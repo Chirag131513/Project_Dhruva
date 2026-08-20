@@ -54,7 +54,15 @@ class Config:
         return int(self.frozen["delay_days"])
 
     def data_dir(self) -> Path:
-        return REPO_ROOT / self.paths["data_dir"]
+        """Where the IEEE-CIS CSVs live.
+
+        Absolute paths are honoured as-is so the ~700MB of raw data can sit OUTSIDE a synced
+        folder. The repo defaults to a relative `data/`, which is convenient but lands inside
+        OneDrive here -- that triggers a full cloud sync of files that are gitignored and freely
+        re-downloadable. Point this somewhere local instead.
+        """
+        d = Path(self.paths["data_dir"]).expanduser()
+        return d if d.is_absolute() else REPO_ROOT / d
 
     def results_dir(self) -> Path:
         d = REPO_ROOT / self.paths["results_dir"]

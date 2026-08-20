@@ -59,7 +59,7 @@ tuning:
     verbosity: -1
 
 paths:
-  data_dir: data
+  data_dir: C:/Users/Chirag V Rao/dhruva-data
   results_dir: results
 
 amendments: []

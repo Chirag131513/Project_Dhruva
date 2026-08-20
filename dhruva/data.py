@@ -67,7 +67,56 @@ def load(data_dir: Path, dev: bool = False, seed: int = 20260820) -> pd.DataFram
 
 
 def is_real(df: pd.DataFrame) -> bool:
+    """Only IEEE-CIS backs a reportable result. ULB and the fixture do not."""
     return df.attrs.get("data_source") == "ieee-cis"
+
+
+def load_ulb(data_dir: Path) -> pd.DataFrame:
+    """ULB / Worldline credit-card fraud (OpenML 1597), remapped onto our column names.
+
+    284,807 transactions, 492 frauds (0.172%) -- a far harsher imbalance than IEEE-CIS's 3.5%,
+    which is exactly why it is useful: it stresses the sparse-calibration-cell path and the
+    PROTOCOL section 12 stop rule under conditions the primary dataset will not reach.
+
+    WHAT IT CANNOT DO. Its features are PCA-anonymised (V1..V28), so there is no identifiable
+    device or behavioural block to ablate. tau is undefined here and no H1/H3 result may come
+    from this source. It validates machinery, not science. `data_source` is set accordingly so
+    every artefact records the distinction.
+    """
+    path = Path(data_dir) / "ulb_creditcard.parquet"
+    if not path.exists():
+        raise FileNotFoundError(
+            f"{path} not found. Fetch it with sklearn.datasets.fetch_openml(data_id=1597)."
+        )
+    raw = pd.read_parquet(path)
+
+    target_col = "Class" if "Class" in raw.columns else raw.columns[-1]
+    df = raw.rename(columns={target_col: TARGET, "Time": TIME, "Amount": AMOUNT})
+    df[TARGET] = pd.to_numeric(df[TARGET], errors="coerce").astype(int)
+    df[TIME] = pd.to_numeric(df[TIME], errors="coerce")
+    df[ID] = np.arange(1, len(df) + 1)
+
+    # ULB's `Time` is seconds since the first transaction and spans only ~48 HOURS. A delay
+    # window measured in days would swallow the entire calibration split, so the axis is
+    # rescaled to a 182-day span and the same chronological machinery applies unchanged.
+    #
+    # WHAT THE RESCALE DOES AND DOES NOT PRESERVE. It preserves ORDER and relative spacing --
+    # which is all the split depends on -- and invents nothing. But it makes the delay window
+    # nominal: "7 days" of rescaled time is about 2.2 hours of real elapsed time, which is not a
+    # realistic verification latency for a chargeback. ULB therefore validates that the split
+    # and calibration machinery RUN correctly under extreme imbalance; it does NOT validate the
+    # verification-latency simulation, and its time axis must never be described as real days.
+    #
+    # Note also: OpenML flags `Time` as row_id_attribute, so sklearn's fetch_openml silently
+    # drops it. The parquet must be built from the raw ARFF or this column simply is not there.
+    span = df[TIME].max() - df[TIME].min()
+    if span > 0:
+        df[TIME] = ((df[TIME] - df[TIME].min()) / span * (182 * 86_400)).astype("int64")
+
+    df = df.sort_values(TIME, kind="mergesort").reset_index(drop=True)
+    df.attrs["data_source"] = "ulb-creditcard"
+    df.attrs["time_rescaled"] = True
+    return df
 
 
 # ------------------------------------------------------------------------------------------
