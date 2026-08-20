@@ -1,0 +1,14 @@
+{
+  "config_hash": "17917c76a46ada55",
+  "data_source": "dev-fixture",
+  "audit": {
+    "n_total": 60000,
+    "n_with_identity": 14417,
+    "coverage": 0.24028333333333332,
+    "fraud_rate_with": 0.03669279323021433,
+    "fraud_rate_without": 0.03468398306386153,
+    "amount_median_with": 68.33,
+    "amount_median_without": 67.91,
+    "data_source": "dev-fixture"
+  }
+}

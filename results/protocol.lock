@@ -1,0 +1,50 @@
+{
+  "frozen": {
+    "alpha": 0.1,
+    "base_seed": 20260820,
+    "cal_frac": 0.15,
+    "cost_sensitivity_pct": 0.5,
+    "delay_days": 7,
+    "fee_chargeback": 1500.0,
+    "gamma": 0.01,
+    "gamma_sensitivity": [
+      0.005,
+      0.01,
+      0.05
+    ],
+    "goodwill": 250.0,
+    "human_error_rate": 0.05,
+    "kappa": 0.5,
+    "lambda_headline": 0.75,
+    "lambda_sweep": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "margin": 0.25,
+    "min_cell_n": 100,
+    "n_seeds": 10,
+    "review_cap_headline": 0.02,
+    "review_cap_sweep": [
+      0.01,
+      0.02,
+      0.05
+    ],
+    "review_cost": 40.0,
+    "rho_sweep": [
+      0.0,
+      0.1,
+      0.2,
+      0.4,
+      0.6,
+      0.8
+    ],
+    "target_coverage_band": 0.02,
+    "test_frac": 0.25,
+    "train_frac": 0.6,
+    "underpowered_note": "n=10 paired seeds; min achievable two-sided p ~= 0.002"
+  },
+  "hash": "17917c76a46ada55"
+}
