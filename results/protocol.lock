@@ -1,6 +1,9 @@
 {
   "frozen": {
     "alpha": 0.1,
+    "amendment1_alpha_fraud": 0.1,
+    "amendment1_alpha_legit_source": "capacity",
+    "amendment1_enabled": true,
     "base_seed": 20260820,
     "cal_frac": 0.15,
     "cost_sensitivity_pct": 0.5,
@@ -46,5 +49,5 @@
     "train_frac": 0.6,
     "underpowered_note": "n=10 paired seeds; min achievable two-sided p ~= 0.002"
   },
-  "hash": "17917c76a46ada55"
+  "hash": "d38888c9d05d398c"
 }

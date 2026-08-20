@@ -118,11 +118,29 @@ class Calibration:
         return sorted([c for c, n in self.n.items() if n < self.min_cell_n])
 
 
+def resolve_alpha(alpha: float | dict[int, float], cls: int) -> float:
+    """One alpha, or one per class.
+
+    A scalar applies the same miscoverage budget to both classes. That is the conventional
+    choice and it is wrong whenever the classes carry different costs AND different prevalence:
+    promising 90% coverage of the legitimate class means excluding 10% of legitimate traffic BY
+    CONSTRUCTION, and at 96.6% legitimate that is ~9.7% of all volume pushed toward block or
+    review -- which no realistic analyst capacity can absorb. See Block 4.
+
+    Passing a dict lets the budget follow the economics instead of convention.
+    """
+    if isinstance(alpha, dict):
+        if cls not in alpha:
+            raise KeyError(f"no alpha given for class {cls}; have {sorted(alpha)}")
+        return float(alpha[cls])
+    return float(alpha)
+
+
 def calibrate(
     scores: np.ndarray,
     labels: np.ndarray,
     populations: np.ndarray,
-    alpha: float,
+    alpha: float | dict[int, float],
     min_cell_n: int = 100,
     class_conditional: bool = True,
     population_conditional: bool = True,
@@ -160,9 +178,16 @@ def calibrate(
         for ck in np.unique(cls_keys):
             mask = (pop_keys == pk) & (cls_keys == ck)
             cell = (str(pk), int(ck))
+            # When class-marginal, the cell key is 0 for everything, so a per-class alpha is
+            # meaningless -- fall back to the scalar rather than silently applying the legit
+            # budget to a pooled cell.
+            cell_alpha = (
+                resolve_alpha(alpha, int(ck)) if class_conditional
+                else (alpha if not isinstance(alpha, dict) else float(np.mean(list(alpha.values()))))
+            )
             n[cell] = int(mask.sum())
-            a[cell] = float(alpha)
-            q[cell] = _conformal_quantile(true_score[mask], alpha)
+            a[cell] = float(cell_alpha)
+            q[cell] = _conformal_quantile(true_score[mask], cell_alpha)
 
     return Calibration(q=q, n=n, alpha=a, min_cell_n=min_cell_n)
 

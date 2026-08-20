@@ -1,0 +1,57 @@
+{
+  "config_hash": "d38888c9d05d398c",
+  "post_hoc": true,
+  "alpha_legit": 0.02077006680097551,
+  "alpha_fraud": 0.1,
+  "p_legit_cal": 0.9629242020088573,
+  "arms": {
+    "B1 bayes": {
+      "total": 3718530.79975,
+      "per_1000": 33689.362817887784,
+      "missed_fraud": 3150876.027,
+      "blocked_legit": 567654.77275,
+      "review": 0.0,
+      "n_missed": 1878,
+      "n_blocked_legit": 1969,
+      "n_reviewed": 0,
+      "review_rate": 0.0,
+      "fraud_recall": 0.4967845659163987,
+      "fpr": 0.0184631253223311,
+      "legit_coverage": NaN,
+      "fraud_coverage": NaN,
+      "net_vs_b1": 0.0
+    },
+    "PRE alpha=0.10": {
+      "total": 5417737.446125,
+      "per_1000": 49083.9345708345,
+      "missed_fraud": 1563884.229,
+      "blocked_legit": 3712360.1125000003,
+      "review": 141493.104625,
+      "n_missed": 978,
+      "n_blocked_legit": 12258,
+      "n_reviewed": 2208,
+      "review_rate": 0.020004167534903104,
+      "fraud_recall": 0.7379421221864951,
+      "fpr": 0.11494209761357775,
+      "legit_coverage": 0.8912197802290575,
+      "fraud_coverage": 0.8778289318703071,
+      "net_vs_b1": -1699206.646375
+    },
+    "AMD per-class": {
+      "total": 3691393.5110250004,
+      "per_1000": 33443.502822372415,
+      "missed_fraud": 2495306.197,
+      "blocked_legit": 1039061.58575,
+      "review": 157025.728275,
+      "n_missed": 1540,
+      "n_blocked_legit": 3398,
+      "n_reviewed": 2208,
+      "review_rate": 0.020004167534903104,
+      "fraud_recall": 0.587352625937835,
+      "fpr": 0.0318627221154297,
+      "legit_coverage": 0.9755570120817387,
+      "fraud_coverage": 0.8778289318703071,
+      "net_vs_b1": 27137.28872499941
+    }
+  }
+}

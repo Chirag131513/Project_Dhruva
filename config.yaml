@@ -11,6 +11,33 @@ frozen:
 
   # --- PROTOCOL 07 : conformal ---------------------------------------------
   alpha: 0.10              # target miscoverage -> 90% coverage per cell
+                           # PRE-REGISTERED. Unchanged. Amendment 1 adds a
+                           # second arm; it does NOT replace this value, and
+                           # both are reported side by side.
+
+  # --- AMENDMENT 1 (2026-08-20) : capacity-derived per-class alpha ----------
+  # Added AFTER Block 4 showed the pre-registered alpha loses money. Recorded
+  # here rather than edited in place, because changing a frozen constant to
+  # improve a result you have already seen is the failure the freeze exists
+  # to prevent.
+  #
+  # DERIVED, NOT TUNED. alpha_legit is not a free parameter: miscovering a
+  # legitimate row pushes it toward block-or-review, so the miscoverage
+  # budget on the majority class is bounded by the review capacity that can
+  # actually be staffed:
+  #
+  #     alpha_legit = review_cap_headline / P(legit)
+  #
+  # At 2% capacity and ~96.6% legitimate traffic that is ~0.021. alpha_fraud
+  # stays at the pre-registered 0.10 -- the fraud-side promise is the one we
+  # actually wanted, and nothing observed justifies loosening it.
+  #
+  # The direction is counter-intuitive and worth stating: fraud is the
+  # expensive error per case, but legitimate traffic is 28x more common, so
+  # in AGGREGATE the miscoverage budget belongs mostly to the fraud class.
+  amendment1_enabled: true
+  amendment1_alpha_fraud: 0.10        # unchanged from pre-registration
+  amendment1_alpha_legit_source: capacity   # = review_cap_headline / P(legit)
   gamma: 0.01              # ACI step size. Declared a priori.
   gamma_sensitivity: [0.005, 0.01, 0.05]   # reported as a band, never as a substitute headline
 
@@ -62,4 +89,27 @@ paths:
   data_dir: C:/Users/Chirag V Rao/dhruva-data
   results_dir: results
 
-amendments: []
+amendments:
+  - id: 1
+    date: 2026-08-20
+    section: PROTOCOL 07
+    title: Capacity-derived per-class alpha
+    reason: >
+      Block 4 refuted H4: at the pre-registered alpha = 0.10 the population-conditional arm
+      cost Rs1,530,135 more than the plain per-transaction Bayes threshold, because targeting
+      90% coverage of the legitimate class excludes 10% of legitimate traffic by construction
+      (FPR 11.15% against the baseline's 1.85%). The failure is structural, not a tuning
+      accident: a symmetric miscoverage budget applied to a 28:1 imbalanced, cost-asymmetric
+      problem allocates almost the whole budget to the class that can least afford it.
+    change: >
+      Adds an arm in which alpha is per-class. alpha_legit is derived from the frozen review
+      capacity as review_cap_headline / P(legit); alpha_fraud remains the pre-registered 0.10.
+      No pre-registered value is modified.
+    reported_as: >
+      A separate arm. The alpha = 0.10 result stands and is reported alongside it. The amended
+      arm is post-hoc and is labelled as such wherever it appears.
+    prediction: >
+      Stated before running: FPR should fall toward the capacity bound and total cost should
+      drop. If cost does NOT drop, the amendment is reported as a further refutation and the
+      conclusion becomes that conformal abstention is the wrong tool for this problem at any
+      alpha, not merely at 0.10.
