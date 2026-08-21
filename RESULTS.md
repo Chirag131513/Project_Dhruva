@@ -78,8 +78,9 @@ almost the whole budget to the class that can least afford it.
 `α_legit = review_cap / P(legit) = 0.02 / 0.96292 = **0.02077**`, with α_fraud unchanged at 0.10.
 Recorded in `config.yaml` with a prediction written **before** the run.
 
-> **On α precision.** The method uses the exact derivation **0.02077**. The §4 sweep evaluates a
-> fixed grid whose nearest point is **0.0208**, giving 3,689,340 against the exact value's
+> **On α precision.** The method uses the exact derivation **0.02077**. The Block 7 α sweep
+> (`results/block7_alpha_sweep.json`) evaluates a fixed grid whose nearest point is **0.0208**,
+> giving 3,689,340 against the exact value's
 > 3,691,394 — a difference of **₹2,054 (0.06%)**, consistent with how flat the cost surface is
 > around the optimum. Where the two appear side by side, 0.02077 is the method and 0.0208 is the
 > grid point.
@@ -132,6 +133,17 @@ false-positive rate** (3.19% vs 1.85%). That is a real operating improvement and
 saleable number here. The margin caveat above applies unchanged: the *net cost* advantage is not
 robust, so present the recall gain as bought at approximately break-even, never as bought at a
 profit.
+
+**The two values move in opposite directions.** §9 measures the layer across three base scorers
+and finds that its *coverage* value grows with model quality — the better the model, the larger
+the gap that class-conditional calibration closes — while its *economic* value shrinks, because a
+good model's threshold baseline is already cheap. On the weakest scorer the layer is worth
+₹2.78M; on the best it is worth ₹27,137.
+
+The consequence is worth saying before anyone works it out: **for a production system with a
+strong model, the honest pitch is the guarantee, not the money.** A team already running a
+well-calibrated scorer is exactly the team for whom the under-coverage is most severe and the
+rupee saving is most negligible.
 
 You buy auditability at approximately zero cost. Not profit.
 
@@ -209,11 +221,16 @@ would not be caught again automatically. Do not claim the suite covers them.
 - **"No retraining" is imprecise.** Recalibration *is* learning. The accurate statement is *no
   gradient-based refitting of the base model.*
 - **Static review queue.** No backlog, no time-of-day effects, constant analyst error rate.
-- **A single base learner.** Every reported number comes from one LightGBM configuration. The
-  layer is model-agnostic by construction and was designed to be demonstrated across three
-  scorers (the E7 ablation), but that ablation was never run on real data. The *direction* of the
-  coverage gap should hold for any miscalibrated scorer; its *magnitude* — and therefore every
-  rupee figure — is unverified beyond this one model.
+- **Base-learner dependence — now measured, and the answer is split** (§9). The *fix* is
+  model-agnostic: class-conditional calibration restores fraud coverage to 0.868–0.894 on all
+  three scorers. The *failure* is not: the under-coverage gap ranges 0.106 to 0.752 and scales
+  with model quality. And the *economics* do not transfer at all — the apparent gains on the
+  weaker scorers are artefacts of broken baselines.
+- **The weaker arms are not like-for-like.** Logistic regression and random forest cannot accept
+  NaN, so they impute (median) where LightGBM handles missingness natively; both also use
+  `class_weight="balanced"`, which inflates predicted probabilities past the cost-optimal
+  threshold. Those are properties of the models and of choices in `model.py`, not of the
+  calibration layer, but they mean the three arms are not strictly comparable.
 - **Amendment 1 is post-hoc.** Derived rather than tuned, prediction pre-recorded, and the
   pre-registered result reported alongside it every time — but post-hoc nonetheless.
 - **Multiple looks.** Seven blocks, four arms, two amendable constants. Every result is reported,
@@ -221,7 +238,46 @@ would not be caught again automatically. Do not claim the suite covers them.
 
 ---
 
-## 9. What not to say
+## 9. Base-learner dependence (E7)
+
+*Post-hoc. Same conformal arms, three different base scorers, everything else held fixed.*
+
+| scorer | PR-AUC | ECE | marginal | B2 fraud | **gap** | B3 fraud | net vs B1 |
+|---|---|---|---|---|---|---|---|
+| logistic regression | 0.1739 | 0.2829 | 0.875 | 0.769 | **0.106** | 0.894 | +2,783,903 |
+| random forest | 0.4729 | 0.1474 | 0.889 | 0.417 | **0.472** | 0.872 | +2,635,767 |
+| LightGBM | 0.5233 | 0.0039 | 0.891 | 0.139 | **0.752** | 0.868 | +27,137 |
+
+**The fix is model-agnostic.** Class-conditional calibration restores fraud coverage to
+0.868–0.894 on every scorer. That is the claim §4 depends on, and it now has evidence.
+
+**The failure is not — and it runs the wrong way.** The under-coverage gap scales monotonically
+with model quality, and inversely with calibration error:
+
+```
+PR-AUC 0.174  →  gap 0.106      ECE 0.2829
+PR-AUC 0.473  →  gap 0.472      ECE 0.1474
+PR-AUC 0.523  →  gap 0.752      ECE 0.0039
+```
+
+The mechanism: a well-separated scorer pushes fraud nonconformity far from legitimate
+nonconformity, so the pooled quantile — set by the 96% legitimate majority — excludes nearly all
+of it. A weak, overlapping scorer covers the fraud class *by accident*. **The failure mode is
+therefore most severe exactly where the best models are deployed**, which is the opposite of the
+intuition that better models need less scaffolding.
+
+**The economics do not generalise, and the apparent gains are artefacts.** The +₹2.78M and
++₹2.64M figures come from broken baselines: logistic regression's cost-optimal threshold runs at
+**69.08% FPR** and random forest's at **43.38%**, costing 5.81× and 3.69× the LightGBM baseline.
+Those are not baselines, they are models nobody would deploy, and the layer is merely rescuing
+them. Both arms additionally impute missing values and use `class_weight="balanced"` — choices in
+`model.py` that inflate predicted probabilities past the threshold. **Do not cite the ₹2.78M
+figure as evidence the method works.** The only economically meaningful row is LightGBM's
++₹27,137, and §4 already says what that is worth.
+
+---
+
+## 10. What not to say
 
 | Don't | Do |
 |---|---|
@@ -234,7 +290,7 @@ would not be caught again automatically. Do not claim the suite covers them.
 
 ---
 
-## 10. Reproducing
+## 11. Reproducing
 
 ```bash
 python scripts/block0_audit.py          # freeze + identity audit
