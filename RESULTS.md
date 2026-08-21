@@ -42,13 +42,58 @@ review volume. Conditioning on the *segment* as well brings worst-cell deviation
 This result needs no τ, no agent modelling, and no contested assumption. It is a property of the
 real data.
 
-**Prior art, stated up front.** That marginal coverage can hold while a class is badly
-under-covered is not our discovery — it is the motivation for class-conditional conformal
-prediction, established by Sadinle, Lei & Wasserman, *Least Ambiguous Set-Valued Classifiers with
-Bounded Error Levels*, JASA 114(525):223–234, 2019 ([arXiv:1609.00451](https://arxiv.org/abs/1609.00451)).
-**Our contribution is the operational measurement, not the mechanism**: how far the gap opens on
-real payments data, what closing it costs in rupees and analyst capacity, and the prevalence
-below which it cannot be closed at all.
+### Prior art, stated up front
+
+That marginal coverage can hold while a class is badly under-covered is not our discovery. The
+mechanism is Sadinle, Lei & Wasserman, *Least Ambiguous Set-Valued Classifiers with Bounded Error
+Levels*, JASA 114(525):223–234, 2019 ([arXiv:1609.00451](https://arxiv.org/abs/1609.00451)) — and
+2026 has been a busy year for the empirical version of it:
+
+| Work | Domain | Reported |
+|---|---|---|
+| [Cost-Sensitive CP & HITL Abstention](https://arxiv.org/abs/2607.27143) (Jul 2026) | 15 imbalanced datasets incl. fraud | marginal → 0.5% minority coverage; Mondrian **+61.7 pp** |
+| [A Quiet Failure in Calibrated Virtual Screening](https://arxiv.org/html/2607.06605v1) (Jul 2026) | drug discovery | 90.2% marginal / **64.8% minority**; Mondrian restores; utility model favours the fix |
+| [Class-Conditional CP for Anomaly Detection](https://doi.org/10.3390/make8070190) (Jul 2026) | Azure KPI, Yahoo, NAB | **52.94% → 90.59%** at 1:345 imbalance; agnostic across XGBoost/RF/NN |
+| [arXiv:2607.18088](https://arxiv.org/html/2607.18088v2) (Jul 2026) | action recognition | "marginal coverage hides a per-class collapse" |
+
+**We claim none of that.** Our contribution is operational and, in one respect, contrarian:
+
+- **The economics run the other way.** Those papers report the fix winning. On real payments with
+  a finite analyst queue it *loses* ₹1.53M at the conventional α, and only reaches break-even
+  after the capacity derivation in §3. None of them models a review capacity.
+- **The prevalence floor** (§5): below ~0.1% fraud there is not enough minority calibration data
+  to run the method at all.
+- **The failure scales with model quality** (§9), which is invisible to a single-model study.
+
+### Why the gap is that large — an exact identity
+
+The collapse is not incidental to imbalance; it is *determined* by it. Writing π_F for fraud
+prevalence, R = π_L/π_F for the imbalance ratio, T for the target and s = cov_legit − T for the
+majority's surplus, the definition of marginal coverage rearranges to:
+
+```
+T − cov_fraud  =  (T − marginal)/π_F  +  s·R
+                   └── marginal deficit ──┘   └─ surplus × ratio ─┘
+```
+
+On our data (π_F = 0.033811, R = 28.58, marginal = 0.890928, cov_legit = 0.917249):
+
+```
+term 1   (0.900 − 0.890928)/0.033811   =  0.268301
+term 2    0.017249 × 28.5758           =  0.492899
+                              predicted =  0.761200
+                               observed =  0.761200      residual 0.00000000
+```
+
+**A 1.7-point surplus on the majority class becomes a 76-point shortfall on the minority.** That
+is the whole failure mode in one line, and it is exact rather than approximate.
+
+The "Quiet Failure" paper states this as *shortfall = surplus × ratio* — **term 2 only**. That
+form assumes marginal coverage lands exactly on target. Ours undershoots by 0.009, and at
+π_F = 0.034 that deficit contributes another 0.268. **Term 2 alone under-predicts our observed
+shortfall by 35.2%.** Their 3.26:1 setting was too mild for the omission to show; at 28.6:1 it is
+a third of the effect. Anyone using the one-term version to size the risk on a heavily imbalanced
+problem will under-state it.
 
 ---
 
