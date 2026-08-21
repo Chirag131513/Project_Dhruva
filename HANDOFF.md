@@ -1,84 +1,92 @@
-# Dhruva — Handoff (session 1, 20 Aug 2026)
+# Dhruva — Handoff
 
-**State: Blocks 0–5 complete on real IEEE-CIS data. All 22 tests pass. HEAD `e3fee68`.**
+**State: complete and audited. HEAD `f2df785`. 22 tests passing.**
 
-Run `git log --oneline` for the commit-by-commit record; each message states what was found and
-what was wrong with it.
+Blocks 0–7 run on real IEEE-CIS. Amendment 1 applied and reported alongside the pre-registered
+arm. Console built. `RESULTS.md` written, audited against a clean re-run, and corrected.
 
----
-
-## Where the hypotheses stand
-
-| | Verdict | Evidence |
-|---|---|---|
-| **H1** calibration degrades faster than discrimination | **REFUTED** | PR-AUC 0.5233 → 0.5109 at full masking (2.4%); ECE non-monotone 0.0036–0.0042. R is noise/noise. Underpowered by construction: only 24.4% of rows carry identity data, so τ is a no-op on three-quarters of the test set. |
-| **H2** pooled calibration under-covers fraud | **SUPPORTED** | Marginal CP: 0.891 marginal coverage, **0.139 on fraud**. Class-conditional restores it to 0.868 for +5.7pp review volume. |
-| **H3a** conditioning restores coverage | **PARTIAL** | True for **ProductCD** segments (worst cell deviation 0.083 vs 0.211 class-only). **False for the identity split** it was framed around — that arm scores 0.263, worse than doing nothing. |
-| **H4** positive net rupees | **REFUTED** | D1 costs ₹1.53M *more* than the Bayes baseline. Sign stable across ±50% sweeps on all three cost constants. |
-
-**Headline for the submission:** *conformal calibration conditioned on the right segment
-substantially improves per-cell coverage, and at α = 0.10 it costs more money than a plain
-cost-optimal threshold.* That is a coherent, honest, useful negative result — and it directly
-answers the track's "honest metrics including false-positive cost" bar.
+Read `RESULTS.md` first — it is the authoritative record. `PROTOCOL.md` is the pre-registration.
+`git log --oneline` is a demo artefact in its own right.
 
 ---
 
-## Two corrections made to our own work
+## Hypothesis standing
 
-**Block 3's headline was circular.** It measured coverage on the same identity cells the arm had
-calibrated on, so the arm was grading itself. On a neutral fine grid (ProductCD × identity ×
-class) identity-conditioning is *worse* than class-only. Corrected in `e3fee68`.
+| | Verdict |
+|---|---|
+| **H1** calibration degrades faster than discrimination | **REFUTED** — PR-AUC 0.5233 → 0.5109 at full masking; ECE non-monotone. Underpowered by construction: only 24.4% of rows carry identity data. |
+| **H2** pooled conformal under-covers fraud | **SUPPORTED** — 0.891 marginal / **0.139 fraud** |
+| **H3a** conditioning restores coverage | **SUPPORTED for ProductCD** (0.083 vs 0.211 worst-cell); **FALSE for the identity split** (0.263) |
+| **H3b** online ACI under drift | **NOT TESTED** — scope closed when H1 fell |
+| **H4** positive net rupees | **REFUTED** — α=0.10 identity-segmented costs ₹1.53M more |
+| **H5** calibration approaches oracle retraining | **NOT TESTED** — oracle arm designed, never run |
 
-**τ is not a pure identity ablation.** It also compresses block-D timing on every shifted row, so
-76.7% of identity-*absent* rows also change score. Documented; matters for any τ claim.
-
----
-
-## Bugs found and fixed (all have regression tests)
-
-1. `aci_update` took target *coverage* where Gibbs–Candès takes target *miscoverage* — the
-   controller ran backwards and drove coverage to ~10%. Silent in production.
-2. `Encoder` detected categoricals via `dtype == object`, missing pandas 3.0's `str` dtype;
-   numeric coercion then nulled ~15 columns including all of block M. Nothing raised.
-3. `coverage()` applied the stop rule to the evaluation cell rather than the governing
-   calibration cell.
-4. `fetch_data.py` probed auth with `kaggle whoami`, which does not exist in CLI 2.x.
-5. Block 5's first version let evaluation granularity follow calibration granularity.
+**Defensible claim:** segment-conditional conformal abstention with a capacity-derived per-class
+α (0.02077) is roughly **cost-neutral** against a per-transaction Bayes threshold, while
+delivering a stated per-segment coverage level a bare threshold cannot state. It buys recall
+58.7% vs 49.7% for +1.34pp FPR at break-even. **Not** "it saves money" — the +₹27,137 margin's
+sign flips on all four cost constants.
 
 ---
 
-## Next session — in priority order
+## Audit result (clean re-run, `f2df785`)
 
-1. **Amendment 1: cost-driven per-class α.** Tight on legit, loose on fraud, derived from the
-   cost matrix rather than fixed at 0.10. Very likely flips the economics. **Must go through the
-   amendment process** — append to `amendments` in `config.yaml` with timestamp and reason,
-   re-run Block 0 to re-freeze, and report *both* the pre-registered α=0.10 result and the
-   amended one side by side. Do not edit α in place.
-2. **Reframe the narrative** to segment-conditional calibration. Drop agent framing from the
-   headline; keep agentic commerce as motivation only. ProductCD is a real, interpretable,
-   deployable segment — this is a strength, not a retreat.
-3. **External validation:** run Block 4 on ULB (already downloaded, works for cost though not τ).
-4. **Language fix:** "no retraining" → "no gradient-based refitting of the base model."
-   Recalibration *is* learning and a sharp judge will say so.
-5. Optional: Block 6 (ACI + γ sensitivity), Block 7 (model-agnosticism), Block 8 (console).
+Every headline number reproduced **exactly** — 18 checked, zero mismatches. Determinism confirmed
+(block1 and block4 artefacts byte-identical across runs). Leakage clean: 0 shared TransactionIDs,
+7.00d delay gap, `dhruva/` never touches test labels. Bugs 1–3 mutation-verified — reverting each
+fix makes a named test fail.
+
+**Known, unactioned:** committed artefacts carry `config_hash 17917c76a46ada55` (pre-Amendment 1);
+current config hashes to `d38888c9d05d398c`. Numbers are identical — only the provenance stamp
+differs. A fresh `check_lock()` on those files would flag them. Re-stamping is a metadata
+refresh, not a result change; left as a decision.
+
+---
+
+## What is left, in priority order
+
+1. **Nothing is required.** The submission is complete. Everything below is optional.
+2. **Prune fixture leftovers.** `results/block2_dev-fixture.json` and `block3_dev-fixture.json`
+   are labelled but sit beside real ones. Delete before handing the repo over.
+3. **Run the E7 three-scorer ablation** — the single-base-learner threat in RESULTS §8 is the
+   most substantive gap a reviewer can name. Cheap: `block1_baseline.py --kind logreg|rf`.
+4. **Run the oracle-retrain arm (H5).** Answers "why not just retrain" with a number instead of
+   an argument.
+5. **Regression tests for bugs 4 and 5** — currently script-level fixes with no coverage, and
+   RESULTS §7 says so explicitly.
+
+**Do not** add graph/GNN features, per-agent cells, ACI, or KYA. They were cut deliberately and
+the write-up does not depend on them.
+
+---
+
+## Demo
+
+`streamlit run app/console.py` after `python scripts/export_console.py`.
+
+The α_legit slider is the demo — drag it and fraud coverage holds at 0.878 while FPR and cost
+climb. The ρ slider planned in `IMPLEMENTATION.md` is dead; τ moved almost nothing.
+
+Runbook (six-minute script + the ten hardest questions with measured answers):
+<https://claude.ai/code/artifact/3d4cfb2f-f0ce-4aa1-ad81-1a5cbb4d060d>
 
 ---
 
 ## Environment
 
-- Code: `C:\Users\Chirag V Rao\OneDrive\ドキュメント\dhruva` (git, 6 commits)
-- Data: `C:\Users\Chirag V Rao\dhruva-data` — outside OneDrive deliberately; gitignored
-  - `train_transaction.csv` 683 MB, `train_identity.csv` 27 MB, `ulb_creditcard.parquet` 72 MB
-  - ULB must come from the **raw ARFF** — OpenML flags `Time` as `row_id_attribute`, so
+- Code: `OneDrive\ドキュメント\dhruva` — git, 11 commits
+- Data: `C:\Users\Chirag V Rao\dhruva-data` — outside OneDrive deliberately, gitignored
+  - `train_transaction.csv` 683 MB · `train_identity.csv` 27 MB · `ulb_creditcard.parquet` 72 MB
+  - ULB must come from the **raw ARFF**: OpenML flags `Time` as `row_id_attribute`, so
     `fetch_openml` silently drops it and the chronological split has nothing to sort on.
-- Kaggle: OAuth via `kaggle auth login`. Two API tokens were exposed during setup and expired.
-- `python -m pytest tests/ -q` → 22 passed.
+- Kaggle: OAuth (`kaggle auth login`). Two API tokens were exposed during setup — both expired.
 
 ---
 
 ## Standing discipline
 
-- Every artefact records `data_source`; only `ieee-cis` is reportable.
+- Only `data_source: ieee-cis` is reportable. The fixture is plumbing.
 - `results/protocol.lock` hashes the frozen constants; blocks refuse to run if one changed.
-- Report refutations as prominently as confirmations. Four blocks in, two hypotheses are dead and
-  one of our own headlines has been retracted — that record *is* the credibility.
+- The §9 "what not to say" table in `RESULTS.md` governs slides and speech, not just the document.
+- Report refutations as prominently as confirmations. Two hypotheses died, one headline was
+  retracted, and external validation failed — that record is the credibility.
