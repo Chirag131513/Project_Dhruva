@@ -54,15 +54,14 @@ If it says `DEV DATA`, stop — the real data isn't loading, see Part 6.
 
 ### The one thing to do on stage
 
-Drag the slider slowly from far left to far right. Watch two things:
+Drag the capacity slider from 1% to 10%. Watch the four bars race:
 
-1. **False-positive rate climbs** from 1.36% to 29.5%, and cost climbs to ₹10.2M.
-2. **Fraud coverage does not move.** It stays at 0.878 the entire time.
+1. **band pulls away** — ₹214k → ₹1,061,079 saved.
+2. **conformal stalls** — peaks at 5%, then falls.
+3. **random goes negative** — escalating the wrong cases *loses* money.
 
-That is the finding. The two error budgets are independent, and the standard setting spends the
-whole review capacity on the wrong class.
-
-Then drag it back to **0.0208** — that's the setting the method actually uses.
+That is the finding. Escalation pays, the *choice* of cases is the entire value, and the
+fashionable method is not the one that wins.
 
 To stop the console: press `Ctrl+C` in PowerShell.
 
@@ -111,17 +110,16 @@ everything in `scripts/`.
 
 If you remember nothing else:
 
-1. **"Marginal conformal reports 89.1% coverage while covering 13.9% of fraud."**
-   A dashboard would call that system healthy. It isn't.
+1. **"Under a capacity limit, choosing which cases a human sees is worth 28% of the loss."**
+   ₹1,061,079 saved at 10% capacity, monotone in capacity, no sign flips under ±50% on any cost
+   constant.
 
-2. **"The two error budgets are independent."**
-   That's what the slider proves. The standard setting spends the whole budget on the majority
-   class before fraud gets anything.
+2. **"Random escalation loses money."**
+   The signal is the whole value, not the reviewing. Band beats random by ₹1.32M, p = 0.0020.
 
-3. **"It's cost-neutral, not profitable."**
-   It buys 58.7% fraud recall against 49.7%, at break-even, plus a coverage number a plain
-   threshold can't state. **Never say it saves money** — that claim doesn't survive sensitivity
-   testing and it's checkable in the repo.
+3. **"A one-line rule beat conformal prediction 22×."**
+   We implemented the 2026 literature, pre-registered a kill test, and it fired. Say this
+   plainly — it is the most memorable thing in the submission.
 
 ---
 
@@ -131,7 +129,7 @@ Full answers are in the Runbook. The short versions:
 
 - **"Why not just retrain?"** — Fraud labels arrive weeks late. During the window that matters,
   retraining isn't available and recalibration is.
-- **"Does it save money?"** — No. Cost-neutral. We tested it four ways and the sign flips.
+- **"Does it save money?"** — Yes, 28% of realised loss at 10% capacity, and the sign holds under ±50% sweeps on all four cost constants. The *conformal* arm did not; that's why we don't use it.
 - **"Did you tune it?"** — No. The setting was frozen and hashed before any result existed;
   `git log` proves it. The one change is recorded as an amendment with its prediction written
   down beforehand.

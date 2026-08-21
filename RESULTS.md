@@ -10,6 +10,51 @@ Protocol pre-registered and hashed before any result existed — `results/protoc
 
 ---
 
+## 0. The result
+
+> **Under a hard analyst-capacity limit, choosing which cases a human sees is worth 28% of a
+> merchant's realised fraud loss — and the signal that wins is the simplest one we tested, not
+> the one the 2026 literature is built around.**
+
+Net benefit against a per-transaction cost-optimal Bayes threshold, 10 seeds, every arm
+escalating the **same volume** so only the *choice* of escalated cases differs:
+
+| escalation signal | 1% | 2% | 5% | 10% |
+|---|---|---|---|---|
+| **band** — rank by \|p − t(x)\| | **+214,512** | **+396,334** | **+787,307** | **+1,061,079** |
+| disagreement (DAUNT-style proxy) | +65,215 | +169,446 | +458,320 | +788,055 |
+| conformal prediction sets | +38,995 | +72,319 | +87,058 | +47,755 |
+| random | −24,344 | −50,752 | −131,542 | −261,883 |
+
+Three things follow, and the second and third are the interesting ones.
+
+**1. Escalation under capacity pays, and it scales.** Band cuts realised loss 5.7% → 10.6% →
+21.0% → **28.4%** as capacity rises 1% → 10%. Monotone, and the sign holds under ±50% sweeps on
+**all four** cost constants (range +₹513,576 to +₹1,409,008).
+
+**2. The signal is the entire value.** Random escalation *loses* ₹261,883. Band beats random by
+₹1,322,962 (p = 0.0020). Giving analysts more cases does nothing; giving them the *right* cases
+is worth 28% of the loss.
+
+**3. Conformal prediction — the technical core we built this project around — is the
+second-worst signal tested.** A one-line rule beats it **22×** at 10% capacity (p = 0.0020, the
+minimum achievable at n = 10). It is also the only signal that is non-monotone in capacity: it
+peaks at 5% and falls at 10%, the behaviour of a signal that has run out of genuinely ambiguous
+cases and is padding the queue.
+
+**4. The operating point strictly dominates the baseline.** At 10% capacity, band reaches
+**72.4% fraud recall against the threshold's 49.7% — while *halving* the false-positive rate,
+1.85% → 0.88%.** Normally these trade against each other; here both improve, because the escalated
+cases are resolved correctly 95% of the time instead of being forced into a binary call. That is
+the sentence a merchant cares about: *more fraud caught, fewer good customers blocked, same
+analyst headcount.*
+
+We implemented the July–August 2026 conformal literature faithfully, pre-registered a kill test
+that could invalidate it, ran the test, and it fired. That is reported here as the finding rather
+than buried.
+
+---
+
 ## 1. Standing of the pre-registered hypotheses
 
 | | Verdict | Evidence |
@@ -23,9 +68,26 @@ Protocol pre-registered and hashed before any result existed — `results/protoc
 
 **Two of five tested hypotheses survived. One of our own published results was retracted.**
 
+### Kill conditions (declared in the Stage-1 verdict, run in Block 9)
+
+| | Condition | Outcome |
+|---|---|---|
+| **K1** | net ≤ 0 at every capacity | **passed** — best +₹87,058 (conformal), +₹1,061,079 (band) |
+| **K2** | benefit not monotone in capacity | **FIRED for conformal** (+38,995 → +72,319 → +87,058 → +47,755). Band is monotone. |
+| **K3** | a plain score-band rule ≥ conformal | **FIRED — band *beats* conformal**, Δ = −₹1,013,324, 95% CI [−1,034,124, −990,935], p = 0.0020 |
+| **K4** | ensemble disagreement beats conformal | **FIRED** (+788,055 vs +47,755) |
+| **K5** | sign flips under ±50% cost sweep | **FIRED for conformal** (3 of 4 constants). **Band: no flips.** |
+
+K3's own test logic was wrong on first write — it checked only for a *tie* and would have
+reported "passed" in exactly the case where conformal is worse. Corrected before the 10-seed run.
+
 ---
 
-## 2. The headline finding
+## 2. Why conformal loses — the mechanism, which is still worth knowing
+
+Section 0 shows conformal losing. This section explains why, and the explanation is the part of
+the original project worth keeping — it is also *why the coverage framing was never going to
+produce a business result*.
 
 > Marginal conformal prediction (arm **B2**) reports **89.1% *marginal* coverage** on held-out
 > IEEE-CIS while covering **13.9% of the fraud class.** A monitoring dashboard reading the
@@ -167,10 +229,15 @@ persisted capacity sweep in `block4_ieee-cis.json` shows the same direction on t
 (1%→5%: B3 +42,412, D1 +99,384 — cost *rises*), while B2, which escalates far fewer and
 better-targeted cases, moves −570,142 in the opposite direction.
 
-> **The defensible claim:** segment-conditional conformal abstention with a capacity-derived
-> per-class α is roughly **cost-neutral** against a plain per-transaction Bayes threshold, while
-> additionally delivering a **stated per-segment coverage level** — 97.6% on legitimate traffic,
-> 87.8% on fraud — that a bare threshold cannot state at all.
+> **Superseded by §0.** This paragraph described the *conformal* arm, which Block 9 showed is
+> the second-worst escalation signal available. It is kept because the ±₹27,137 margin and its
+> four sign flips are the contrast that makes the band result meaningful: **+₹1,061,079 with no
+> sign flips at all.** Do not present the sentence below as the claim.
+
+> ~~Segment-conditional conformal abstention with a capacity-derived per-class α is roughly
+> cost-neutral against a plain per-transaction Bayes threshold, while additionally delivering a
+> stated per-segment coverage level — 97.6% on legitimate traffic, 87.8% on fraud — that a bare
+> threshold cannot state at all.~~
 
 **The operational upside, stated with its caveat.** At roughly zero net cost the gate also buys
 **fraud recall 58.7% against the baseline's 49.7%** — nearly nine points — for **+1.34 points of
@@ -326,6 +393,8 @@ figure as evidence the method works.** The only economically meaningful row is L
 
 | Don't | Do |
 |---|---|
+| "we built a conformal risk gate" | "we measured what escalation is worth under a capacity limit — conformal lost" |
+| "conformal prediction is our method" | conformal is a **baseline we tested and it came second-worst** |
 | "AI-agent traffic" | "segment-conditional calibration"; agentic commerce is motivation only |
 | "error guarantee" | "target empirical coverage under stated assumptions" |
 | "we save ₹X" | "roughly cost-neutral, with a stated coverage level" |
@@ -335,7 +404,22 @@ figure as evidence the method works.** The only economically meaningful row is L
 
 ---
 
-## 11. Reproducing
+## 11. What we would do next
+
+The band result is strong but the *signal* is barely explored. `band` ranks by distance to the
+Bayes threshold; it was written as a strawman for the kill test and it won. Obvious next steps,
+none of them run:
+
+- **A learned rejector** trained directly on realised rupee cost, which is what DAUNT's framing
+  implies and what would test whether hand-built ranking is leaving money on the table.
+- **Why conformal fails specifically.** Our reading is that conformal nominates cases where the
+  *classes* are hard to separate, while the money is in cases near the *cost-optimal cut* — two
+  different sets. That is a hypothesis we state, not a result we measured.
+- **Capacity beyond 10%**, to find where the curve saturates.
+
+---
+
+## 12. Reproducing
 
 ```bash
 python scripts/block0_audit.py          # freeze + identity audit
@@ -346,6 +430,8 @@ python scripts/block4_cost.py           # H4 refuted
 python scripts/block5_segments.py       # Block 3 retracted
 python scripts/block6_amendment.py      # Amendment 1
 python scripts/block7_alpha_sweep.py    # curve + ULB failure
+python scripts/block8_agnostic.py       # E7: fix is agnostic, failure scales with model quality
+python scripts/block9_triage.py --seeds 10   # THE RESULT: kill test, band beats conformal 22x
 python scripts/export_console.py && streamlit run app/console.py
 python -m pytest tests/ -q              # 22 passed
 ```
