@@ -35,22 +35,26 @@ Two commands. The first prepares the data the screen needs; the second opens the
 python scripts/export_console.py
 ```
 
-Takes ~2 minutes. It prints eleven lines like `alpha_legit=0.002  cost=3,681,959  fpr=1.36%`.
+Takes ~2 minutes. It prints four lines like `cap 10%  cost 2,657,816  net +1,060,714`.
 When it says `written results/console_data.json`, it worked.
 
 ```powershell
-streamlit run app/console.py
+python scripts/build_dashboard.py
 ```
 
-Your browser opens automatically. **Check the top-right corner says `TEST REPLAY · IEEE-CIS`.**
-If it says `DEV DATA`, stop — the real data isn't loading, see Part 6.
+That writes `app\dashboard.html`. **Double-click it.** No server needed — it opens in your
+browser as an ordinary file.
+
+**Check the top-right says `TEST REPLAY · IEEE-CIS`.** If it says `DEV DATA`, stop — the
+real data isn't loading, see Part 6.
 
 ### What you're looking at
 
-- **Left:** a slider labelled `α_legit`. This is the only control that matters.
-- **Top row:** four numbers — cost, false-positive rate, fraud recall, escalation rate.
-- **Middle:** a cost curve, and a coverage table per segment.
-- **Bottom:** a stream of individual decisions.
+- **Top:** a slider for **analyst review capacity**. The only control that matters.
+- **Tiles:** loss, money saved, false-positive rate, fraud recall, escalation rate.
+- **Left panel:** four bars racing — the four ways of choosing which cases a human sees.
+- **Right panel:** how each signal scales as capacity grows.
+- **Bottom:** where the money goes, and a stream of individual decisions.
 
 ### The one thing to do on stage
 
@@ -63,7 +67,7 @@ Drag the capacity slider from 1% to 10%. Watch the four bars race:
 That is the finding. Escalation pays, the *choice* of cases is the entire value, and the
 fashionable method is not the one that wins.
 
-To stop the console: press `Ctrl+C` in PowerShell.
+The dashboard is a plain file — just close the tab. Nothing runs in the background.
 
 ---
 
@@ -78,14 +82,17 @@ Run them in order. Each prints a table and saves a file.
 |---|---|---|---|
 | 0 | `python scripts/block0_audit.py` | 1 min | The data is real: 590,540 transactions, 24.4% have device data |
 | 1 | `python scripts/block1_baseline.py` | 2 min | The fraud model works: PR-AUC 0.523 |
-| 2 | `python scripts/block2_conformal.py` | 2 min | **The headline: 89.1% overall, 13.9% on fraud** |
+| 2 | `python scripts/block2_conformal.py` | 2 min | Why conformal looks healthy: 89.1% overall, 13.9% on fraud |
 | 3 | `python scripts/block3_shift.py --seeds 3` | 8 min | Hypothesis 1 fails — reports it honestly |
 | 4 | `python scripts/block4_cost.py` | 2 min | The money. Hypothesis 4 fails too |
 | 5 | `python scripts/block5_segments.py` | 2 min | Which grouping actually works |
 | 6 | `python scripts/block6_amendment.py` | 2 min | The fix, and what it's worth |
 | 7 | `python scripts/block7_alpha_sweep.py` | 5 min | The curve, and the failure on a second dataset |
 
-**The most important one is Block 2.** If you only run one, run that.
+| 8 | `python scripts/block8_agnostic.py` | 12 min | The failure gets worse as the model gets better |
+| 9 | `python scripts/block9_triage.py --seeds 10` | 25 min | **THE RESULT — the kill test that fired** |
+
+**The most important one is Block 9.** If you only run one, run that.
 
 ---
 
@@ -95,9 +102,9 @@ Run them in order. Each prints a table and saves a file.
 |---|---|---|
 | **This file** | now | you're here |
 | **The Runbook** ([link](https://claude.ai/code/artifact/3d4cfb2f-f0ce-4aa1-ad81-1a5cbb4d060d)) | before presenting | your six-minute script, word for word, plus the ten questions judges will ask with the answers |
-| **`RESULTS.md` §2 and §4** | before presenting | the headline and what you're allowed to claim — two pages |
+| **`RESULTS.md` §0** | before presenting | the result, on one page |
 | **`RESULTS.md` in full** | if you have an hour | every number, every limitation |
-| **`RESULTS.md` §9** | before writing any slide | the "never say this" table |
+| **`RESULTS.md` §10** | before writing any slide | the "never say this" table |
 | **`PROTOCOL.md`** | only if asked about method | what was decided before any result existed |
 | **`HANDOFF.md`** | if you come back after a break | where things stand and what's optional |
 
@@ -163,10 +170,9 @@ re-download:
 python scripts/fetch_data.py
 ```
 
-**Console won't open at all** — present from the picture instead. Open
-`results\figures\graph4_alpha_sweep.png`. The left panel is the cost curve with the method's
-setting marked; the right panel is the second dataset failing. You can give the entire talk from
-that one image.
+**Dashboard won't open** — you can give the whole talk from the table in `RESULTS.md` §0.
+It has the four signals × four capacities, which is the entire finding.
+`results\figures\` also holds the earlier plots if you want a picture.
 
 **A script says `FROZEN CONFIG CHANGED`** — someone edited `config.yaml`. Undo it:
 ```powershell
@@ -184,22 +190,24 @@ check from Part 0.
 
 ## Part 7 — What this project actually is, in plain words
 
-A fraud model gives every transaction a score. To use it you need a cutoff, and picking that
-cutoff is normally guesswork.
+A fraud model gives every transaction a score, and you act on it: approve or block. But a
+merchant also has a small team of analysts who can look at a few cases by hand and get them
+right. **Which cases should they look at?**
 
-There's a technique called **conformal prediction** that replaces guesswork with a promise:
-*"90% of the time the right answer is in the set I give you."* It's just entering production
-fraud systems — there's a paper from August 2026.
+That question has a budget attached — maybe 2% of transactions, maybe 10%, never all of them.
+We tested four ways of choosing, on real card-fraud data, holding the number of escalated cases
+identical so that only the *choice* differed.
 
-**We found that the promise can be kept on average and broken completely where it matters.**
-On real card-fraud data the system keeps its 89% promise overall while covering 13.9% of actual
-fraud, because 96% of transactions are legitimate and they dominate the average.
+**The choice is worth 28% of the merchant's losses.** Picking cases at *random* actually loses
+money — so it isn't the reviewing that helps, it's the picking.
 
-We showed why, showed how to fix it (calculate the budget from how many analysts you actually
-have, rather than picking a round number), showed what the fix costs, and showed where it stops
-working entirely.
+And the winner was the simplest rule we wrote: send the analyst the cases sitting closest to the
+decision boundary. It beat **conformal prediction** — the sophisticated method the 2026 research
+literature is built around, and the one this project was originally designed to showcase — by a
+factor of 22.
 
-Along the way we tested five specific predictions. Two survived. We reported the other three
-anyway, and retracted one of our own results when we found it was flawed.
+We wrote down in advance what result would make us abandon that method. Then it happened, and we
+reported it.
 
-That last part is not a weakness in the submission. It is the submission.
+Along the way we tested five predictions; two survived. We retracted one of our own results after
+finding it was measuring itself. That is not a weakness in the submission. It is the submission.
