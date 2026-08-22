@@ -55,6 +55,36 @@ than buried.
 
 ---
 
+## 0b. Two premises, tested rather than asserted
+
+The 28% claim assumes the baseline is the model *used well* and that escalated cases are
+genuinely where it fails. Block 10 tested both. One came back against us.
+
+**A — the baseline is very slightly favourable to us.** Sweeping fixed thresholds, a flat cutoff
+at 0.10 costs ₹3,695,822 against our per-transaction Bayes threshold's ₹3,718,531 — **our
+baseline is ₹22,709 (0.6%) worse.** The per-transaction rule is optimal only under perfectly
+calibrated probabilities; ours has ECE 0.0039, close but not exact.
+
+Two things keep this honest rather than fatal: 0.10 was found by sweeping the **test set**, which
+is hindsight our own method never received, so 0.6% is an *upper bound* on the advantage. And the
+escalation gain is **47× larger** than the gap. Report the number; don't let anyone find it first.
+
+**B — the model's errors are strongly concentrated, and the rule finds them.**
+
+| | escalated 10% | remaining 90% |
+|---|---|---|
+| model error rate | **17.05%** | 1.98% |
+| concentration | **8.6×** | — |
+| share of all errors captured | **48.9%** (1,882 of 3,847) | |
+| share of error *value* captured | **46.8%** (₹1,738,832 of ₹3,718,531) | |
+
+**Read this the right way round: the model is not bad.** It is right 98% of the time across nine
+tenths of the traffic — that is a good model. Its mistakes simply are not spread evenly, and a
+one-line rule locates about half of them in a tenth of the volume. That is why a human helps: not
+because the model is weak, but because its failures are findable.
+
+---
+
 ## 1. Standing of the pre-registered hypotheses
 
 | | Verdict | Evidence |
