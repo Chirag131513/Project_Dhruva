@@ -78,6 +78,37 @@ escalation gain is **47× larger** than the gap. Report the number; don't let an
 | share of all errors captured | **48.9%** (1,882 of 3,847) | |
 | share of error *value* captured | **46.8%** (₹1,738,832 of ₹3,718,531) | |
 
+### Does this transfer to a *strong* production model?
+
+The obvious objection: we measured a LightGBM at PR-AUC 0.523. Razorpay runs Vulcan. **We have no
+evidence about Vulcan and cannot get any** — we have never seen its scores. What we *can* test is
+whether the effect survives as models improve.
+
+| scorer | PR-AUC | err @ escalated 10% | err @ other 90% | ratio | errors captured | value captured |
+|---|---|---|---|---|---|---|
+| logreg | 0.1739 | 47.00% | 69.15% | **0.7×** | 7.0% | 7.1% |
+| rf | 0.4729 | 47.09% | 41.61% | **1.1×** | 11.2% | 11.3% |
+| lgbm | 0.5233 | 17.05% | 1.98% | **8.6×** | 48.9% | 46.8% |
+
+**Concentration does not vanish as the model improves — it grows sharply**, 0.7× → 1.1× → 8.6×.
+The mechanism is intuitive: a broken model errs everywhere, so there is nothing to concentrate
+(logreg is wrong 69% of the time on the supposedly easy 90%). A good model makes the easy cases
+genuinely easy — 1.98% error — and what remains piles up against the decision boundary, where a
+one-line rule finds it.
+
+**The caveat, which matters.** This is n = 3 on one dataset, and two of those three points are
+not "weaker models" — they are *broken* ones, running at 69% and 42% error because
+`class_weight="balanced"` pushes their probabilities past the cost-optimal cut. So the honest
+statement is **"one healthy model shows strong concentration and two broken ones do not"**, which
+is weaker than a clean monotone trend across three healthy models. It is directionally
+encouraging and it is not proof.
+
+**What to say if asked whether this applies to Vulcan:** *we don't know, we can't know, and the
+trend points the right way.* Razorpay's own published material shows the setting applies — Vulcan
+is marketed as catching 5× more fraud **"without increasing alerts"**, which is an alert budget,
+and Bumblebee left **~175 human review hours a month** in place. The problem exists there. The
+effect size is an experiment they would run in an afternoon with this code.
+
 **Read this the right way round: the model is not bad.** It is right 98% of the time across nine
 tenths of the traffic — that is a good model. Its mistakes simply are not spread evenly, and a
 one-line rule locates about half of them in a tenth of the volume. That is why a human helps: not
