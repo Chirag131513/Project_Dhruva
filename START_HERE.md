@@ -88,7 +88,6 @@ Run them in order. Each prints a table and saves a file.
 | 5 | `python scripts/block5_segments.py` | 2 min | Which grouping actually works |
 | 6 | `python scripts/block6_amendment.py` | 2 min | The fix, and what it's worth |
 | 7 | `python scripts/block7_alpha_sweep.py` | 5 min | The curve, and the failure on a second dataset |
-
 | 8 | `python scripts/block8_agnostic.py` | 12 min | The failure gets worse as the model gets better |
 | 9 | `python scripts/block9_triage.py --seeds 10` | 25 min | **THE RESULT — the kill test that fired** |
 
