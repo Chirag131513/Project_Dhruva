@@ -17,8 +17,56 @@ Protocol pre-registered and hashed before any result existed — `results/protoc
 > Choosing correctly is worth 6–8% of realised loss — and the advantage disappears only at queue
 > sizes nobody can staff.**
 
+### The standard metrics, up front
+
+Held-out test window, **read once**: 110,377 transactions, 3,732 fraud, 3.38% prevalence.
+
+| | PR-AUC | ROC-AUC | Precision@2% | Recall@2% | ECE |
+|---|---|---|---|---|---|
+| base scorer (LightGBM) | **0.5233** | 0.8964 | **0.6803** | 0.4025 | 0.0039 |
+
+| operating point | fraud recall | false-positive rate | review rate |
+|---|---|---|---|
+| cost-optimal Bayes threshold *(baseline, no queue)* | 49.68% | 1.846% | 0% |
+| **deployed gate @ 10% capacity** | **73.45%** | **0.862%** | 10.9% |
+
+**Both move the right way at once** — recall +23.8 points while the false-positive rate *halves* —
+because escalated cases get resolved by a human instead of forced into a yes or no. A threshold
+cannot do that; it can only trade one against the other.
+
+**False-positive cost is priced per transaction, not as a flat constant**, and it is carried as
+its own term in every table below:
+
+```
+c_FP(x) = 0.25 · amount + ₹250      blocked legitimate: lost margin + friction
+c_FN(x) = amount + ₹1,500           missed fraud: goods gone + dispute fee
+c_REV   = ₹40 per escalation        plus a 5% analyst error rate
+```
+
+All five constants are **declared, not measured** (§8), and the Bayes threshold t(x) falls out of
+them rather than being tuned — it ranges from ~0.1 on large transactions to >0.5 on small ones.
+
+**Decision latency: p50 14.6 µs, p99 24.1 µs** per transaction, measured end to end on the
+deployable gate (§3a).
+
+---
+
 Net benefit against a per-transaction cost-optimal Bayes threshold (₹3,752,646, no queue).
 5 seeds. Every policy escalates the **same volume**; only the choice of cases differs.
+
+> **Which baseline number is which.** Three figures for "the baseline" appear in this document and
+> they are three different quantities, not a drift:
+>
+> | figure | what it is |
+> |---|---|
+> | **₹3,752,646** | mean over **5 seeds** — §0, Block 12. The LightGBM is refit per seed (`block12_policies.py:77`), so the baseline moves with it |
+> | **₹3,718,531** | the **single base-seed** run — §0b, §3a, the deployed-gate measurement, and the blindness map (`block12_policies.py:126`) |
+> | **₹3,740,313** | mean over **10 seeds** — Block 9, the kill test |
+>
+> The spread across all three is 0.9%, which is seed noise on a refit model. Percentages in §0 are
+> computed against the 5-seed mean; percentages in §0b against the single-seed run. We state this
+> because an unexplained 0.9% gap between two baselines on the same page would rightly cost us
+> more credibility than the gap is worth.
 
 | queue policy | 1% capacity | 2% | 5% | 10% |
 |---|---|---|---|---|
@@ -82,8 +130,12 @@ escalation signals we tried (§1). That is reported here rather than buried.
 
 ## 0b. Two premises, tested rather than asserted
 
-The 28% claim assumes the baseline is the model *used well* and that escalated cases are
-genuinely where it fails. Block 10 tested both. One came back against us.
+The escalation result in §0 assumes the baseline is the model *used well*, and that escalated
+cases are genuinely where it fails. Block 10 tested both premises. One came back against us.
+
+*(Block 10 was designed when the headline was the retired "28% vs no queue" framing. Both
+premises still bear on §0 unchanged — a weak baseline or diffuse errors would undercut the
+queue-policy comparison exactly as they would have undercut the old one.)*
 
 **A — the baseline is very slightly favourable to us.** Sweeping fixed thresholds, a flat cutoff
 at 0.10 costs ₹3,695,822 against our per-transaction Bayes threshold's ₹3,718,531 — **our
@@ -162,10 +214,23 @@ because the model is weak, but because its failures are findable.
 | **K2** | benefit not monotone in capacity | **FIRED for conformal** (+38,995 → +72,319 → +87,058 → +47,755). Band is monotone. |
 | **K3** | a plain score-band rule ≥ conformal | **FIRED — band *beats* conformal**, Δ = −₹1,013,324, 95% CI [−1,034,124, −990,935], p = 0.0020 |
 | **K4** | ensemble disagreement beats conformal | **FIRED** (+788,055 vs +47,755) |
-| **K5** | sign flips under ±50% cost sweep | **FIRED for conformal** (3 of 4 constants). **Band: no flips.** |
+| **K5** | sign flips under ±50% cost sweep | **FIRED for conformal** — 3 of 4 constants (`fee_chargeback`, `review_cost`, `goodwill`). **Band was never swept.** See below. |
 
 K3's own test logic was wrong on first write — it checked only for a *tie* and would have
 reported "passed" in exactly the case where conformal is worse. Corrected before the 10-seed run.
+
+> **Correction — the K5 sweep never covered the winning arm.** Earlier versions of this table,
+> of `START_HERE.md` and of the runbook stated "Band: no flips", and the runbook attached a
+> numeric range to it. That was not measured. `scripts/block9_triage.py:220` hardcodes
+> `ambiguity("conformal", ...)` inside the sweep loop, so **every K5 number in
+> `block9_triage.json["sensitivity"]` is the conformal arm's**, and no cost sweep was ever run on
+> `band`. The claim has been struck from all four documents rather than restated more softly.
+>
+> This does not touch §0: the queue-policy result is a comparison *between* policies under one
+> fixed cost vector, and all four policies move together when a constant moves. What is unknown
+> is whether **band's margin over the best rival** holds its sign under ±50% — plausible, since
+> the rivals are scored with the same constants, but unmeasured. Fixing it is a one-line change
+> to line 220 and a re-run of Block 9.
 
 ---
 
@@ -286,6 +351,38 @@ The arithmetic makes it concrete: α_legit = 0.02077 applied to ~96% of volume i
 transactions — **the entire review capacity, consumed before the fraud class spends anything.**
 That is why the symmetric α=0.10 could not work: it was writing a cheque for ~9.7% of volume
 against a 2% account.
+
+---
+
+## 3a. The deployable gate — measured, not sketched
+
+`dhruva/gate.py`. Three lines to integrate on top of any scorer:
+
+```python
+gate = Gate.fit(cal_scores, cal_amounts, capacity=0.02)   # no labels required
+action = gate.decide(score, amount)                       # APPROVE / REVIEW / BLOCK
+record = gate.explain(score, amount)                      # audit trail for every decision
+```
+
+| | measured |
+|---|---|
+| single-decision latency | **p50 14.6 µs · p99 24.1 µs** |
+| batch throughput | 0.082 µs per transaction |
+| calibration set | 78,353 transactions, **unlabelled** |
+| saving @ 10% capacity | ₹1,072,199 vs the no-queue baseline |
+| recall / FPR @ 10% capacity | 73.45% / 0.862% |
+
+**It needs no labels to fit.** The escalation cutoff is a quantile of an unlabelled ranking, so it
+re-fits on last week's traffic without waiting for chargebacks to arrive — which matters precisely
+because the labels are the thing that arrives late (§8, and H5).
+
+**Why we measured latency at all.** [arXiv:2607.13078](https://arxiv.org/abs/2607.13078) found
+**0 of 18** fraud-detection papers reporting per-decision latency. Criticising that gap while
+having it ourselves would be a stone thrown from inside, so we closed it.
+
+Note what the number does *not* cover: this is the **gate's own** latency, on top of whatever the
+base scorer costs. We did not measure the scorer, and it dominates. The honest reading is "the
+layer is free relative to the model you already run", not "decisions take 15 microseconds".
 
 ---
 
@@ -433,6 +530,18 @@ would not be caught again automatically. Do not claim the suite covers them.
   pre-registered result reported alongside it every time — but post-hoc nonetheless.
 - **Multiple looks.** Seven blocks, four arms, two amendable constants. Every result is reported,
   including the ones that killed hypotheses.
+- **Selective labels — the deepest limitation in this document, and the one we cannot close.**
+  Every number here is an **offline replay**. A transaction the system blocks never acquires an
+  outcome: we never learn whether it would have been fraud, so its correct label is unobservable
+  *by construction*. This cuts in two directions at once. IEEE-CIS's labels are themselves the
+  output of **someone else's prior decision system**, so the fraud available to measure is the
+  fraud that system let through — the population is already filtered before we see it. And our own
+  escalation arms price a reviewed case using a label that, in production, would not exist at the
+  moment the decision is made. The review queue is the *only* mechanism here that generates
+  outcomes for cases the model wanted to reject, which makes it a partial window into the blocked
+  region — but it reaches cases near the cut, never the confidently-blocked ones. **No offline
+  study can resolve this**, ours included; §11 records what measuring it would actually take.
+  The honest framing of every result above is therefore: *this is what the replay says*.
 
 ---
 
@@ -483,10 +592,21 @@ figure as evidence the method works.** The only economically meaningful row is L
 | "conformal prediction is our method" | conformal is a **baseline we tested and it came second-worst** |
 | "AI-agent traffic" | "segment-conditional calibration"; agentic commerce is motivation only |
 | "error guarantee" | "target empirical coverage under stated assumptions" |
-| "we save ₹X" | "roughly cost-neutral, with a stated coverage level" |
+| "we save ₹X of your fraud loss" | "**6–8% more than the queue policy you already run**, at the capacity you actually staff" |
+| "we save 28%" | **retired.** That measured against a baseline with *no queue*. Never say it again |
+| "the result is robust to our cost assumptions" | the ±50% sweep was run on the **conformal** arm only. **Band was never swept** — say "we didn't measure that" |
+| "escalation pays" *(as if it were the finding)* | escalation is what every team already does; **the finding is that the common ways of filling the queue lose money** |
 | "nobody has done this" | "we found no public work measuring this failure mode" |
 | "LIVE" | "TEST REPLAY" |
 | "no retraining" | "no gradient-based refitting of the base model" |
+| "our concentration result replicates across models" | Block 11 is **n = 3 with two broken models and no committed script**. Recorded, not reproducible |
+| "we catch 73% of fraud" *(unqualified)* | "73% **on an offline replay** of a held-out window." Blocked transactions never acquire outcomes, so **no offline number is a production guarantee** — say the words *selective labels* before a judge does (§8) |
+| "this will save Razorpay ₹X" | "here is the experiment that would tell you, and it is an afternoon's work on your data" |
+
+*(The first two rows replaced a single conformal-era rule, `"we save ₹X" → "roughly cost-neutral,
+with a stated coverage level"`. That rule described the conformal gate of §4, which was
+approximately break-even. It contradicted §0 once Block 12 landed, and the contradiction sat in
+this table — the one that governs slides — for the whole of that period.)*
 
 ---
 
@@ -503,6 +623,21 @@ none of them run:
   different sets. That is a hypothesis we state, not a result we measured.
 - **Capacity beyond 10%**, to find where the curve saturates.
 
+Two of these are cheap and close a stated gap rather than opening a new question — do them first:
+
+- **Sweep the costs on the winning arm.** `scripts/block9_triage.py:220` hardcodes
+  `ambiguity("conformal", ...)`; parameterise it and re-run. This is the only reason we cannot
+  say whether the headline is cost-robust, and it is one line.
+- **Rewrite Block 11.** Its results file has no generating script, so the transfer table in §0b
+  cannot be audited or re-run.
+
+**A counterfactual / blindspot block**, to put a number on the selective-labels gap in §8:
+estimate what the confidently-blocked region actually contains, by treating the review queue as a
+randomised window into it and reweighting. **Deliberately not built.** It is multi-day work, and
+it would introduce a second headline competing with the one in §0 — the §8 bullet answers the
+question at a fiftieth of the cost. Recorded here as the right next study, not as a gap we intend
+to close before submission.
+
 ---
 
 ## 12. Reproducing
@@ -517,7 +652,26 @@ python scripts/block5_segments.py       # Block 3 retracted
 python scripts/block6_amendment.py      # Amendment 1
 python scripts/block7_alpha_sweep.py    # curve + ULB failure
 python scripts/block8_agnostic.py       # E7: fix is agnostic, failure scales with model quality
-python scripts/block9_triage.py --seeds 10   # THE RESULT: kill test, band beats conformal 22x
-python scripts/export_console.py && streamlit run app/console.py
+python scripts/block9_triage.py --seeds 10   # kill test: band beats conformal 22x
+python scripts/block10_proofs.py        # the two premises; the baseline one goes against us
+python scripts/block12_policies.py --seeds 5 # THE RESULT: the queue-policy race (§0)
 python -m pytest tests/ -q              # 22 passed
 ```
+
+The demo is rebuilt separately, and all three steps are required in order:
+
+```bash
+python scripts/export_console.py
+python scripts/measure_gate.py          # build_dashboard refuses to run without this
+python scripts/build_dashboard.py       # writes app/dashboard.html — open it directly
+python scripts/make_figures.py          # results/figures/graph5_triage.png
+```
+
+**Two gaps in this list, stated rather than hidden:**
+
+- **Block 11 has no script.** `results/block11_concentration.json` and the transfer table in §0b
+  exist, but commit `881438b` added only the JSON and the prose — nothing in the repo regenerates
+  those three rows. They are recorded, not reproducible, until the block is rewritten.
+- **`streamlit run app/console.py`** is deliberately no longer listed. It still runs, but its α
+  slider is built around the conformal arm that Block 9 retired; it contradicts §0. Use the
+  dashboard.

@@ -1,10 +1,24 @@
 # Project Dhruva — Implementation Plan
 
+> ## ⚠️ HISTORICAL DOCUMENT — do not present from this file
+>
+> This is the plan the project was designed against in August 2026, **before the evidence came
+> in**. It describes a conformal-prediction risk gate and a ρ-slider demo. Both are dead:
+> conformal finished **second-worst of four escalation signals** in the pre-registered kill test,
+> and the ρ-slider console was replaced by `app/dashboard.html`.
+>
+> It is kept because the reasoning that led here is part of the record, and because §§ on data
+> handling and module layout are still accurate.
+>
+> **For what the project actually found, read `RESULTS.md` §0.**
+> **For how to run and present it, read `START_HERE.md`.** Both supersede this file.
+
 **A risk gate that stays calibrated when human behavioural signal disappears from the payment stream.**
 
 Companion to the [strategy brief](https://claude.ai/code/artifact/9d1331b5-60b6-40d0-9db1-d40016f4357a) and the
 [pre-registered protocol](https://claude.ai/code/artifact/b6b651f4-d182-4f5b-9299-d2b3d9b89b87).
-Where this file and the protocol disagree, **the protocol governs**.
+Where this file and the protocol disagree, **the protocol governs**. Where this file and
+`RESULTS.md` disagree, **RESULTS governs** — it has the measurements.
 
 ---
 

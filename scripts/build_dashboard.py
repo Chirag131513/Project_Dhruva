@@ -9,9 +9,11 @@ answer two questions in ninety seconds: *what does it do to my losses*, and *how
 front of my model*. So the page leads with the pipeline position, carries a capacity control, and
 ends with the actual three-line API, the measured per-decision latency, and a real audit record.
 
-THE DEMO GESTURE is the capacity slider: drag it and the four escalation signals separate, band
-pulling away while conformal stalls and random goes negative. Escalation pays, the choice of
-cases is the entire value, and the fashionable method is not the one that wins.
+THE DEMO GESTURE is the capacity slider: drag it and the four QUEUE POLICIES separate -- ours
+pulling away while sorting-by-score and sorting-by-stake sit BELOW ZERO at the capacities a real
+team staffs. Escalation is not the finding; every team escalates. The finding is that the two
+most common ways of filling the queue lose money at 1-2% capacity. Park the slider at 2%, where
+the advantage peaks; at 10% it collapses to 0.9% and the story goes with it.
 """
 
 from __future__ import annotations

@@ -4,7 +4,11 @@
 
 State: Blocks 0–12 complete on real IEEE-CIS. 22 tests pass. Deployable API exists
 (`dhruva/gate.py`), latency measured, dashboard built. **The science is finished — do not run
-more experiments.** What remains is documentation debt, listed at the bottom.
+more experiments.** The documentation debt is **cleared** (see the bottom); two provenance gaps
+were found while clearing it, one of which is worth a single 25-minute re-run if you want the
+strongest possible answer to the cost-assumptions question.
+
+**Step one is still to read the submission form.** Nobody has.
 
 Competition: Razorpay AI Buildathon, Track 02 (AI Risk Manager). Applications close
 **5 September 2026**. Submission format unknown — nobody has read the form yet. That is step one.
@@ -95,24 +99,42 @@ itself on the cells it had calibrated on.
 
 ---
 
-## DOCUMENTATION DEBT — the only work left
+## DOCUMENTATION DEBT — CLEARED 23 August 2026
 
-The Block 12 reframe was applied to `RESULTS.md` §0 and the dashboard. **These were not
-migrated and now contradict it:**
+Every item below is migrated to the Block 12 framing. Nothing in the repo now says 28% except
+the places that explicitly retire it.
 
-| File | What's stale |
+| File | Done |
 |---|---|
-| **The Runbook** (artifact `3d4cfb2f-f0ce-4aa1-ad81-1a5cbb4d060d`) | **Entire document.** Built on the Block 9 framing — 28%, band-vs-conformal, "random loses money". This is what you'd present from. **Highest priority.** |
-| `START_HERE.md` Part 4 | All three sentences stale (28%, random, 22× conformal) |
-| `START_HERE.md` Part 5 | *"Does it save money? Yes, 28%…"* |
-| `START_HERE.md` Part 1 "one thing to do on stage" | Names band/conformal/random; now band/score/amount/stake |
-| `START_HERE.md` Part 2 table | Missing Blocks 10, 11, 12 |
-| `RESULTS.md` §0b | Opens *"The 28% claim assumes…"* — stale reference |
-| `results/figures/graph5_triage.png` | Shows the old four-signal race, not the queue-policy race |
-| `IMPLEMENTATION.md` | Describes the dead ρ-slider demo. Historical document now; `START_HERE` supersedes it. |
+| **The Runbook** (artifact `3d4cfb2f-…`) | Rewritten. **Source now lives in the repo at `RUNBOOK.html`** — edit that and republish to the same URL, so artifact and repo cannot drift again. New beat at 0:35 concedes the queue; the slider parks at **2%**, not 10% |
+| `START_HERE.md` Parts 1, 2, 3, 4, 5, 6, 7 | All migrated. Part 2 gains Blocks 10–12 |
+| `RESULTS.md` §0b | Opener rewritten; notes Block 10 predates the reframe but still bears on §0 |
+| `RESULTS.md` §10 | **Was itself contradicting §0** — the row `"we save ₹X" → "roughly cost-neutral"` was conformal-era discipline. Replaced |
+| `RESULTS.md` §12 | Was missing Blocks 10–12 and still pointed at the retired Streamlit console |
+| `results/figures/graph5_triage.png` | Rebuilt from `block12_policies.json`. `make_figures.py` rewritten — no experiment re-run |
+| `IMPLEMENTATION.md` | Carries a HISTORICAL banner |
 
-Roughly one hour of work. **Do this before any rehearsal** — presenting from the stale runbook
-while `RESULTS.md` says something different is the one avoidable way to lose the room.
+22 tests still pass.
+
+### Two provenance gaps found while migrating — both unresolved
+
+Neither was on the list above. Both are claims the repo cannot back, and both were sitting in
+the presentation layer.
+
+1. **Band's ±50% cost sweep was never run.** `scripts/block9_triage.py:220` hardcodes
+   `ambiguity("conformal", ...)` inside the K5 loop, so every number in
+   `block9_triage.json["sensitivity"]` is the *conformal* arm's. "Band: no flips" was asserted in
+   `RESULTS.md` §1, `START_HERE` Parts 4 and 5, and the runbook — the runbook also carried a range
+   (`+513,576 … +1,409,008`) that **appears nowhere in the repo**. All of it is struck. The docs
+   now say "we did not measure that."
+   **Fix: parameterise line 220 and re-run Block 9.** One line, ~25 min. This is the single
+   highest-value experiment left, because it is the one a judge is most likely to probe.
+2. **Block 11 has no script.** Commit `881438b` added `results/block11_concentration.json` and the
+   §0b prose and nothing else. The transfer table (0.7× → 1.1× → 8.6×) cannot be regenerated or
+   audited. Flagged in `RESULTS.md` §12, §10, `START_HERE` Part 2, and the runbook.
+
+Neither was run here: the standing instruction was **do not run more experiments**, and (1) is an
+experiment. Both are recorded as gaps instead, which is what the rest of the project does.
 
 ---
 

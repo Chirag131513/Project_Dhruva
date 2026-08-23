@@ -59,21 +59,28 @@ real data isn't loading, see Part 6.
 - **Pipeline strip:** where the layer sits — your scorer → the gate → approve/review/block.
 - **Top:** a slider for **analyst review capacity**. The only control that matters.
 - **Tiles:** loss, money saved, false-positive rate, fraud recall, escalation rate.
-- **Left panel:** four bars racing — the four ways of choosing which cases a human sees.
-- **Right panel:** how each signal scales as capacity grows.
+- **Left panel:** four bars racing — the four **queue policies** a team might already run.
+- **Right panel:** how each policy scales as capacity grows, and where our advantage peaks.
+- **Blindness table:** where the model's errors concentrate — needs none of our code.
 - **Integration panel:** the real three-line API, measured latency, and an audit record.
 - **Bottom:** where the money goes, and a stream of individual decisions.
 
 ### The one thing to do on stage
 
-Drag the capacity slider from 1% to 10%. Watch the four bars race:
+Drag the capacity slider from 1% to 10%, then **drag it back to 2% and leave it there.**
+Watch the four bars race:
 
-1. **band pulls away** — ₹214k → ₹1,061,079 saved.
-2. **conformal stalls** — peaks at 5%, then falls.
-3. **random goes negative** — escalating the wrong cases *loses* money.
+1. **ours pulls away** — +₹405,514 at 2% capacity.
+2. **most suspicious first goes negative** — the policy most teams actually run *loses*
+   ₹15,091 at 2%, and ₹89,329 at 1%.
+3. **most rupees at stake goes negative too** — −₹75,921 at 2%.
+4. **biggest amount first barely registers** — +₹108,327, the best of the three rivals.
 
-That is the finding. Escalation pays, the *choice* of cases is the entire value, and the
-fashionable method is not the one that wins.
+That is the finding. Every team already escalates; the *choice* of cases is the entire value,
+and the two most common choices are underwater at the capacity a real team can staff.
+
+**Do not leave the slider at 10%.** At 10% our advantage over sorting-by-score is 0.9% and the
+story evaporates. 2% is both the honest operating point and the strongest one.
 
 The dashboard is a plain file — just close the tab. Nothing runs in the background.
 
@@ -97,9 +104,19 @@ Run them in order. Each prints a table and saves a file.
 | 6 | `python scripts/block6_amendment.py` | 2 min | The fix, and what it's worth |
 | 7 | `python scripts/block7_alpha_sweep.py` | 5 min | The curve, and the failure on a second dataset |
 | 8 | `python scripts/block8_agnostic.py` | 12 min | The failure gets worse as the model gets better |
-| 9 | `python scripts/block9_triage.py --seeds 10` | 25 min | **THE RESULT — the kill test that fired** |
+| 9 | `python scripts/block9_triage.py --seeds 10` | 25 min | The kill test that fired — a one-line rule beats conformal 22× |
+| 10 | `python scripts/block10_proofs.py` | 3 min | Tests the two premises. One comes back against us |
+| 11 | *(no script — see below)* | — | Concentration across three scorers: 0.7× → 1.1× → 8.6× |
+| 12 | `python scripts/block12_policies.py --seeds 5` | 15 min | **THE RESULT — the race against the queue policies teams already run** |
 
-**The most important one is Block 9.** If you only run one, run that.
+**The most important one is Block 12.** If you only run one, run that. Block 9 is the second —
+it is where the kill test fired, and it is the credibility story even though it is no longer the
+headline.
+
+> **Block 11 does not reproduce.** `results/block11_concentration.json` and the RESULTS §0b
+> transfer table exist, but **no script that generates them was ever committed** (commit
+> `881438b` added only the JSON and the prose). Treat those three numbers as recorded but
+> unverifiable until someone rewrites the block. Do not offer to re-run it on stage.
 
 ---
 
@@ -108,7 +125,7 @@ Run them in order. Each prints a table and saves a file.
 | Read | When | Why |
 |---|---|---|
 | **This file** | now | you're here |
-| **The Runbook** ([link](https://claude.ai/code/artifact/3d4cfb2f-f0ce-4aa1-ad81-1a5cbb4d060d)) | before presenting | your six-minute script, word for word, plus the ten questions judges will ask with the answers |
+| **The Runbook** ([link](https://claude.ai/code/artifact/3d4cfb2f-f0ce-4aa1-ad81-1a5cbb4d060d)) | before presenting | your six-minute script, word for word, plus the fifteen questions judges will ask with the answers. Source is `RUNBOOK.html` in this repo — edit that, then republish, so the two cannot drift |
 | **`RESULTS.md` §0** | before presenting | the result, on one page |
 | **`RESULTS.md` in full** | if you have an hour | every number, every limitation |
 | **`RESULTS.md` §10** | before writing any slide | the "never say this" table |
@@ -124,16 +141,21 @@ everything in `scripts/`.
 
 If you remember nothing else:
 
-1. **"Under a capacity limit, choosing which cases a human sees is worth 28% of the loss."**
-   ₹1,061,079 saved at 10% capacity, monotone in capacity, no sign flips under ±50% on any cost
-   constant.
+1. **"The queue policy you already run loses money at the capacity you can actually staff."**
+   At 2% capacity, sorting by risk score returns **−₹15,091** and sorting by rupees at stake
+   **−₹75,921**. Choosing correctly is worth **7.9% of realised loss** — ₹297,187 over the best
+   rival policy. It peaks at 2% and is gone by 10%, and we say that ourselves.
 
-2. **"Random escalation loses money."**
-   The signal is the whole value, not the reviewing. Band beats random by ₹1.32M, p = 0.0020.
+2. **"Every team already escalates. Nobody had measured which cases."**
+   That is the contribution — the measurement and the negative result, not the rule. The rule is
+   one line, and we say so first.
 
 3. **"A one-line rule beat conformal prediction 22×."**
    We implemented the 2026 literature, pre-registered a kill test, and it fired. Say this
    plainly — it is the most memorable thing in the submission.
+
+**Do not say 28%.** That compared against a baseline with no review queue at all. We retired it
+ourselves. Anything still carrying it is stale.
 
 ---
 
@@ -143,12 +165,24 @@ Full answers are in the Runbook. The short versions:
 
 - **"Why not just retrain?"** — Fraud labels arrive weeks late. During the window that matters,
   retraining isn't available and recalibration is.
-- **"Does it save money?"** — Yes, 28% of realised loss at 10% capacity, and the sign holds under ±50% sweeps on all four cost constants. The *conformal* arm did not; that's why we don't use it.
+- **"Does it save money?"** — Yes: **6–8% of realised loss** over the queue policy a team already
+  runs, peaking at **7.9% at 2% capacity**. Not 28% — that compared against a baseline with no
+  queue at all, and we retired it.
+- **"Is that robust to your cost assumptions?"** — **Say we didn't measure it.** We swept all four
+  constants ±50% on the *conformal* arm, where three of four flipped sign. **That sweep was never
+  run on the winning rule.** It is a one-line change to `block9_triage.py` to find out, and until
+  someone runs it, claiming robustness is inventing a number.
 - **"Did you tune it?"** — No. The setting was frozen and hashed before any result existed;
   `git log` proves it. The one change is recorded as an amendment with its prediction written
   down beforehand.
 - **"Does it generalise?"** — Not below ~0.1% fraud. It failed on a second dataset and that
   failure is in the write-up.
+- **"How would you know it was working in production?"** — **You couldn't, fully.** A blocked
+  transaction never acquires an outcome, so its true label is unobservable by construction. That's
+  the **selective-labels** problem, it's §8, and it's why every number here is an *offline replay*.
+  The review queue is a partial window into the blocked region, but only near the cut — never the
+  confidently-blocked cases. **Say this unprompted.** It is the same move as reporting the kill
+  test that fired, and it lands harder than any number in the deck.
 - **"Anything you got wrong?"** — Yes. We retracted one of our own results after finding it was
   measuring itself. It's in the commit history.
 
@@ -177,9 +211,9 @@ re-download:
 python scripts/fetch_data.py
 ```
 
-**Dashboard won't open** — you can give the whole talk from the table in `RESULTS.md` §0.
-It has the four signals × four capacities, which is the entire finding.
-`results\figures\` also holds the earlier plots if you want a picture.
+**Dashboard won't open** — you can give the whole talk from the tables in `RESULTS.md` §0.
+They have the four queue policies × four capacities plus the blindness map, which is the entire
+finding. `results\figures\graph5_triage.png` is the same thing as a picture.
 
 **A script says `FROZEN CONFIG CHANGED`** — someone edited `config.yaml`. Undo it:
 ```powershell
@@ -202,11 +236,14 @@ merchant also has a small team of analysts who can look at a few cases by hand a
 right. **Which cases should they look at?**
 
 That question has a budget attached — maybe 2% of transactions, maybe 10%, never all of them.
-We tested four ways of choosing, on real card-fraud data, holding the number of escalated cases
-identical so that only the *choice* differed.
+Every payments team already has that queue and already fills it somehow — almost always by
+sorting on risk score or on transaction size. We tested four ways of choosing, on real card-fraud
+data, holding the number of escalated cases identical so that only the *choice* differed.
 
-**The choice is worth 28% of the merchant's losses.** Picking cases at *random* actually loses
-money — so it isn't the reviewing that helps, it's the picking.
+**At the queue sizes real teams actually run, the two most common policies lose money.** Sorting
+by score returns −₹15,091 at 2% capacity; sorting by rupees at stake returns −₹75,921. Choosing
+correctly instead is worth **6–8% of realised loss**. So it isn't the reviewing that helps, it's
+the picking — and the obvious way to pick is the wrong one.
 
 And the winner was the simplest rule we wrote: send the analyst the cases sitting closest to the
 decision boundary. It beat **conformal prediction** — the sophisticated method the 2026 research

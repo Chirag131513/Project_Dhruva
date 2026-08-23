@@ -2,7 +2,9 @@
 
     python scripts/block10_proofs.py
 
-The 28% claim rests on two premises that were never checked:
+The escalation claim rests on two premises that were never checked (this block predates
+the Block 12 reframe -- it was written against the retired 28%-vs-no-queue headline, but
+both premises bear on the current claim unchanged):
 
   A  the baseline is the model USED WELL, not a hobbled strawman
   B  the escalated cases are genuinely where the model fails
