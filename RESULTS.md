@@ -12,46 +12,71 @@ Protocol pre-registered and hashed before any result existed — `results/protoc
 
 ## 0. The result
 
-> **Under a hard analyst-capacity limit, choosing which cases a human sees is worth 28% of a
-> merchant's realised fraud loss — and the signal that wins is the simplest one we tested, not
-> the one the 2026 literature is built around.**
+> **Every payments team already has a review queue, and fills it by sorting on risk score or on
+> transaction size. At the queue sizes real teams actually run, those policies *lose money*.
+> Choosing correctly is worth 6–8% of realised loss — and the advantage disappears only at queue
+> sizes nobody can staff.**
 
-Net benefit against a per-transaction cost-optimal Bayes threshold, 10 seeds, every arm
-escalating the **same volume** so only the *choice* of escalated cases differs:
+Net benefit against a per-transaction cost-optimal Bayes threshold (₹3,752,646, no queue).
+5 seeds. Every policy escalates the **same volume**; only the choice of cases differs.
 
-| escalation signal | 1% | 2% | 5% | 10% |
+| queue policy | 1% capacity | 2% | 5% | 10% |
 |---|---|---|---|---|
-| **band** — rank by \|p − t(x)\| | **+214,512** | **+396,334** | **+787,307** | **+1,061,079** |
-| disagreement (DAUNT-style proxy) | +65,215 | +169,446 | +458,320 | +788,055 |
-| conformal prediction sets | +38,995 | +72,319 | +87,058 | +47,755 |
-| random | −24,344 | −50,752 | −131,542 | −261,883 |
+| **nearest the cost-optimal cut** *(ours)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
+| most suspicious first — *the obvious policy* | **−89,329** | **−15,091** | +577,447 | +1,038,038 |
+| biggest amount first — *very common in practice* | +1,899 | +108,327 | +128,600 | +63,451 |
+| most rupees at stake | **−87,962** | **−75,921** | +117,620 | +101,915 |
 
-Three things follow, and the second and third are the interesting ones.
+**1. The standard policies lose money when the queue is small.** At 1% capacity, *most suspicious
+first* loses **₹89,329** and *most rupees at stake* loses **₹87,962**. *Biggest amount first* —
+the most common heuristic in the industry — returns **₹1,899**, which is nothing. All three send
+analysts to cases the model is already confident about, where a human adds cost and no decision.
 
-**1. Escalation under capacity pays, and it scales.** Band cuts realised loss 5.7% → 10.6% →
-21.0% → **28.4%** as capacity rises 1% → 10%. Monotone, and the sign holds under ±50% sweeps on
-**all four** cost constants (range +₹513,576 to +₹1,409,008).
+**2. The advantage is concentrated where real teams operate.** Band's edge over the *best* rival
+policy at each capacity:
 
-**2. The signal is the entire value.** Random escalation *loses* ₹261,883. Band beats random by
-₹1,322,962 (p = 0.0020). Giving analysts more cases does nothing; giving them the *right* cases
-is worth 28% of the loss.
+| capacity | best rival | band advantage | % of loss |
+|---|---|---|---|
+| 1% | biggest amount first | +₹217,542 | **5.8%** |
+| 2% | biggest amount first | +₹297,187 | **7.9%** |
+| 5% | most suspicious first | +₹220,884 | 5.9% |
+| 10% | most suspicious first | +₹34,798 | 0.9% |
 
-**3. Conformal prediction — the technical core we built this project around — is the
-second-worst signal tested.** A one-line rule beats it **22×** at 10% capacity (p = 0.0020, the
-minimum achievable at n = 10). It is also the only signal that is non-monotone in capacity: it
-peaks at 5% and falls at 10%, the behaviour of a signal that has run out of genuinely ambiguous
-cases and is padding the queue.
+It **peaks at 2% and collapses by 10%** — not a monotone decline, but the shape is the point: at
+a tenth of traffic under review, sorting by score nearly catches up. No merchant reviews a tenth
+of their traffic. Read the left of that table.
 
-**4. The operating point strictly dominates the baseline.** At 10% capacity, band reaches
-**72.4% fraud recall against the threshold's 49.7% — while *halving* the false-positive rate,
-1.85% → 0.88%.** Normally these trade against each other; here both improve, because the escalated
-cases are resolved correctly 95% of the time instead of being forced into a binary call. That is
-the sentence a merchant cares about: *more fraud caught, fewer good customers blocked, same
-analyst headcount.*
+### Where the model is blind
+
+A routing rule is easy to dismiss. A map of where the losses live is not, and it requires
+adopting nothing of ours.
+
+| segment | share of transactions | error rate | share of ₹ lost | concentration |
+|---|---|---|---|---|
+| **ProductCD C** | 10.3% | **10.61%** | 19.4% | **1.9×** |
+| ProductCD H | 2.8% | 6.71% | 4.2% | 1.5× |
+| ProductCD W | 79.1% | 2.42% | 68.5% | 0.9× |
+| **credit** cards | 23.2% | **6.65%** | 38.0% | **1.6×** |
+| debit cards | 76.1% | 2.51% | 61.7% | 0.8× |
+| **₹270–5,367** (top decile) | 10.0% | 5.48% | 20.8% | **2.1×** |
+
+**Product C carries 4.4× the error rate of product W. Credit is 2.6× debit. The largest tenth of
+transactions carries twice its share of losses.** Retrain there, add features there, staff the
+queue there.
+
+*(Method borrowed from arXiv:2607.06605, which localises confident errors to specific molecular
+scaffolds. The payments analogue is business segments.)*
+
+### What we are not claiming
+
+**Not that escalation is new** — every team escalates. **Not "28% of loss saved"**: that compares
+against a baseline with *no queue at all*, which nobody runs, and it is the weaker framing. The
+defensible claim is the **6–8% advantage over the policy a team already has, at the capacity a
+team actually has**, plus the blindness map.
 
 We implemented the July–August 2026 conformal literature faithfully, pre-registered a kill test
-that could invalidate it, ran the test, and it fired. That is reported here as the finding rather
-than buried.
+that could invalidate it, ran it, and it fired — conformal finished second-worst of the four
+escalation signals we tried (§1). That is reported here rather than buried.
 
 ---
 

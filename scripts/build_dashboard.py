@@ -188,17 +188,18 @@ td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 
 <div class="grid">
   <div class="panel">
-    <div class="ptitle">Which cases to escalate <span id="raceSub"></span></div>
+    <div class="ptitle">Queue policies a team already has <span id="raceSub"></span></div>
     <div class="race" id="race"></div>
-    <div class="note">Escalation volume is <b>identical across all four</b> — only the choice of
-      cases differs. Random escalation <b>loses money</b>, so the value is not in reviewing more.
-      It is in reviewing the right ones.</div>
+    <div class="note">Every policy escalates the <b>same volume</b> — only the choice differs.
+      At small queue sizes, <b>sorting by risk score loses money</b>: it sends analysts to cases
+      the model is already sure about. Drag capacity down to see it.</div>
   </div>
   <div class="panel">
     <div class="ptitle">Net benefit vs the threshold <span>by capacity</span></div>
     <svg id="curve" viewBox="0 0 560 250" style="height:250px"></svg>
-    <div class="note"><b>Band</b> scales cleanly. <b>Conformal</b> peaks at 5% and falls — it runs
-      out of genuinely ambiguous cases and pads the queue.</div>
+    <div class="note">The advantage <b>peaks near 2% capacity</b> and collapses by 10%, where
+      sorting by score nearly catches up. Nobody reviews a tenth of their traffic — the left of
+      this chart is where real teams sit.</div>
   </div>
 </div>
 
@@ -219,8 +220,10 @@ td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 </div>
 
 <div class="grid3">
-  <div class="panel"><div class="ptitle">Where the money goes</div>
-    <svg id="money" viewBox="0 0 400 112" style="height:112px"></svg></div>
+  <div class="panel"><div class="ptitle">Where the model is blind <span>share of losses vs share of traffic</span></div>
+    <div class="scroll" style="max-height:206px"><table id="blind"></table></div>
+    <div class="note">Actionable without adopting anything of ours: <b>retrain there, add features
+      there, staff the queue there.</b></div></div>
   <div class="panel"><div class="ptitle">Decision stream <span id="revN"></span></div>
     <div class="scroll"><table id="stream"></table></div></div>
 </div>
@@ -230,12 +233,14 @@ td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 const D=__DATA__,G_=__GATE__,$=i=>document.getElementById(i);
 const inr=v=>(v<0?"-":"")+"₹"+Math.round(Math.abs(v)).toLocaleString("en-IN");
 const G=D.grid,CAPS=D.caps,N=G.length;
-const SIG=[["band","distance to threshold","#2E7BF6"],["disagree","ensemble disagreement","#FBBF24"],
-           ["conformal","conformal sets","#F87171"],["random","random escalation","#4A5B78"]];
+const SIG=[["band","nearest the cost-optimal cut  (ours)","#2E7BF6"],
+           ["score","most suspicious first  (what most teams do)","#FBBF24"],
+           ["amount","biggest amount first","#F87171"],
+           ["stake","most rupees at stake","#4A5B78"]];
 $("mN").textContent=D.test_n.toLocaleString("en-IN");
 $("mF").textContent=D.test_fraud.toLocaleString("en-IN");
 $("mV").textContent="₹"+(D.test_volume/1e6).toFixed(1)+"M";
-$("mB").textContent=inr(D.b1.total);$("mS").textContent=D.seeds;
+$("mB").textContent=inr(D.b1.total);$("mS").textContent=D.policy_seeds;   // the race is 5-seed; b9 was 10
 const real=D.data_source==="ieee-cis";
 $("chip").textContent=real?"TEST REPLAY · HELD-OUT DATA":"DEV DATA · NOT REPORTABLE";
 if(!real)$("chip").classList.add("dev");
@@ -243,13 +248,13 @@ $("ticks").innerHTML=CAPS.map(c=>`<span>${(c*100).toFixed(0)}%</span>`).join("")
 $("sl").max=N-1;
 $("pipeLat").textContent=`${G_.p50_us.toFixed(1)} µs p50 · ${G_.p99_us.toFixed(0)} µs p99`;
 
-const mean=(s,c)=>{const a=D.net[s][String(c)];return a.reduce((x,y)=>x+y,0)/a.length;};
+const mean=(s,c)=>{const a=D.policies[s][String(c)];return a.reduce((x,y)=>x+y,0)/a.length;};
 const allN=SIG.flatMap(([s])=>CAPS.map(c=>mean(s,c)));
 const lo=Math.min(...allN,0),hi=Math.max(...allN);
 
-function tiles(r){
+function tiles(r,adv){
   const t=[["realised loss",inr(r.cost),"baseline "+inr(D.b1.total),""],
-    ["loss removed",(r.net/D.b1.total*100).toFixed(1)+"%",inr(r.net),"hero"],
+    ["vs best existing policy",(adv.share*100).toFixed(1)+"%",inr(adv.delta)+" better","hero"],
     ["fraud recall",(r.recall*100).toFixed(1)+"%","baseline "+(D.b1.fraud_recall*100).toFixed(1)+"%",""],
     ["false positives",(r.fpr*100).toFixed(2)+"%","baseline "+(D.b1.fpr*100).toFixed(2)+"%",""],
     ["escalated",(r.review_rate*100).toFixed(1)+"%","of "+D.test_n.toLocaleString("en-IN"),""],
@@ -286,14 +291,21 @@ function curve(ci){
     g+=`<text class="ax" x="${pts[N-1][0]+8}" y="${pts[N-1][1]+3}" fill="${col}">${s}</text>`;});
   $("curve").innerHTML=g;
 }
-function money(r){
-  const parts=[["missed fraud",r.missed_fraud,"#F87171"],["blocked legitimate",r.blocked_legit,"#FBBF24"],["review",r.review_cost,"#2E7BF6"]];
-  const tot=parts.reduce((a,p)=>a+p[1],0)||1;let x=0,s="",lg="";
-  parts.forEach(([n,v,c],i)=>{const w=v/tot*400;
-    s+=`<rect x="${x.toFixed(1)}" y="8" width="${Math.max(w,0).toFixed(1)}" height="28" fill="${c}"><title>${n}: ${inr(v)}</title></rect>`;
-    lg+=`<g transform="translate(${i*135},62)"><rect width="8" height="8" y="-7" fill="${c}" rx="1"/>
-      <text class="ax" x="13" y="0">${n}</text><text class="ax" x="13" y="14" fill="#93A6C4">${inr(v)}</text></g>`;x+=w;});
-  $("money").innerHTML=s+lg;
+function blind(){
+  const rows=[];
+  for(const [grp,items] of Object.entries(D.blind||{}))
+    items.forEach(r=>rows.push({grp,...r}));
+  rows.sort((a,b)=>b.concentration-a.concentration);
+  $("blind").innerHTML=`<thead><tr><th>segment</th><th style="text-align:right">share txns</th>
+    <th style="text-align:right">err rate</th><th style="text-align:right">share Rs lost</th>
+    <th style="text-align:right">conc.</th></tr></thead><tbody>`+
+    rows.map(r=>{const hot=r.concentration>=1.4;
+      return `<tr><td>${r.value} <span style="color:var(--ink3);font-size:.9em">${r.grp}</span></td>
+      <td class="n">${(r.share*100).toFixed(1)}%</td>
+      <td class="n" style="color:${hot?"var(--bad)":"var(--ink2)"}">${(r.err_rate*100).toFixed(2)}%</td>
+      <td class="n">${(r.share_lost*100).toFixed(1)}%</td>
+      <td class="n" style="color:${hot?"var(--bad)":"var(--ink3)"};font-weight:${hot?600:400}">${r.concentration.toFixed(1)}x</td></tr>`;
+    }).join("")+`</tbody>`;
 }
 function stream(cap){
   const A=["APPROVE","REVIEW","BLOCK"],acts=D.sample_actions[String(cap)]||[];
@@ -330,7 +342,8 @@ function render(){
   const i=+$("sl").value,r=G[i],cap=CAPS[i];
   $("sl").style.setProperty("--pct",(i/(N-1)*100)+"%");
   $("cNow").textContent=(cap*100).toFixed(0)+"%";
-  tiles(r);race(cap);curve(i);money(r);stream(cap);integration(cap);
+  const adv=D.advantage[String(cap)]||{share:0,delta:0};
+  tiles(r,adv);race(cap);curve(i);blind();stream(cap);integration(cap);
 }
 $("sl").addEventListener("input",render);
 document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft"||e.key==="ArrowRight"){

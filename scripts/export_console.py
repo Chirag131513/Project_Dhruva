@@ -35,6 +35,11 @@ def main() -> int:
     cfg = config.load(); cfg.check_lock()
     costs = cost.Costs.from_config(cfg)
     b9 = json.loads((cfg.results_dir() / "block9_triage.json").read_text(encoding="utf-8"))
+    b12p = cfg.results_dir() / "block12_policies.json"
+    if not b12p.exists():
+        print("results/block12_policies.json missing — run scripts/block12_policies.py first")
+        raise SystemExit(1)
+    b12 = json.loads(b12p.read_text(encoding="utf-8"))
 
     df = data.load(cfg.data_dir())
     sp = splits.chronological(df, cfg)
@@ -59,7 +64,10 @@ def main() -> int:
         "config_hash": cfg.hash(), "data_source": df.attrs["data_source"],
         "test_n": int(n), "test_fraud": int(y.sum()), "test_volume": float(amt.sum()),
         "b1": b1, "b1_mean": b9["b1_mean"], "seeds": b9["seeds"],
-        "caps": b9["caps"], "net": b9["net"], "kill": b9["kill"],
+        "caps": b12["caps"], "net": b9["net"], "kill": b9["kill"],
+        "policies": b12["policies"], "advantage": b12["advantage"],
+        "blind": b12["blind"], "total_error_cost": b12["total_error_cost"],
+        "policy_seeds": b12["seeds"],
         "k3": b9["k3_detail"],
         "sample_amount": [float(a) for a in amt[idx]],
         "sample_segment": [str(s) for s in sp.test["ProductCD"].astype(str).to_numpy()[idx]],
@@ -68,7 +76,7 @@ def main() -> int:
         "grid": [],
     }
 
-    for c in b9["caps"]:
+    for c in b12["caps"]:
         k = int(round(c * n))
         acts = cost.decide_bayes(p, amt, costs)
         if k:
@@ -80,7 +88,7 @@ def main() -> int:
             "review_rate": r["review_rate"],
             "missed_fraud": r["missed_fraud"], "blocked_legit": r["blocked_legit"],
             "review_cost": r["review"],
-            "net_by_signal": {s: float(np.mean(b9["net"][s][str(c)])) for s in b9["net"]},
+            "net_by_policy": {k: float(np.mean(v[str(c)])) for k, v in b12["policies"].items()},
         })
         out.setdefault("sample_actions", {})[str(c)] = [int(v) for v in acts[idx]]
         print(f"  cap {c:.0%}  cost {r['total']:>12,.0f}  net {b1['total']-r['total']:>+12,.0f}"
