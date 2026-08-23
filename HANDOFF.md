@@ -27,7 +27,7 @@ every policy escalating the **same volume**:
 
 | queue policy | 1% | 2% | 5% | 10% |
 |---|---|---|---|---|
-| **nearest the cost-optimal cut** *(ours)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
+| **nearest the cost-optimal cut** *(mine)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
 | most suspicious first *(what most teams do)* | **−89,329** | **−15,091** | +577,447 | +1,038,038 |
 | biggest amount first | +1,899 | +108,327 | +128,600 | +63,451 |
 | most rupees at stake | **−87,962** | **−75,921** | +117,620 | +101,915 |
@@ -35,7 +35,7 @@ every policy escalating the **same volume**:
 Advantage over the **best rival at each capacity**: 5.8% (1%) · **7.9% (2%)** · 5.9% (5%) ·
 0.9% (10%). **Peaks at 2%, not monotone.**
 
-### Where the model is blind — the half that needs none of our code
+### Where the model is blind — the half that needs none of my code
 
 | segment | share of traffic | error rate | share of ₹ lost | concentration |
 |---|---|---|---|---|
@@ -55,15 +55,15 @@ audit record via `gate.explain()`.
 
 ---
 
-## What we are NOT claiming — enforce this
+## What I am NOT claiming — enforce this
 
 - **Not 28%.** That compared against a baseline with *no review queue*, which nobody runs. It is
   the retired framing. Any document still saying 28% is stale.
 - **Not that escalation is new.** Every team escalates.
-- **Not that conformal prediction is our method.** It finished second-worst of four signals.
+- **Not that conformal prediction is my method.** It finished second-worst of four signals.
 - **Not novelty in the method.** `band` is one line. The contribution is the measurement, the
   negative result, and the blindness map.
-- **Nothing about Vulcan.** We have no evidence about any production model and cannot get any.
+- **Nothing about Vulcan.** I have no evidence about any production model and cannot get any.
 
 ---
 
@@ -72,12 +72,12 @@ audit record via `gate.explain()`.
 Designed around conformal prediction. A Stage-1 audit found the headline pre-empted four times in
 July–August 2026. A kill test was **pre-registered**; K2, K3, K4 and K5 fired, and a one-line rule
 beat conformal 22× (p = 0.0020). Reframed around what the data supported. Then the user asked the
-right question — *"are we producing real value?"* — which exposed that our baseline had no queue
+right question — *"am I producing real value?"* — which exposed that my baseline had no queue
 at all. Block 12 fixed that comparison and shrank the headline from 28% to 6–8%. **That shrinkage
 was correct.** Do not try to grow it back.
 
 **Hypotheses:** H1 refuted · H2 supported · H3a supported for ProductCD only · H3b, H5 never
-tested · H4 refuted. One of our own headlines was retracted after it was found to be scoring
+tested · H4 refuted. One of my own headlines was retracted after it was found to be scoring
 itself on the cells it had calibrated on.
 
 ---
@@ -86,12 +86,12 @@ itself on the cells it had calibrated on.
 
 - **`band` was written as a strawman for the kill test and it won.** Signal space barely explored;
   a rejector trained on realised cost might beat it. Unrun.
-- **Why conformal fails is a hypothesis, not a measurement.** Our reading: it nominates cases
+- **Why conformal fails is a hypothesis, not a measurement.** My reading: it nominates cases
   where the *classes* are hard to separate, while the money sits near the *cost-optimal cut*.
 - **Transfer evidence is n = 3 with two broken models** (logreg and rf run at 69% and 42% error
   because `class_weight="balanced"` pushes them past the cost cut). Directionally encouraging,
   not proof.
-- **Our baseline is 0.6% favourable to us** — a flat 0.10 threshold beats it by ₹22,709, found by
+- **My baseline is 0.6% favourable to me** — a flat 0.10 threshold beats it by ₹22,709, found by
   sweeping the test set. Disclosed in RESULTS §0b; 47× smaller than the effect.
 - **One dataset for the positive result.** ULB fails entirely below ~0.1% prevalence.
 - **`disagree` is a boosting-stage-spread proxy**, not a reimplementation of DAUNT.
@@ -109,7 +109,7 @@ the places that explicitly retire it.
 | **The Runbook** (artifact `3d4cfb2f-…`) | Rewritten. **Source now lives in the repo at `RUNBOOK.html`** — edit that and republish to the same URL, so artifact and repo cannot drift again. New beat at 0:35 concedes the queue; the slider parks at **2%**, not 10% |
 | `START_HERE.md` Parts 1, 2, 3, 4, 5, 6, 7 | All migrated. Part 2 gains Blocks 10–12 |
 | `RESULTS.md` §0b | Opener rewritten; notes Block 10 predates the reframe but still bears on §0 |
-| `RESULTS.md` §10 | **Was itself contradicting §0** — the row `"we save ₹X" → "roughly cost-neutral"` was conformal-era discipline. Replaced |
+| `RESULTS.md` §10 | **Was itself contradicting §0** — the row `"I save ₹X" → "roughly cost-neutral"` was conformal-era discipline. Replaced |
 | `RESULTS.md` §12 | Was missing Blocks 10–12 and still pointed at the retired Streamlit console |
 | `results/figures/graph5_triage.png` | Rebuilt from `block12_policies.json`. `make_figures.py` rewritten — no experiment re-run |
 | `IMPLEMENTATION.md` | Carries a HISTORICAL banner |
@@ -126,7 +126,7 @@ the presentation layer.
    `block9_triage.json["sensitivity"]` is the *conformal* arm's. "Band: no flips" was asserted in
    `RESULTS.md` §1, `START_HERE` Parts 4 and 5, and the runbook — the runbook also carried a range
    (`+513,576 … +1,409,008`) that **appears nowhere in the repo**. All of it is struck. The docs
-   now say "we did not measure that."
+   now say "I did not measure that."
    **Fix: parameterise line 220 and re-run Block 9.** One line, ~25 min. This is the single
    highest-value experiment left, because it is the one a judge is most likely to probe.
 2. **Block 11 has no script.** Commit `881438b` added `results/block11_concentration.json` and the

@@ -5,7 +5,7 @@ WHY NOT A RANDOM SPLIT
 Payment fraud labels arrive late. A transaction is confirmed fraudulent when the customer
 disputes it -- days or weeks after it settled. A random split therefore trains on the future to
 predict the past, and produces a number that is both excellent and meaningless. Dal Pozzolo et
-al. (TNNLS 2017) formalised this; the Fraud Detection Handbook (Ch. 5) gives the protocol we
+al. (TNNLS 2017) formalised this; the Fraud Detection Handbook (Ch. 5) gives the protocol I
 follow here.
 
 THE DELAY WINDOW IS NOT DECORATION

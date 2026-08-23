@@ -9,9 +9,9 @@ against the policies a risk team is already using to fill a finite queue:
     score    most suspicious first    -- the obvious policy, and the one most teams use
     amount   biggest transaction first -- extremely common, "watch the big ones"
     stake    most rupees at risk       -- the sophisticated version of the above
-    band     nearest the cost-optimal cut (ours)
+    band     nearest the cost-optimal cut (mine)
 
-If band cannot beat those, the value claim collapses and we say so.
+If band cannot beat those, the value claim collapses and I say so.
 
 THE SECOND HALF answers a question a routing rule cannot: WHERE is the model blind? A rule that
 reorders a queue is easy to dismiss. A map of which product, card type and amount band carry the
@@ -40,7 +40,7 @@ from dhruva.data import AMOUNT, TARGET
 
 CAPS = [0.01, 0.02, 0.05, 0.10]
 NAME = {"score": "most suspicious first", "amount": "biggest amount first",
-        "stake": "most rupees at stake", "band": "nearest the cut (ours)"}
+        "stake": "most rupees at stake", "band": "nearest the cut (mine)"}
 
 
 def localise(values, wrong, err, tot, min_n=200):

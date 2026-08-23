@@ -17,7 +17,7 @@ Closes the two real gaps left after Amendment 1:
 alpha_fraud is held at the pre-registered 0.10 throughout. Only the legitimate-class budget moves.
 
 STATUS: post-hoc, exploratory. The sweep is a diagnostic, NOT a procedure for picking alpha on
-test data -- reading the argmin off this curve and reporting it as "our method" would be fitting
+test data -- reading the argmin off this curve and reporting it as "my method" would be fitting
 a hyperparameter to the test set. The capacity-derived value is the one the method uses; the
 sweep exists to show where it sits relative to the optimum.
 """

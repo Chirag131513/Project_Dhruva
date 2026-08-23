@@ -73,7 +73,7 @@ def test_encoding_is_fitted_on_train_only(df, cfg):
 
 
 def test_missing_values_are_preserved_not_imputed(df):
-    """tau works by masking. An encoder that imputes would replace the signal loss we study."""
+    """tau works by masking. An encoder that imputes would replace the signal loss I study."""
     enc = Encoder().fit(df)
     out = enc.transform(df)
     numeric = [c for c in out.columns if c not in enc.categorical]

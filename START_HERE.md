@@ -60,8 +60,8 @@ real data isn't loading, see Part 6.
 - **Top:** a slider for **analyst review capacity**. The only control that matters.
 - **Tiles:** loss, money saved, false-positive rate, fraud recall, escalation rate.
 - **Left panel:** four bars racing — the four **queue policies** a team might already run.
-- **Right panel:** how each policy scales as capacity grows, and where our advantage peaks.
-- **Blindness table:** where the model's errors concentrate — needs none of our code.
+- **Right panel:** how each policy scales as capacity grows, and where my advantage peaks.
+- **Blindness table:** where the model's errors concentrate — needs none of my code.
 - **Integration panel:** the real three-line API, measured latency, and an audit record.
 - **Bottom:** where the money goes, and a stream of individual decisions.
 
@@ -70,7 +70,7 @@ real data isn't loading, see Part 6.
 Drag the capacity slider from 1% to 10%, then **drag it back to 2% and leave it there.**
 Watch the four bars race:
 
-1. **ours pulls away** — +₹405,514 at 2% capacity.
+1. **nearest the cut pulls away** — +₹405,514 at 2% capacity.
 2. **most suspicious first goes negative** — the policy most teams actually run *loses*
    ₹15,091 at 2%, and ₹89,329 at 1%.
 3. **most rupees at stake goes negative too** — −₹75,921 at 2%.
@@ -79,7 +79,7 @@ Watch the four bars race:
 That is the finding. Every team already escalates; the *choice* of cases is the entire value,
 and the two most common choices are underwater at the capacity a real team can staff.
 
-**Do not leave the slider at 10%.** At 10% our advantage over sorting-by-score is 0.9% and the
+**Do not leave the slider at 10%.** At 10% my advantage over sorting-by-score is 0.9% and the
 story evaporates. 2% is both the honest operating point and the strongest one.
 
 The dashboard is a plain file — just close the tab. Nothing runs in the background.
@@ -105,7 +105,7 @@ Run them in order. Each prints a table and saves a file.
 | 7 | `python scripts/block7_alpha_sweep.py` | 5 min | The curve, and the failure on a second dataset |
 | 8 | `python scripts/block8_agnostic.py` | 12 min | The failure gets worse as the model gets better |
 | 9 | `python scripts/block9_triage.py --seeds 10` | 25 min | The kill test that fired — a one-line rule beats conformal 22× |
-| 10 | `python scripts/block10_proofs.py` | 3 min | Tests the two premises. One comes back against us |
+| 10 | `python scripts/block10_proofs.py` | 3 min | Tests the two premises. One comes back against me |
 | 11 | *(no script — see below)* | — | Concentration across three scorers: 0.7× → 1.1× → 8.6× |
 | 12 | `python scripts/block12_policies.py --seeds 5` | 15 min | **THE RESULT — the race against the queue policies teams already run** |
 
@@ -144,18 +144,18 @@ If you remember nothing else:
 1. **"The queue policy you already run loses money at the capacity you can actually staff."**
    At 2% capacity, sorting by risk score returns **−₹15,091** and sorting by rupees at stake
    **−₹75,921**. Choosing correctly is worth **7.9% of realised loss** — ₹297,187 over the best
-   rival policy. It peaks at 2% and is gone by 10%, and we say that ourselves.
+   rival policy. It peaks at 2% and is gone by 10%, and I say that myself.
 
 2. **"Every team already escalates. Nobody had measured which cases."**
    That is the contribution — the measurement and the negative result, not the rule. The rule is
-   one line, and we say so first.
+   one line, and I say so first.
 
 3. **"A one-line rule beat conformal prediction 22×."**
-   We implemented the 2026 literature, pre-registered a kill test, and it fired. Say this
+   I implemented the 2026 literature, pre-registered a kill test, and it fired. Say this
    plainly — it is the most memorable thing in the submission.
 
-**Do not say 28%.** That compared against a baseline with no review queue at all. We retired it
-ourselves. Anything still carrying it is stale.
+**Do not say 28%.** That compared against a baseline with no review queue at all. I retired it
+myself. Anything still carrying it is stale.
 
 ---
 
@@ -167,8 +167,8 @@ Full answers are in the Runbook. The short versions:
   retraining isn't available and recalibration is.
 - **"Does it save money?"** — Yes: **6–8% of realised loss** over the queue policy a team already
   runs, peaking at **7.9% at 2% capacity**. Not 28% — that compared against a baseline with no
-  queue at all, and we retired it.
-- **"Is that robust to your cost assumptions?"** — **Say we didn't measure it.** We swept all four
+  queue at all, and I retired it.
+- **"Is that robust to your cost assumptions?"** — **Say I didn't measure it.** I swept all four
   constants ±50% on the *conformal* arm, where three of four flipped sign. **That sweep was never
   run on the winning rule.** It is a one-line change to `block9_triage.py` to find out, and until
   someone runs it, claiming robustness is inventing a number.
@@ -183,10 +183,10 @@ Full answers are in the Runbook. The short versions:
   The review queue is a partial window into the blocked region, but only near the cut — never the
   confidently-blocked cases. **Say this unprompted.** It is the same move as reporting the kill
   test that fired, and it lands harder than any number in the deck.
-- **"Anything you got wrong?"** — Yes. We retracted one of our own results after finding it was
+- **"Anything you got wrong?"** — Yes. I retracted one of my own results after finding it was
   measuring itself. It's in the commit history.
 
-**If you don't know:** say "we didn't measure that," and say what you'd measure. Never invent a
+**If you don't know:** say "I didn't measure that," and say what you'd measure. Never invent a
 number out loud — one made-up figure poisons every real one next to it.
 
 ---
@@ -237,7 +237,7 @@ right. **Which cases should they look at?**
 
 That question has a budget attached — maybe 2% of transactions, maybe 10%, never all of them.
 Every payments team already has that queue and already fills it somehow — almost always by
-sorting on risk score or on transaction size. We tested four ways of choosing, on real card-fraud
+sorting on risk score or on transaction size. I tested four ways of choosing, on real card-fraud
 data, holding the number of escalated cases identical so that only the *choice* differed.
 
 **At the queue sizes real teams actually run, the two most common policies lose money.** Sorting
@@ -245,13 +245,13 @@ by score returns −₹15,091 at 2% capacity; sorting by rupees at stake returns
 correctly instead is worth **6–8% of realised loss**. So it isn't the reviewing that helps, it's
 the picking — and the obvious way to pick is the wrong one.
 
-And the winner was the simplest rule we wrote: send the analyst the cases sitting closest to the
+And the winner was the simplest rule I wrote: send the analyst the cases sitting closest to the
 decision boundary. It beat **conformal prediction** — the sophisticated method the 2026 research
 literature is built around, and the one this project was originally designed to showcase — by a
 factor of 22.
 
-We wrote down in advance what result would make us abandon that method. Then it happened, and we
+I wrote down in advance what result would make me abandon that method. Then it happened, and I
 reported it.
 
-Along the way we tested five predictions; two survived. We retracted one of our own results after
+Along the way I tested five predictions; two survived. I retracted one of my own results after
 finding it was measuring itself. That is not a weakness in the submission. It is the submission.

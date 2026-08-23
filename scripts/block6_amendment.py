@@ -14,7 +14,7 @@ be staffed:
 
     alpha_legit = review_cap / P(legit)
 
-alpha_fraud stays at the pre-registered 0.10: the fraud-side promise is the one we wanted, and
+alpha_fraud stays at the pre-registered 0.10: the fraud-side promise is the one I wanted, and
 nothing observed justifies loosening it.
 
 The direction is counter-intuitive and worth saying out loud. Fraud is the expensive error per

@@ -9,7 +9,7 @@ answer two questions in ninety seconds: *what does it do to my losses*, and *how
 front of my model*. So the page leads with the pipeline position, carries a capacity control, and
 ends with the actual three-line API, the measured per-decision latency, and a real audit record.
 
-THE DEMO GESTURE is the capacity slider: drag it and the four QUEUE POLICIES separate -- ours
+THE DEMO GESTURE is the capacity slider: drag it and the four QUEUE POLICIES separate -- mine
 pulling away while sorting-by-score and sorting-by-stake sit BELOW ZERO at the capacities a real
 team staffs. Escalation is not the finding; every team escalates. The finding is that the two
 most common ways of filling the queue lose money at 1-2% capacity. Park the slider at 2%, where
@@ -224,7 +224,7 @@ td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 <div class="grid3">
   <div class="panel"><div class="ptitle">Where the model is blind <span>share of losses vs share of traffic</span></div>
     <div class="scroll" style="max-height:206px"><table id="blind"></table></div>
-    <div class="note">Actionable without adopting anything of ours: <b>retrain there, add features
+    <div class="note">Actionable without adopting anything of mine: <b>retrain there, add features
       there, staff the queue there.</b></div></div>
   <div class="panel"><div class="ptitle">Decision stream <span id="revN"></span></div>
     <div class="scroll"><table id="stream"></table></div></div>
@@ -235,7 +235,7 @@ td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 const D=__DATA__,G_=__GATE__,$=i=>document.getElementById(i);
 const inr=v=>(v<0?"-":"")+"₹"+Math.round(Math.abs(v)).toLocaleString("en-IN");
 const G=D.grid,CAPS=D.caps,N=G.length;
-const SIG=[["band","nearest the cost-optimal cut  (ours)","#2E7BF6"],
+const SIG=[["band","nearest the cost-optimal cut  (mine)","#2E7BF6"],
            ["score","most suspicious first  (what most teams do)","#FBBF24"],
            ["amount","biggest amount first","#F87171"],
            ["stake","most rupees at stake","#4A5B78"]];

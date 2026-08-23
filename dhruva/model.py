@@ -1,20 +1,20 @@
 """Base scorers.
 
 DELIBERATELY NOT DEEP. Razorpay shipped a transformer foundation model trained on ~3 trillion
-data points in August 2026; competing with it on modelling is not a contest we can win, and not
+data points in August 2026; competing with it on modelling is not a contest I can win, and not
 the contest this project entered. Dhruva's contribution is the layer ABOVE the scorer, and its
-value is that it is model-agnostic -- which we demonstrate by running the same layer over three
+value is that it is model-agnostic -- which I demonstrate by running the same layer over three
 very different base models (PROTOCOL section 08, experiment E7).
 
 LightGBM is the primary because it handles missing values natively. That matters more here than
-usual: tau works by MASKING features, and any imputation step would replace the signal loss we
+usual: tau works by MASKING features, and any imputation step would replace the signal loss I
 are trying to study with an artefact of the imputer. Native NaN handling means an absent feature
 is genuinely absent.
 
 NO RESAMPLING. No SMOTE, no undersampling. Imbalance is handled by the cost model downstream.
 Resampling before the split leaks duplicated minority rows across the boundary; resampling after
 distorts the very score distribution the conformal layer calibrates against. Skipping it removes
-an entire family of bugs and costs nothing we need.
+an entire family of bugs and costs nothing I need.
 """
 
 from __future__ import annotations

@@ -8,7 +8,7 @@ Dhruva is a routing layer that sits on top of whatever scorer you already run an
 transactions a human should look at*. Three lines to integrate. No retraining. 14.6 µs per
 decision.
 
-We measured what that choice is worth on 590,540 real card-not-present transactions. **At the
+I measured what that choice is worth on 590,540 real card-not-present transactions. **At the
 queue sizes real teams actually staff, the two most common ways of filling a review queue lose
 money.**
 
@@ -44,7 +44,7 @@ near the decision boundary.
   A threshold cannot do that — it can only trade one against the other. Escalation escapes the
   trade-off because a human *resolves* the case instead of the system guessing.
 - **A map of where your model is blind** — which costs you nothing and requires adopting none of
-  our code. See below.
+  my code. See below.
 - **An audit record for every decision**, which matters if anyone has to explain a block.
 
 ## Drop-in integration
@@ -70,7 +70,7 @@ last week's traffic without waiting for a single dispute to resolve.
 
 ## Where your model is blind
 
-This part requires adopting nothing of ours. We localised the model's confident errors to business
+This part requires adopting nothing of mine. I localised the model's confident errors to business
 segments — the same method [arXiv:2607.06605](https://arxiv.org/html/2607.06605v1) uses to localise
 errors to molecular scaffolds:
 
@@ -92,45 +92,45 @@ queue), 5 seeds. **Every policy escalates the same volume** — only the choice 
 
 | queue policy | 1% capacity | 2% | 5% | 10% |
 |---|---|---|---|---|
-| **nearest the cost-optimal cut** *(ours)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
+| **nearest the cost-optimal cut** *(mine)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
 | most suspicious first | **−89,329** | **−15,091** | +577,447 | +1,038,038 |
 | biggest amount first | +1,899 | +108,327 | +128,600 | +63,451 |
 | most rupees at stake | **−87,962** | **−75,921** | +117,620 | +101,915 |
 
 Advantage over the **best rival at each capacity**: 5.8% · **7.9%** · 5.9% · 0.9%.
 
-**It peaks at 2% and collapses by 10% — and we say so ourselves.** At a tenth of traffic under
+**It peaks at 2% and collapses by 10% — and I say so myself.** At a tenth of traffic under
 review, sorting by score nearly catches up. No merchant reviews a tenth of their traffic, which is
 why the left of that table is the one that matters. False-positive cost is priced per transaction
 (`c_FP(x) = 0.25·amount + ₹250`), not as a flat constant.
 
-## What we are not claiming
+## What I am not claiming
 
 - **Not that escalation is new.** Every team escalates. The finding is that the usual way of
   choosing *what* to escalate loses money at realistic capacity.
 - **Not novelty in the method.** The winning rule is one line. The contribution is the
   measurement, the negative result, and the blindness map.
-- **Nothing about Vulcan.** We have never seen its scores and cannot get them. What we can show is
+- **Nothing about Vulcan.** I have never seen its scores and cannot get them. What I can show is
   that the effect *grows* as the underlying model gets better.
 - **Not "28% of loss saved."** An earlier version of this claim compared against a baseline with
-  no review queue at all — which nobody runs. We retired it ourselves and the number fell to 6–8%.
+  no review queue at all — which nobody runs. I retired it myself and the number fell to 6–8%.
 
 ## The record
 
-This project was designed around conformal prediction. We pre-registered a kill test that could
-invalidate it, ran it, and **it fired** — a one-line rule beat conformal by 22× (p = 0.0020). We
+This project was designed around conformal prediction. I pre-registered a kill test that could
+invalidate it, ran it, and **it fired** — a one-line rule beat conformal by 22× (p = 0.0020). I
 reported that and changed the project rather than the test.
 
 - Of five hypotheses: two supported, **two refuted**, one supported only in part.
-- **One of our own headlines was retracted** after we found it was scoring itself on the cells it
+- **One of my own headlines was retracted** after I found it was scoring itself on the cells it
   had calibrated on.
 - **External validation failed.** Below ~0.1% fraud prevalence the method does not work at all.
-- **Our own baseline is 0.6% favourable to us** — we found that by sweeping the test set ourselves,
+- **My own baseline is 0.6% favourable to me** — I found that by sweeping the test set myself,
   and disclosed it.
 - **Two claims have no code behind them** and are labelled as such: `band`'s ±50% cost sweep was
   never run, and Block 11 has no committed script.
 - Every number here is an **offline replay**. A blocked transaction never acquires an outcome, so
-  no offline study — ours included — can fully verify this in production.
+  no offline study — mine included — can fully verify this in production.
 
 The method the project was named after lost, and the headline shrank by a factor of three under
 scrutiny. That record is the point, not a blemish on it.

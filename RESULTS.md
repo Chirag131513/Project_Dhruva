@@ -1,6 +1,6 @@
 # Dhruva — Results
 
-**What we set out to test, what the data said, and what we are entitled to claim.**
+**What I set out to test, what the data said, and what I am entitled to claim.**
 
 Dataset: IEEE-CIS Fraud Detection (Vesta), 590,540 card-not-present transactions over ~6 months,
 3.4% fraud. External validation: ULB/Worldline, 284,807 transactions (0.172% fraud overall;
@@ -64,13 +64,13 @@ Net benefit against a per-transaction cost-optimal Bayes threshold (₹3,752,646
 > | **₹3,740,313** | mean over **10 seeds** — Block 9, the kill test |
 >
 > The spread across all three is 0.9%, which is seed noise on a refit model. Percentages in §0 are
-> computed against the 5-seed mean; percentages in §0b against the single-seed run. We state this
-> because an unexplained 0.9% gap between two baselines on the same page would rightly cost us
+> computed against the 5-seed mean; percentages in §0b against the single-seed run. I state this
+> because an unexplained 0.9% gap between two baselines on the same page would rightly cost me
 > more credibility than the gap is worth.
 
 | queue policy | 1% capacity | 2% | 5% | 10% |
 |---|---|---|---|---|
-| **nearest the cost-optimal cut** *(ours)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
+| **nearest the cost-optimal cut** *(mine)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
 | most suspicious first — *the obvious policy* | **−89,329** | **−15,091** | +577,447 | +1,038,038 |
 | biggest amount first — *very common in practice* | +1,899 | +108,327 | +128,600 | +63,451 |
 | most rupees at stake | **−87,962** | **−75,921** | +117,620 | +101,915 |
@@ -97,7 +97,7 @@ of their traffic. Read the left of that table.
 ### Where the model is blind
 
 A routing rule is easy to dismiss. A map of where the losses live is not, and it requires
-adopting nothing of ours.
+adopting nothing of mine.
 
 | segment | share of transactions | error rate | share of ₹ lost | concentration |
 |---|---|---|---|---|
@@ -115,35 +115,35 @@ queue there.
 *(Method borrowed from arXiv:2607.06605, which localises confident errors to specific molecular
 scaffolds. The payments analogue is business segments.)*
 
-### What we are not claiming
+### What I am not claiming
 
 **Not that escalation is new** — every team escalates. **Not "28% of loss saved"**: that compares
 against a baseline with *no queue at all*, which nobody runs, and it is the weaker framing. The
 defensible claim is the **6–8% advantage over the policy a team already has, at the capacity a
 team actually has**, plus the blindness map.
 
-We implemented the July–August 2026 conformal literature faithfully, pre-registered a kill test
+I implemented the July–August 2026 conformal literature faithfully, pre-registered a kill test
 that could invalidate it, ran it, and it fired — conformal finished second-worst of the four
-escalation signals we tried (§1). That is reported here rather than buried.
+escalation signals I tried (§1). That is reported here rather than buried.
 
 ---
 
 ## 0b. Two premises, tested rather than asserted
 
 The escalation result in §0 assumes the baseline is the model *used well*, and that escalated
-cases are genuinely where it fails. Block 10 tested both premises. One came back against us.
+cases are genuinely where it fails. Block 10 tested both premises. One came back against me.
 
 *(Block 10 was designed when the headline was the retired "28% vs no queue" framing. Both
 premises still bear on §0 unchanged — a weak baseline or diffuse errors would undercut the
 queue-policy comparison exactly as they would have undercut the old one.)*
 
-**A — the baseline is very slightly favourable to us.** Sweeping fixed thresholds, a flat cutoff
-at 0.10 costs ₹3,695,822 against our per-transaction Bayes threshold's ₹3,718,531 — **our
+**A — the baseline is very slightly favourable to me.** Sweeping fixed thresholds, a flat cutoff
+at 0.10 costs ₹3,695,822 against my per-transaction Bayes threshold's ₹3,718,531 — **my
 baseline is ₹22,709 (0.6%) worse.** The per-transaction rule is optimal only under perfectly
-calibrated probabilities; ours has ECE 0.0039, close but not exact.
+calibrated probabilities; mine has ECE 0.0039, close but not exact.
 
 Two things keep this honest rather than fatal: 0.10 was found by sweeping the **test set**, which
-is hindsight our own method never received, so 0.6% is an *upper bound* on the advantage. And the
+is hindsight my own method never received, so 0.6% is an *upper bound* on the advantage. And the
 escalation gain is **47× larger** than the gap. Report the number; don't let anyone find it first.
 
 **B — the model's errors are strongly concentrated, and the rule finds them.**
@@ -157,8 +157,8 @@ escalation gain is **47× larger** than the gap. Report the number; don't let an
 
 ### Does this transfer to a *strong* production model?
 
-The obvious objection: we measured a LightGBM at PR-AUC 0.523. Razorpay runs Vulcan. **We have no
-evidence about Vulcan and cannot get any** — we have never seen its scores. What we *can* test is
+The obvious objection: I measured a LightGBM at PR-AUC 0.523. Razorpay runs Vulcan. **I have no
+evidence about Vulcan and cannot get any** — I have never seen its scores. What I *can* test is
 whether the effect survives as models improve.
 
 | scorer | PR-AUC | err @ escalated 10% | err @ other 90% | ratio | errors captured | value captured |
@@ -180,7 +180,7 @@ statement is **"one healthy model shows strong concentration and two broken ones
 is weaker than a clean monotone trend across three healthy models. It is directionally
 encouraging and it is not proof.
 
-**What to say if asked whether this applies to Vulcan:** *we don't know, we can't know, and the
+**What to say if asked whether this applies to Vulcan:** *I don't know, I can't know, and the
 trend points the right way.* Razorpay's own published material shows the setting applies — Vulcan
 is marketed as catching 5× more fraud **"without increasing alerts"**, which is an alert budget,
 and Bumblebee left **~175 human review hours a month** in place. The problem exists there. The
@@ -204,7 +204,7 @@ because the model is weak, but because its failures are findable.
 | **H4** coverage restoration yields positive net rupees | **REFUTED** | At **α=0.10, identity-segmented**, the gate costs **₹1.53M more** than a plain Bayes threshold (5,248,665 vs 3,718,531). Sign stable across ±50% sweeps. |
 | **H5** calibration approaches oracle retraining | **NOT TESTED** | Superseded: the method did not clear its own baseline, so the gap-to-oracle question never became live. |
 
-**Two of five tested hypotheses survived. One of our own published results was retracted.**
+**Two of five tested hypotheses survived. One of my own published results was retracted.**
 
 ### Kill conditions (declared in the Stage-1 verdict, run in Block 9)
 
@@ -257,7 +257,7 @@ real data.
 
 ### Prior art, stated up front
 
-That marginal coverage can hold while a class is badly under-covered is not our discovery. The
+That marginal coverage can hold while a class is badly under-covered is not my discovery. The
 mechanism is Sadinle, Lei & Wasserman, *Least Ambiguous Set-Valued Classifiers with Bounded Error
 Levels*, JASA 114(525):223–234, 2019 ([arXiv:1609.00451](https://arxiv.org/abs/1609.00451)) — and
 2026 has been a busy year for the empirical version of it:
@@ -269,7 +269,7 @@ Levels*, JASA 114(525):223–234, 2019 ([arXiv:1609.00451](https://arxiv.org/abs
 | [Class-Conditional CP for Anomaly Detection](https://doi.org/10.3390/make8070190) (Jul 2026) | Azure KPI, Yahoo, NAB | **52.94% → 90.59%** at 1:345 imbalance; agnostic across XGBoost/RF/NN |
 | [arXiv:2607.18088](https://arxiv.org/html/2607.18088v2) (Jul 2026) | action recognition | "marginal coverage hides a per-class collapse" |
 
-**We claim none of that.** Our contribution is operational and, in one respect, contrarian:
+**I claim none of that.** My contribution is operational and, in one respect, contrarian:
 
 - **The economics run the other way.** Those papers report the fix winning. On real payments with
   a finite analyst queue it *loses* ₹1.53M at the conventional α, and only reaches break-even
@@ -289,7 +289,7 @@ T − cov_fraud  =  (T − marginal)/π_F  +  s·R
                    └── marginal deficit ──┘   └─ surplus × ratio ─┘
 ```
 
-On our data (π_F = 0.033811, R = 28.58, marginal = 0.890928, cov_legit = 0.917249):
+On my data (π_F = 0.033811, R = 28.58, marginal = 0.890928, cov_legit = 0.917249):
 
 ```
 term 1   (0.900 − 0.890928)/0.033811   =  0.268301
@@ -302,8 +302,8 @@ term 2    0.017249 × 28.5758           =  0.492899
 is the whole failure mode in one line, and it is exact rather than approximate.
 
 The "Quiet Failure" paper states this as *shortfall = surplus × ratio* — **term 2 only**. That
-form assumes marginal coverage lands exactly on target. Ours undershoots by 0.009, and at
-π_F = 0.034 that deficit contributes another 0.268. **Term 2 alone under-predicts our observed
+form assumes marginal coverage lands exactly on target. Mine undershoots by 0.009, and at
+π_F = 0.034 that deficit contributes another 0.268. **Term 2 alone under-predicts my observed
 shortfall by 35.2%.** Their 3.26:1 setting was too mild for the omission to show; at 28.6:1 it is
 a third of the effect. Anyone using the one-term version to size the risk on a heavily imbalanced
 problem will under-state it.
@@ -376,17 +376,17 @@ record = gate.explain(score, amount)                      # audit trail for ever
 re-fits on last week's traffic without waiting for chargebacks to arrive — which matters precisely
 because the labels are the thing that arrives late (§8, and H5).
 
-**Why we measured latency at all.** [arXiv:2607.13078](https://arxiv.org/abs/2607.13078) found
+**Why I measured latency at all.** [arXiv:2607.13078](https://arxiv.org/abs/2607.13078) found
 **0 of 18** fraud-detection papers reporting per-decision latency. Criticising that gap while
-having it ourselves would be a stone thrown from inside, so we closed it.
+having it myself would be a stone thrown from inside, so I closed it.
 
 Note what the number does *not* cover: this is the **gate's own** latency, on top of whatever the
-base scorer costs. We did not measure the scorer, and it dominates. The honest reading is "the
+base scorer costs. I did not measure the scorer, and it dominates. The honest reading is "the
 layer is free relative to the model you already run", not "decisions take 15 microseconds".
 
 ---
 
-## 4. The claim we are entitled to make
+## 4. The claim I am entitled to make
 
 **Not** *"this saves money."* The +₹27,137 margin is 0.73%, and its sign flips on **all four**
 cost constants under ±50%:
@@ -468,7 +468,7 @@ working, not obstructing.
 
 ---
 
-## 6. Corrections made to our own work
+## 6. Corrections made to my own work
 
 **Block 3's headline was circular.** It measured coverage on the same identity cells the arm had
 calibrated on — the arm was grading itself. On a neutral fine grid (ProductCD × identity × class)
@@ -530,17 +530,17 @@ would not be caught again automatically. Do not claim the suite covers them.
   pre-registered result reported alongside it every time — but post-hoc nonetheless.
 - **Multiple looks.** Seven blocks, four arms, two amendable constants. Every result is reported,
   including the ones that killed hypotheses.
-- **Selective labels — the deepest limitation in this document, and the one we cannot close.**
+- **Selective labels — the deepest limitation in this document, and the one I cannot close.**
   Every number here is an **offline replay**. A transaction the system blocks never acquires an
-  outcome: we never learn whether it would have been fraud, so its correct label is unobservable
+  outcome: I never learn whether it would have been fraud, so its correct label is unobservable
   *by construction*. This cuts in two directions at once. IEEE-CIS's labels are themselves the
   output of **someone else's prior decision system**, so the fraud available to measure is the
-  fraud that system let through — the population is already filtered before we see it. And our own
+  fraud that system let through — the population is already filtered before I see it. And my own
   escalation arms price a reviewed case using a label that, in production, would not exist at the
   moment the decision is made. The review queue is the *only* mechanism here that generates
   outcomes for cases the model wanted to reject, which makes it a partial window into the blocked
   region — but it reaches cases near the cut, never the confidently-blocked ones. **No offline
-  study can resolve this**, ours included; §11 records what measuring it would actually take.
+  study can resolve this**, mine included; §11 records what measuring it would actually take.
   The honest framing of every result above is therefore: *this is what the replay says*.
 
 ---
@@ -588,29 +588,29 @@ figure as evidence the method works.** The only economically meaningful row is L
 
 | Don't | Do |
 |---|---|
-| "we built a conformal risk gate" | "we measured what escalation is worth under a capacity limit — conformal lost" |
-| "conformal prediction is our method" | conformal is a **baseline we tested and it came second-worst** |
+| "I built a conformal risk gate" | "I measured what escalation is worth under a capacity limit — conformal lost" |
+| "conformal prediction is my method" | conformal is a **baseline I tested and it came second-worst** |
 | "AI-agent traffic" | "segment-conditional calibration"; agentic commerce is motivation only |
 | "error guarantee" | "target empirical coverage under stated assumptions" |
-| "we save ₹X of your fraud loss" | "**6–8% more than the queue policy you already run**, at the capacity you actually staff" |
-| "we save 28%" | **retired.** That measured against a baseline with *no queue*. Never say it again |
-| "the result is robust to our cost assumptions" | the ±50% sweep was run on the **conformal** arm only. **Band was never swept** — say "we didn't measure that" |
+| "I save ₹X of your fraud loss" | "**6–8% more than the queue policy you already run**, at the capacity you actually staff" |
+| "I save 28%" | **retired.** That measured against a baseline with *no queue*. Never say it again |
+| "the result is robust to my cost assumptions" | the ±50% sweep was run on the **conformal** arm only. **Band was never swept** — say "I didn't measure that" |
 | "escalation pays" *(as if it were the finding)* | escalation is what every team already does; **the finding is that the common ways of filling the queue lose money** |
-| "nobody has done this" | "we found no public work measuring this failure mode" |
+| "nobody has done this" | "I found no public work measuring this failure mode" |
 | "LIVE" | "TEST REPLAY" |
 | "no retraining" | "no gradient-based refitting of the base model" |
-| "our concentration result replicates across models" | Block 11 is **n = 3 with two broken models and no committed script**. Recorded, not reproducible |
-| "we catch 73% of fraud" *(unqualified)* | "73% **on an offline replay** of a held-out window." Blocked transactions never acquire outcomes, so **no offline number is a production guarantee** — say the words *selective labels* before a judge does (§8) |
+| "my concentration result replicates across models" | Block 11 is **n = 3 with two broken models and no committed script**. Recorded, not reproducible |
+| "I catch 73% of fraud" *(unqualified)* | "73% **on an offline replay** of a held-out window." Blocked transactions never acquire outcomes, so **no offline number is a production guarantee** — say the words *selective labels* before a judge does (§8) |
 | "this will save Razorpay ₹X" | "here is the experiment that would tell you, and it is an afternoon's work on your data" |
 
-*(The first two rows replaced a single conformal-era rule, `"we save ₹X" → "roughly cost-neutral,
+*(The first two rows replaced a single conformal-era rule, `"I save ₹X" → "roughly cost-neutral,
 with a stated coverage level"`. That rule described the conformal gate of §4, which was
 approximately break-even. It contradicted §0 once Block 12 landed, and the contradiction sat in
 this table — the one that governs slides — for the whole of that period.)*
 
 ---
 
-## 11. What we would do next
+## 11. What I would do next
 
 The band result is strong but the *signal* is barely explored. `band` ranks by distance to the
 Bayes threshold; it was written as a strawman for the kill test and it won. Obvious next steps,
@@ -618,15 +618,15 @@ none of them run:
 
 - **A learned rejector** trained directly on realised rupee cost, which is what DAUNT's framing
   implies and what would test whether hand-built ranking is leaving money on the table.
-- **Why conformal fails specifically.** Our reading is that conformal nominates cases where the
+- **Why conformal fails specifically.** My reading is that conformal nominates cases where the
   *classes* are hard to separate, while the money is in cases near the *cost-optimal cut* — two
-  different sets. That is a hypothesis we state, not a result we measured.
+  different sets. That is a hypothesis I state, not a result I measured.
 - **Capacity beyond 10%**, to find where the curve saturates.
 
 Two of these are cheap and close a stated gap rather than opening a new question — do them first:
 
 - **Sweep the costs on the winning arm.** `scripts/block9_triage.py:220` hardcodes
-  `ambiguity("conformal", ...)`; parameterise it and re-run. This is the only reason we cannot
+  `ambiguity("conformal", ...)`; parameterise it and re-run. This is the only reason I cannot
   say whether the headline is cost-robust, and it is one line.
 - **Rewrite Block 11.** Its results file has no generating script, so the transfer table in §0b
   cannot be audited or re-run.
@@ -635,7 +635,7 @@ Two of these are cheap and close a stated gap rather than opening a new question
 estimate what the confidently-blocked region actually contains, by treating the review queue as a
 randomised window into it and reweighting. **Deliberately not built.** It is multi-day work, and
 it would introduce a second headline competing with the one in §0 — the §8 bullet answers the
-question at a fiftieth of the cost. Recorded here as the right next study, not as a gap we intend
+question at a fiftieth of the cost. Recorded here as the right next study, not as a gap I intend
 to close before submission.
 
 ---
@@ -653,7 +653,7 @@ python scripts/block6_amendment.py      # Amendment 1
 python scripts/block7_alpha_sweep.py    # curve + ULB failure
 python scripts/block8_agnostic.py       # E7: fix is agnostic, failure scales with model quality
 python scripts/block9_triage.py --seeds 10   # kill test: band beats conformal 22x
-python scripts/block10_proofs.py        # the two premises; the baseline one goes against us
+python scripts/block10_proofs.py        # the two premises; the baseline one goes against me
 python scripts/block12_policies.py --seeds 5 # THE RESULT: the queue-policy race (§0)
 python -m pytest tests/ -q              # 22 passed
 ```

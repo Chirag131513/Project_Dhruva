@@ -73,8 +73,8 @@ def test_marginal_conformal_undercovers_the_minority_class():
     """B2: a single pooled quantile hits its target on average while failing the rare class.
 
     This is the failure the strategy brief cites at 0.5% coverage in the literature. Reproducing
-    it here on our own code proves we have implemented the thing that is supposed to be broken,
-    which is a precondition for claiming we fixed it.
+    it here on my own code proves I have implemented the thing that is supposed to be broken,
+    which is a precondition for claiming I fixed it.
     """
     p, y = make_imbalanced(seed=1)
     (p_cal, p_test), (y_cal, y_test) = split_half(p, y, seed=1)
@@ -173,7 +173,7 @@ def test_population_conditioning_restores_coverage_under_signal_loss():
 
 
 # --------------------------------------------------------------------------------------
-# Guards against reporting numbers we should not report
+# Guards against reporting numbers I should not report
 # --------------------------------------------------------------------------------------
 
 def test_thin_cells_are_not_reportable():

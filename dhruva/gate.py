@@ -141,7 +141,7 @@ class Gate:
     def evaluate(self, scores, amounts, labels) -> dict:
         """Realised cost on a labelled period, decomposed, against the no-review baseline.
 
-        Run this on your own data before believing any number from our write-up.
+        Run this on your own data before believing any number from my write-up.
         """
         scores = np.asarray(scores, dtype=float)
         amounts = np.asarray(amounts, dtype=float)

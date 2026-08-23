@@ -17,8 +17,8 @@ THE FAIR COMPARISON
 
     conformal   the prediction set is not a singleton; ties broken by rupees at stake
     band        |p - t(x)| small -- plain distance to the cost-optimal threshold, no conformal
-                machinery at all.  <<< THIS IS K3. If it matches conformal, our machinery is
-                decoration and we say so.
+                machinery at all.  <<< THIS IS K3. If it matches conformal, my machinery is
+                decoration and I say so.
     disagree    spread across boosting stages (100/200/300/400 trees) -- a cheap stand-in for
                 DAUNT's ensemble-disagreement signal. Labelled a PROXY, not a reimplementation.
     random      sanity floor. If a signal cannot beat random escalation it is not a signal.
@@ -233,7 +233,7 @@ def main() -> int:
         print(f"  '{best_sig}' at {np.mean(res[best_sig][hi]):+,.0f} against conformal's "
               f"{conf[hi].mean():+,.0f}.")
         print("  The honest headline is therefore about the CAPACITY CURVE and the value of")
-        print("  escalating at all -- not about conformal prediction, which we should stop")
+        print("  escalating at all -- not about conformal prediction, which I should stop")
         print("  presenting as the method. Report the ranking of signals as the result.")
     else:
         print(f"  Conformal abstention beats both the threshold and the simpler signals at "

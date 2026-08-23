@@ -6,8 +6,8 @@ Everything the dashboard's integration panel displays comes from here, computed 
 data. Nothing is illustrative and nothing is hand-written -- an invented example on a page whose
 whole argument is honest measurement would be the worst possible detail to get wrong.
 
-Latency is measured because we criticise the field for not reporting it (arXiv:2607.13078 found
-0 of 18 fraud papers report per-decision latency). Criticising a gap we also had would be a
+Latency is measured because I criticise the field for not reporting it (arXiv:2607.13078 found
+0 of 18 fraud papers report per-decision latency). Criticising a gap I also had would be a
 stone thrown from inside.
 """
 

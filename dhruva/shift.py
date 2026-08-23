@@ -10,7 +10,7 @@ created, deleted, or relabelled.
   MAY NOT CLAIM:  "this is what AI-agent payments look like"
   MAY CLAIM:      "tau is a controlled proxy for the progressive loss of human-specific
                    behavioural and device signal that industry reports under agent-initiated
-                   transactions. We manipulate signal availability, not agent-ness. The
+                   transactions. I manipulate signal availability, not agent-ness. The
                    transactions and the fraud labels are real."
 
 The distinction is the difference between an ablation study and a fabrication, and it is the
@@ -68,7 +68,7 @@ def tau(
 
     Missingness is left as NaN and never imputed. LightGBM handles that natively, so an absent
     feature is genuinely absent rather than replaced by a median that the model can still learn
-    from -- imputing here would substitute an artefact of the imputer for the effect we study.
+    from -- imputing here would substitute an artefact of the imputer for the effect I study.
     """
     if not 0.0 <= lam <= 1.0:
         raise ValueError(f"lambda must be in [0, 1], got {lam}")
@@ -139,7 +139,7 @@ def routing_report(assigned: np.ndarray, routed: np.ndarray) -> RoutingReport:
     """How closely signal-based routing tracks the ground-truth assignment.
 
     Reported alongside every result. If agreement is poor, the coverage numbers are attributable
-    to a mix of populations rather than to the populations we think we conditioned on -- and a
+    to a mix of populations rather than to the populations I think I conditioned on -- and a
     reader is entitled to know that before believing the cells.
     """
     assigned = np.asarray(assigned, dtype=bool)

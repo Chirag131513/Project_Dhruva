@@ -12,14 +12,14 @@ TWO SOURCES, AND THEY MUST NEVER BE CONFUSED
 
 Every frame carries `df.attrs["data_source"]`, and every artefact downstream records it. The
 console shows a DEV DATA banner whenever it is not "ieee-cis". This is the discipline that keeps
-us on the right side of the synthetic-data critique (arXiv:2604.13125).
+me on the right side of the synthetic-data critique (arXiv:2604.13125).
 
 THE BLOCK 0 AUDIT
 
-IEEE-CIS's identity table does not cover every transaction. That gives us a naturally occurring
+IEEE-CIS's identity table does not cover every transaction. That gives me a naturally occurring
 sub-population for which the device/identity block is simply absent -- no ablation involved. If
 its calibration differs from the identity-present population, the premise behind H1 has support
-in real data before we manipulate anything, which is the strongest available answer to "you
+in real data before I manipulate anything, which is the strongest available answer to "you
 invented your test distribution". `identity_coverage` measures it; block0 reports it.
 """
 
@@ -72,7 +72,7 @@ def is_real(df: pd.DataFrame) -> bool:
 
 
 def load_ulb(data_dir: Path) -> pd.DataFrame:
-    """ULB / Worldline credit-card fraud (OpenML 1597), remapped onto our column names.
+    """ULB / Worldline credit-card fraud (OpenML 1597), remapped onto my column names.
 
     284,807 transactions, 492 frauds (0.172%) -- a far harsher imbalance than IEEE-CIS's 3.5%,
     which is exactly why it is useful: it stresses the sparse-calibration-cell path and the
@@ -273,12 +273,12 @@ def _fixture(n: int = 60_000, prevalence: float = 0.035, seed: int = 20260820) -
         df[f"V{i}"] = _with_missing(rng.normal(y * eff, 1, n), rng, 0.20)
 
     # Identity block, present for only part of the data -- mirrors IEEE-CIS's join structure.
-    # The share is a structural property we must handle, not a number to be relied upon.
+    # The share is a structural property I must handle, not a number to be relied upon.
     # Identity block, present for only part of the data -- mirrors IEEE-CIS's join structure.
     # It is given a somewhat STRONGER per-feature relationship than the other blocks, because
     # that is what makes it worth ablating: device and behavioural signals are informative in
     # real fraud detection, which is exactly why losing them is expected to hurt. Note this is a
-    # property we BUILD INTO the fixture, so no conclusion about H1 may be drawn from it. On
+    # property I BUILD INTO the fixture, so no conclusion about H1 may be drawn from it. On
     # IEEE-CIS the block's real contribution is measured, not assumed -- that is Block 1's
     # go/no-go check.
     has_id = rng.random(n) < 0.24

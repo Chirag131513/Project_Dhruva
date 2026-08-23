@@ -24,13 +24,13 @@ Where this file and the protocol disagree, **the protocol governs**. Where this 
 
 ## 0. What this actually is, in one paragraph
 
-We take a normal fraud model (LightGBM on IEEE-CIS). We wrap it in a layer that, instead of
+I take a normal fraud model (LightGBM on IEEE-CIS). I wrap it in a layer that, instead of
 emitting a score, emits a **decision with a stated coverage level**: approve, review, or block.
-We then progressively remove the human-specific device/behavioural signals from the incoming
+I then progressively remove the human-specific device/behavioural signals from the incoming
 stream — the thing industry says happens when an AI agent transacts on a customer's behalf —
-and measure what breaks. The claim we are testing is that **calibration breaks before
+and measure what breaks. The claim I am testing is that **calibration breaks before
 discrimination does**: the model still ranks transactions correctly but no longer knows where to
-cut. If true, recalibrating per population fixes it without retraining anything, and we can price
+cut. If true, recalibrating per population fixes it without retraining anything, and I can price
 the difference in rupees.
 
 Everything below exists to produce three graphs and one table honestly.
@@ -322,7 +322,7 @@ pipeline, the tests and the console can be built and validated today.
 > **The fixture is plumbing-only.** It is a hand-specified deterministic generator, not a learned
 > synthetic model, and **no reported result may come from it**. Every artefact records
 > `data_source` and the console shows a `DEV DATA` banner when that field is not `ieee-cis`.
-> This is the discipline that keeps us on the right side of the synthetic-data critique.
+> This is the discipline that keeps me on the right side of the synthetic-data critique.
 
 ---
 
@@ -331,7 +331,7 @@ pipeline, the tests and the console can be built and validated today.
 | Layer | Choice | Why not more |
 |---|---|---|
 | Core | Python 3.12, numpy, pandas, scipy | — |
-| Model | LightGBM, scikit-learn | Native missing-value handling matters — we mask features deliberately |
+| Model | LightGBM, scikit-learn | Native missing-value handling matters — I mask features deliberately |
 | Conformal | hand-rolled, ~80 lines | Short enough to write, and you can defend every line under questioning |
 | Charts | matplotlib | Three charts decide this. Make them excellent. |
 | Console | Streamlit | Fastest path to the ρ slider |

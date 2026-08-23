@@ -91,7 +91,7 @@ tr.win td{background:var(--accent-soft)}
         <strong>sorting by risk score loses money at 1&ndash;2%</strong> &middot; <strong>14.6&nbsp;&micro;s</strong>.</li>
   </ul>
   <div class="call stop"><p class="cl">Do not say 28%</p>
-  <p>That compared us against a baseline running <strong>no review queue at all</strong>, which no
+  <p>That compared my result against a baseline running <strong>no review queue at all</strong>, which no
   merchant does. It is retired. The claim is <strong>6&ndash;8% against the queue policy a team already
   has</strong>. If a slide, an old doc, or your own memory says 28%, it is stale &mdash; and a judge who
   finds the weaker framing behind the stronger number will not trust the rest.</p></div>
@@ -109,7 +109,7 @@ tr.win td{background:var(--accent-soft)}
       <h3>Open with the constraint, not the technology</h3>
       <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;A merchant has two analysts. Not two hundred. Every fraud system assumes somebody will look at what it flags &mdash; and mostly, nobody can.&rdquo;</span></div>
       <div class="line"><span class="lbl l-do">Do</span><span>Nothing on screen yet.</span></div>
-      <div class="line"><span class="lbl l-never">Never</span><span class="never-txt">Do not open with &ldquo;we built an AI risk layer&rdquo;, or with conformal prediction.</span></div>
+      <div class="line"><span class="lbl l-never">Never</span><span class="never-txt">Do not open with &ldquo;I built an AI risk layer&rdquo;, or with conformal prediction.</span></div>
     </div></div>
 
     <div class="beat"><div class="t">0:35</div><div>
@@ -121,16 +121,16 @@ tr.win td{background:var(--accent-soft)}
 
     <div class="beat"><div class="t">1:15</div><div>
       <h3>Establish a real baseline</h3>
-      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;Our baseline isn&rsquo;t a strawman. It&rsquo;s a per-transaction cost-optimal threshold &mdash; the cutoff moves with the amount, because blocking a &#8377;40,000 order isn&rsquo;t the same mistake as blocking a &#8377;200 one. On real held-out data it loses &#8377;37 lakh.&rdquo;</span></div>
+      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;My baseline isn&rsquo;t a strawman. It&rsquo;s a per-transaction cost-optimal threshold &mdash; the cutoff moves with the amount, because blocking a &#8377;40,000 order isn&rsquo;t the same mistake as blocking a &#8377;200 one. On real held-out data it loses &#8377;37 lakh.&rdquo;</span></div>
       <div class="line"><span class="lbl l-do">Do</span><span>Dashboard, capacity at 1%. Point at baseline loss in the header.</span></div>
     </div></div>
 
     <div class="beat"><div class="t">2:00</div><div>
       <h3>The slider &mdash; this is the demo</h3>
       <div class="line"><span class="lbl l-do">Do</span><span>Drag capacity 1% &rarr; 10%, slowly. Let the four bars race. <strong>Then drag it back to 2% and leave it there.</strong></span></div>
-      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;Four ways of choosing, every one escalating the same volume &mdash; so only the choice differs. At two percent capacity, sorting by risk score loses fifteen thousand rupees. Sorting by rupees at stake loses seventy-six thousand. Sorting by amount makes a hundred and eight. Ours makes four hundred and five.&rdquo;</span></div>
+      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;Four ways of choosing, every one escalating the same volume &mdash; so only the choice differs. At two percent capacity, sorting by risk score loses fifteen thousand rupees. Sorting by rupees at stake loses seventy-six thousand. Sorting by amount makes a hundred and eight. Mine makes four hundred and five.&rdquo;</span></div>
       <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;So it isn&rsquo;t the reviewing that pays. It&rsquo;s the picking. And the two most common ways of picking are underwater at the capacity you actually staff.&rdquo;</span></div>
-      <div class="line"><span class="lbl l-never">Never</span><span class="never-txt">Do not leave the slider at 10%. At 10% our advantage is 0.9% and the story evaporates. 2% is the honest operating point and the strongest one.</span></div>
+      <div class="line"><span class="lbl l-never">Never</span><span class="never-txt">Do not leave the slider at 10%. At 10% my advantage is 0.9% and the story evaporates. 2% is the honest operating point and the strongest one.</span></div>
     </div></div>
 
     <div class="beat"><div class="t">3:00</div><div>
@@ -141,14 +141,14 @@ tr.win td{background:var(--accent-soft)}
 
     <div class="beat"><div class="t">3:40</div><div>
       <h3>The uncomfortable part, said by you first</h3>
-      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;We built this project around conformal prediction &mdash; it&rsquo;s what the 2026 literature is full of, four papers from July alone. We wrote down in advance what result would make us abandon it. Then a one-line rule beat it twenty-two times over, p equals 0.002. So we abandoned it.&rdquo;</span></div>
+      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;I built this project around conformal prediction &mdash; it&rsquo;s what the 2026 literature is full of, four papers from July alone. I wrote down in advance what result would make me abandon it. Then a one-line rule beat it twenty-two times over, p equals 0.002. So I abandoned it.&rdquo;</span></div>
       <div class="line"><span class="lbl l-do">Do</span><span>Switch to the terminal. <code>git log --oneline</code>.</span></div>
-      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;The protocol was frozen and hashed before any result existed. The kill test is in the commits. So is the retraction of one of our own headlines &mdash; and so is the day we found our baseline had no queue in it and cut our own number from twenty-eight percent to eight.&rdquo;</span></div>
+      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;The protocol was frozen and hashed before any result existed. The kill test is in the commits. So is the retraction of one of my own headlines &mdash; and so is the day I found my baseline had no queue in it and cut my own number from twenty-eight percent to eight.&rdquo;</span></div>
     </div></div>
 
     <div class="beat"><div class="t">4:30</div><div>
-      <h3>The half that needs none of our code</h3>
-      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;Separately from any of that &mdash; here is where your model is blind. Product C is ten percent of traffic and four times the error rate of your main product. Credit cards are a quarter of traffic and thirty-eight percent of the money you lose. The biggest tenth of transactions carries twice its share. You can act on that tomorrow and adopt nothing of ours.&rdquo;</span></div>
+      <h3>The half that needs none of my code</h3>
+      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;Separately from any of that &mdash; here is where your model is blind. Product C is ten percent of traffic and four times the error rate of your main product. Credit cards are a quarter of traffic and thirty-eight percent of the money you lose. The biggest tenth of transactions carries twice its share. You can act on that tomorrow and adopt nothing of mine.&rdquo;</span></div>
       <div class="line"><span class="lbl l-do">Do</span><span>Scroll to the blindness table on the dashboard.</span></div>
     </div></div>
 
@@ -160,9 +160,9 @@ tr.win td{background:var(--accent-soft)}
 
     <div class="beat"><div class="t">5:35</div><div>
       <h3>Limitations, unprompted</h3>
-      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;Below about 0.1% fraud it doesn&rsquo;t work at all &mdash; we tried a second dataset and it failed at every setting. The rule was written as a strawman and it won, so the signal space is barely explored. And our own baseline is beatable by about half a percent, which we found ourselves and put in the write-up.&rdquo;</span></div>
-      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;And the deepest one: every number I&rsquo;ve shown you is an offline replay. A transaction you block never acquires an outcome, so you can never fully verify this in production. That&rsquo;s the selective-labels problem, it&rsquo;s in the write-up, and no offline study escapes it &mdash; ours included.&rdquo;</span></div>
-      <div class="line"><span class="lbl l-never">Never</span><span class="never-txt">Do not claim the &plusmn;50% cost sweep holds for our rule. It was only ever run on the conformal arm. See the question below.</span></div>
+      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;Below about 0.1% fraud it doesn&rsquo;t work at all &mdash; I tried a second dataset and it failed at every setting. The rule was written as a strawman and it won, so the signal space is barely explored. And my own baseline is beatable by about half a percent, which I found myself and put in the write-up.&rdquo;</span></div>
+      <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;And the deepest one: every number I&rsquo;ve shown you is an offline replay. A transaction you block never acquires an outcome, so you can never fully verify this in production. That&rsquo;s the selective-labels problem, it&rsquo;s in the write-up, and no offline study escapes it &mdash; mine included.&rdquo;</span></div>
+      <div class="line"><span class="lbl l-never">Never</span><span class="never-txt">Do not claim the &plusmn;50% cost sweep holds for my rule. It was only ever run on the conformal arm. See the question below.</span></div>
     </div></div>
 
     <div class="beat"><div class="t">5:50</div><div>
@@ -179,21 +179,21 @@ tr.win td{background:var(--accent-soft)}
 
   <div class="tw"><table>
     <thead><tr><th>queue policy</th><th>1%</th><th>2%</th><th>5%</th><th>10%</th></tr></thead><tbody>
-    <tr class="win"><td class="nm">nearest the cost-optimal cut &mdash; ours</td><td class="n">+219,440</td><td class="n">+405,514</td><td class="n">+798,331</td><td class="n">+1,072,836</td></tr>
+    <tr class="win"><td class="nm">nearest the cost-optimal cut &mdash; mine</td><td class="n">+219,440</td><td class="n">+405,514</td><td class="n">+798,331</td><td class="n">+1,072,836</td></tr>
     <tr><td class="nm">most suspicious first</td><td class="n neg">&minus;89,329</td><td class="n neg">&minus;15,091</td><td class="n">+577,447</td><td class="n">+1,038,038</td></tr>
     <tr><td class="nm">biggest amount first</td><td class="n">+1,899</td><td class="n">+108,327</td><td class="n">+128,600</td><td class="n">+63,451</td></tr>
     <tr><td class="nm">most rupees at stake</td><td class="n neg">&minus;87,962</td><td class="n neg">&minus;75,921</td><td class="n">+117,620</td><td class="n">+101,915</td></tr>
     </tbody></table></div>
 
   <div class="tw"><table>
-    <thead><tr><th>capacity</th><th>best rival</th><th>our advantage</th><th>% of loss</th></tr></thead><tbody>
+    <thead><tr><th>capacity</th><th>best rival</th><th>my advantage</th><th>% of loss</th></tr></thead><tbody>
     <tr><td>1%</td><td>biggest amount first</td><td class="n">+&#8377;217,542</td><td class="n">5.8%</td></tr>
     <tr class="win"><td>2%</td><td>biggest amount first</td><td class="n">+&#8377;297,187</td><td class="n">7.9%</td></tr>
     <tr><td>5%</td><td>most suspicious first</td><td class="n">+&#8377;220,884</td><td class="n">5.9%</td></tr>
     <tr><td>10%</td><td>most suspicious first</td><td class="n">+&#8377;34,798</td><td class="n">0.9%</td></tr>
     </tbody></table></div>
 
-  <p class="ss" style="margin-bottom:10px">Where the model is blind &mdash; requires adopting nothing of ours:</p>
+  <p class="ss" style="margin-bottom:10px">Where the model is blind &mdash; requires adopting nothing of mine:</p>
   <div class="tw"><table>
     <thead><tr><th>segment</th><th>share</th><th>error rate</th><th>share of &#8377; lost</th><th>concentration</th></tr></thead><tbody>
     <tr class="win"><td class="nm">ProductCD C</td><td class="n">10.3%</td><td class="n">10.61%</td><td class="n">19.4%</td><td class="n">1.9&times;</td></tr>
@@ -214,7 +214,7 @@ tr.win td{background:var(--accent-soft)}
     <tr><td>Error concentration, escalated 10% vs rest</td><td class="n">17.05% vs 1.98% &mdash; 8.6&times;</td></tr>
     <tr><td>Share of all error value captured @ 10%</td><td class="n">46.8%</td></tr>
     <tr><td>Concentration across scorers (logreg / rf / lgbm)<br><span style="color:var(--never)">Block 11 &mdash; recorded but not reproducible</span></td><td class="n">0.7&times; &rarr; 1.1&times; &rarr; 8.6&times;</td></tr>
-    <tr><td>Our baseline&rsquo;s own headroom (disclosed)</td><td class="n">a flat 0.10 cut beats it by &#8377;22,709 (0.6%)</td></tr>
+    <tr><td>My baseline&rsquo;s own headroom (disclosed)</td><td class="n">a flat 0.10 cut beats it by &#8377;22,709 (0.6%)</td></tr>
     <tr><td>Base model PR-AUC / Precision@2% / ROC-AUC</td><td class="n">0.5233 &middot; 0.6803 &middot; 0.8964</td></tr>
     <tr><td>Marginal conformal coverage / on fraud</td><td class="n">0.891 / 0.139</td></tr>
     <tr><td>Test set</td><td class="n">110,377 txns &middot; 3,732 fraud &middot; &#8377;15.2M volume</td></tr>
@@ -228,23 +228,23 @@ tr.win td{background:var(--accent-soft)}
   <div class="qa">
 
     <div class="q"><p class="ask">Six to eight percent? That&rsquo;s not much.</p>
-    <p class="ans"><strong>It is 6&ndash;8% of realised fraud loss for a config change on top of the model you already run</strong>, with no retraining, no new labels, and 14 microseconds of latency. And it is measured against the policy you are running <em>today</em>, not against a strawman. We had a 28% number; it compared against a baseline with no queue at all, we decided that was dishonest, and we cut it ourselves.</p>
+    <p class="ans"><strong>It is 6&ndash;8% of realised fraud loss for a config change on top of the model you already run</strong>, with no retraining, no new labels, and 14 microseconds of latency. And it is measured against the policy you are running <em>today</em>, not against a strawman. I had a 28% number; it compared against a baseline with no queue at all, I decided that was dishonest, and I cut it myself.</p>
     <p class="pin">Block 12 &middot; RESULTS &sect;0</p></div>
 
     <div class="q"><p class="ask">Your winning method is one line. Where is the contribution?</p>
-    <p class="ans"><strong>The measurement, the negative result, and the blindness map &mdash; not the method.</strong> Nobody had priced queue <em>composition</em> against a cost-optimal threshold under a hard capacity limit on real payments. We did, we showed the two most common policies lose money at realistic capacity, and we showed the sophisticated alternative loses too &mdash; after pre-registering the test that could show it. We are not claiming the rule is novel. It is one line.</p>
+    <p class="ans"><strong>The measurement, the negative result, and the blindness map &mdash; not the method.</strong> Nobody had priced queue <em>composition</em> against a cost-optimal threshold under a hard capacity limit on real payments. I did, I showed the two most common policies lose money at realistic capacity, and I showed the sophisticated alternative loses too &mdash; after pre-registering the test that could show it. I am not claiming the rule is novel. It is one line.</p>
     <p class="pin">Block 12 &middot; Block 9 &middot; 10 seeds &middot; p = 0.0020</p></div>
 
-    <div class="q"><p class="ask">We already sort our queue by risk score. Isn&rsquo;t that basically the same thing?</p>
+    <div class="q"><p class="ask">I already sort my queue by risk score. Isn&rsquo;t that basically the same thing?</p>
     <p class="ans">No, and that is the whole result. At 1% capacity sorting by score <strong>loses &#8377;89,329</strong>; at 2% it loses &#8377;15,091. It sends analysts to cases the model is already confident about, where a human adds cost and changes no decision. The cases worth a human are the ones sitting <em>near the cut</em>, not the ones at the top of the ranking.</p>
     <p class="pin">Block 12 &middot; the score row of the first table</p></div>
 
     <div class="q"><p class="ask">Isn&rsquo;t this just DAUNT, or the July conformal papers?</p>
-    <p class="ans">We cite all of them first, and we tested DAUNT&rsquo;s signal as an arm rather than ignoring it. None of those papers measures rupee benefit against a cost-optimal threshold under a finite queue, and none reports a signal <em>losing</em>. <strong>Our result contradicts theirs</strong>: they report the conformal fix winning; on payments with a real capacity limit it doesn&rsquo;t. Our <code>disagree</code> arm is a boosting-stage-spread proxy, not a reimplementation of DAUNT &mdash; say that if pressed.</p>
+    <p class="ans">I cite all of them first, and I tested DAUNT&rsquo;s signal as an arm rather than ignoring it. None of those papers measures rupee benefit against a cost-optimal threshold under a finite queue, and none reports a signal <em>losing</em>. <strong>My result contradicts theirs</strong>: they report the conformal fix winning; on payments with a real capacity limit it doesn&rsquo;t. My <code>disagree</code> arm is a boosting-stage-spread proxy, not a reimplementation of DAUNT &mdash; say that if pressed.</p>
     <p class="pin">RESULTS &sect;2 prior-art table</p></div>
 
     <div class="q"><p class="ask">Why not just use Vulcan?</p>
-    <p class="ans">This sits on top of Vulcan and never retrains anything. It takes a score and decides what a human should see. <strong>We have no evidence about Vulcan and cannot get any</strong> &mdash; we have never seen its scores. What we can say is that the effect grows as the scorer improves, 0.7&times; to 1.1&times; to 8.6&times; across three base models, and that your own published material describes an alert budget and roughly 175 human review hours a month. The problem exists there. The effect size is an afternoon&rsquo;s experiment.</p>
+    <p class="ans">This sits on top of Vulcan and never retrains anything. It takes a score and decides what a human should see. <strong>I have no evidence about Vulcan and cannot get any</strong> &mdash; I have never seen its scores. What I can say is that the effect grows as the scorer improves, 0.7&times; to 1.1&times; to 8.6&times; across three base models, and that your own published material describes an alert budget and roughly 175 human review hours a month. The problem exists there. The effect size is an afternoon&rsquo;s experiment.</p>
     <p class="pin">Block 11 &middot; n = 3, two of them broken, and no script was ever committed &mdash; say so if pressed</p></div>
 
     <div class="q"><p class="ask">Why not just raise the threshold, or block more?</p>
@@ -252,7 +252,7 @@ tr.win td{background:var(--accent-soft)}
     <p class="pin">73.4% vs 49.7% recall; 0.86% vs 1.85% FPR</p></div>
 
     <div class="q"><p class="ask">Are your cost constants invented?</p>
-    <p class="ans">Declared, not measured, and stated as such: &#8377;1,500 chargeback fee, 25% margin, &#8377;250 goodwill, &#8377;40 per review, 5% analyst error. <strong>Be careful how you answer the robustness half of this.</strong> We swept all four &plusmn;50% on the <em>conformal</em> arm, where three of the four flipped sign &mdash; that is one of the reasons we dropped it. <strong>We never ran that sweep on the winning rule.</strong> If asked whether our headline is cost-robust, the honest answer is that we did not measure it, and it is a one-line change to the Block 9 script to find out.</p>
+    <p class="ans">Declared, not measured, and stated as such: &#8377;1,500 chargeback fee, 25% margin, &#8377;250 goodwill, &#8377;40 per review, 5% analyst error. <strong>Be careful how you answer the robustness half of this.</strong> I swept all four &plusmn;50% on the <em>conformal</em> arm, where three of the four flipped sign &mdash; that is one of the reasons I dropped it. <strong>I never ran that sweep on the winning rule.</strong> If asked whether my headline is cost-robust, the honest answer is that I did not measure it, and it is a one-line change to the Block 9 script to find out.</p>
     <p class="pin">Block 9 K5 &mdash; conformal only. Do not claim a range for band.</p></div>
 
     <div class="q"><p class="ask">Analyst review isn&rsquo;t free or perfect.</p>
@@ -260,15 +260,15 @@ tr.win td{background:var(--accent-soft)}
     <p class="pin">RESULTS &sect;8</p></div>
 
     <div class="q"><p class="ask">Why not retrain?</p>
-    <p class="ans">Chargeback labels arrive weeks late; our split drops a 7-day window for exactly that reason. During the window that matters, retraining isn&rsquo;t available. Our gate needs no labels to fit at all &mdash; the cutoff is a quantile of an unlabelled ranking. We designed an oracle-retrain arm and <strong>never ran it</strong>, so we can&rsquo;t size the gap.</p>
+    <p class="ans">Chargeback labels arrive weeks late; my split drops a 7-day window for exactly that reason. During the window that matters, retraining isn&rsquo;t available. My gate needs no labels to fit at all &mdash; the cutoff is a quantile of an unlabelled ranking. I designed an oracle-retrain arm and <strong>never ran it</strong>, so I can&rsquo;t size the gap.</p>
     <p class="pin">H5, untested &mdash; say so</p></div>
 
-    <div class="q"><p class="ask">How do we know your baseline isn&rsquo;t weak?</p>
-    <p class="ans">We went looking for that ourselves. Sweeping fixed thresholds, a flat cut at 0.10 beats our per-transaction Bayes baseline by <strong>&#8377;22,709 &mdash; 0.6% in our favour</strong>. Two things keep it honest: 0.10 was found by sweeping the <em>test set</em>, which our own method never got, so 0.6% is an upper bound; and the escalation effect is <strong>47&times; larger</strong> than the gap. It&rsquo;s in the write-up. Report it before anyone finds it.</p>
+    <div class="q"><p class="ask">How do I know your baseline isn&rsquo;t weak?</p>
+    <p class="ans">I went looking for that myself. Sweeping fixed thresholds, a flat cut at 0.10 beats my per-transaction Bayes baseline by <strong>&#8377;22,709 &mdash; 0.6% in my favour</strong>. Two things keep it honest: 0.10 was found by sweeping the <em>test set</em>, which my own method never got, so 0.6% is an upper bound; and the escalation effect is <strong>47&times; larger</strong> than the gap. It&rsquo;s in the write-up. Report it before anyone finds it.</p>
     <p class="pin">Block 10 &middot; RESULTS &sect;0b</p></div>
 
     <div class="q"><p class="ask">ROC-AUC 0.896 but PR-AUC 0.523?</p>
-    <p class="ans">Same model, same test set. At 3.4% fraud the false-positive axis is dominated by the negative class, so large swings in absolute false positives barely move ROC. We never report accuracy &mdash; it would read 96.6% for a model that approves everything.</p>
+    <p class="ans">Same model, same test set. At 3.4% fraud the false-positive axis is dominated by the negative class, so large swings in absolute false positives barely move ROC. I never report accuracy &mdash; it would read 96.6% for a model that approves everything.</p>
     <p class="pin">Block 1</p></div>
 
     <div class="q"><p class="ask">Does it generalise?</p>
@@ -284,20 +284,20 @@ tr.win td{background:var(--accent-soft)}
     <p class="ans">The review queue is the one mechanism that generates outcomes for cases the model
     wanted to reject &mdash; so it is a partial window into the blocked region. But it reaches the cases
     near the cut, never the confidently-blocked ones. It also cuts backwards: <strong>IEEE-CIS&rsquo;s own
-    labels are the output of somebody else&rsquo;s prior decision system</strong>, so the fraud we can measure
+    labels are the output of somebody else&rsquo;s prior decision system</strong>, so the fraud I can measure
     is the fraud that system let through.</p>
     <p class="pin">RESULTS &sect;8 &middot; say this before a judge does &mdash; unprompted, it is worth more than any number in the deck</p></div>
 
     <div class="q"><p class="ask">Did you tune anything to get this?</p>
-    <p class="ans">The protocol was frozen and hashed before results existed; <code>results/protocol.lock</code> holds the hash and blocks refuse to run if a constant moved. The one change is a recorded amendment with its prediction written down <em>beforehand</em>. When a sweep later revealed a better &alpha; we did <strong>not</strong> switch to it, because reading an argmin off a test curve is fitting to the test set. And the winning rule was written as a strawman &mdash; we did not tune it, it simply won.</p>
+    <p class="ans">The protocol was frozen and hashed before results existed; <code>results/protocol.lock</code> holds the hash and blocks refuse to run if a constant moved. The one change is a recorded amendment with its prediction written down <em>beforehand</em>. When a sweep later revealed a better &alpha; I did <strong>not</strong> switch to it, because reading an argmin off a test curve is fitting to the test set. And the winning rule was written as a strawman &mdash; I did not tune it, it simply won.</p>
     <p class="pin">config.yaml amendments[0] &middot; protocol.lock &middot; git log</p></div>
 
     <div class="q"><p class="ask">What would have made you abandon this?</p>
-    <p class="ans">Five conditions, written down before the run. <strong>Four fired.</strong> K1 was the one that would have killed the economics; it held. K3 killed conformal as the method, and we changed the project rather than the test.</p>
+    <p class="ans">Five conditions, written down before the run. <strong>Four fired.</strong> K1 was the one that would have killed the economics; it held. K3 killed conformal as the method, and I changed the project rather than the test.</p>
     <p class="pin">RESULTS &sect;1 kill table</p></div>
 
     <div class="q"><p class="ask">Anything you got wrong?</p>
-    <p class="ans">Two hypotheses refuted. One of our own headlines retracted after we found it was scoring itself on the cells it had calibrated on. Five bugs, two of which would have silently corrupted every downstream number. And we cut our own headline from 28% to 8% when we realised the baseline had no queue in it. <strong>That record is the submission</strong>, not a blemish on it.</p>
+    <p class="ans">Two hypotheses refuted. One of my own headlines retracted after I found it was scoring itself on the cells it had calibrated on. Five bugs, two of which would have silently corrupted every downstream number. And I cut my own headline from 28% to 8% when I realised the baseline had no queue in it. <strong>That record is the submission</strong>, not a blemish on it.</p>
     <p class="pin">RESULTS &sect;6, &sect;7</p></div>
 
   </div>
@@ -307,7 +307,7 @@ tr.win td{background:var(--accent-soft)}
   <div class="sh"><h2>If something breaks</h2></div>
   <div class="call"><p class="cl">Dashboard won&rsquo;t open</p>
   <p>Open <code>results\figures\graph5_triage.png</code>. Left panel is the four queue policies against
-  capacity; right panel is our advantage over the best rival at each capacity. You can give the
+  capacity; right panel is my advantage over the best rival at each capacity. You can give the
   entire talk from it. Failing that, the tables in <code>RESULTS.md</code> &sect;0 carry it.</p></div>
   <div class="call"><p class="cl">Build refuses with a missing-gate error</p>
   <p>You skipped <code>measure_gate.py</code>. Run it, then <code>build_dashboard.py</code> again.</p></div>
@@ -319,9 +319,9 @@ tr.win td{background:var(--accent-soft)}
   <p>Do not say the method is novel &mdash; it is one line. Do not say conformal is your method &mdash; it is
   the thing that lost. Do not say 28%. Do not claim a cost-robustness range for the winning rule.
   Do not extrapolate to Razorpay&rsquo;s TPV. The true version is stronger:
-  <em>we pre-registered a test that could destroy our own project, it fired, we shipped the result
-  anyway &mdash; and then we cut our own headline by a factor of three when we found our baseline
-  was too kind to us.</em></p></div>
+  <em>I pre-registered a test that could destroy my own project, it fired, I shipped the result
+  anyway &mdash; and then I cut my own headline by a factor of three when I found my baseline
+  was too kind to me.</em></p></div>
 </section>
 
 </main></div>

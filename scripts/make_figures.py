@@ -32,16 +32,16 @@ import numpy as np
 
 from dhruva import config
 
-# Ours first so it wins the legend order; the two that go negative are the point of the panel.
+# Mine first so it wins the legend order; the two that go negative are the point of the panel.
 STYLE = {
-    "band":   ("#0A6570", "-",  "nearest the cost-optimal cut  (ours)"),
+    "band":   ("#0A6570", "-",  "nearest the cost-optimal cut  (mine)"),
     "score":  ("#9C382C", "--", "most suspicious first  (the obvious policy)"),
     "amount": ("#B8860B", "--", "biggest amount first"),
     "stake":  ("#8A9AA0", "--", "most rupees at stake"),
 }
 
 SHORT = {"amount": "amount-sort", "score": "score-sort",
-         "stake": "stake-sort", "band": "ours"}
+         "stake": "stake-sort", "band": "mine"}
 
 
 def main() -> int:

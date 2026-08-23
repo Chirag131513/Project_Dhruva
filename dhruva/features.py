@@ -15,7 +15,7 @@ Forter's scripted-mode measurements). Every masking decision traces to one of th
 
 Block V is NOT ablated even though it plausibly contains behavioural derivatives, because its
 provenance is undocumented. Ablating opaque features would make the manipulation unfalsifiable.
-The cost of that choice is that some behavioural signal survives tau, so any degradation we
+The cost of that choice is that some behavioural signal survives tau, so any degradation I
 measure is a LOWER BOUND -- which is the conservative direction, and must be stated as such.
 
 ENCODING IS FITTED ON TRAIN ONLY

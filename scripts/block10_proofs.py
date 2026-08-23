@@ -9,8 +9,8 @@ both premises bear on the current claim unchanged):
   A  the baseline is the model USED WELL, not a hobbled strawman
   B  the escalated cases are genuinely where the model fails
 
-If A is false we are beating a crippled comparison. If B is false, escalation is arbitrary and
-the gain is luck. Both are cheap to test and one of them came back partly against us.
+If A is false I am beating a crippled comparison. If B is false, escalation is arbitrary and
+the gain is luck. Both are cheap to test and one of them came back partly against me.
 """
 
 from __future__ import annotations
@@ -46,19 +46,19 @@ def main() -> int:
     amt = sp.test[AMOUNT].to_numpy(dtype=float)
     n = len(y)
 
-    # ---- A: is our baseline the model at its best? ---------------------------------------
+    # ---- A: is my baseline the model at its best? ---------------------------------------
     base = cost.realised_cost(cost.decide_bayes(p, amt, costs), y, amt, costs)["total"]
     print("=" * 76)
     print("A  is the baseline the model USED WELL, or a strawman?")
     print("=" * 76)
-    print(f"\n{'fixed threshold':>16}{'realised loss':>16}{'vs ours':>14}")
+    print(f"\n{'fixed threshold':>16}{'realised loss':>16}{'vs mine':>14}")
     print("-" * 76)
     sweep = {}
     for t in FIXED:
         c = cost.realised_cost(np.where(p > t, BLOCK, APPROVE), y, amt, costs)["total"]
         sweep[t] = c
         print(f"{t:>16.3f}{c:>16,.0f}{c - base:>+14,.0f}")
-    print(f"{'per-transaction':>16}{base:>16,.0f}      <- ours")
+    print(f"{'per-transaction':>16}{base:>16,.0f}      <- mine")
 
     bt = min(sweep, key=sweep.get)
     gap = base - sweep[bt]
@@ -66,13 +66,13 @@ def main() -> int:
     if gap > 0:
         print(f"  OUR BASELINE IS Rs{gap:,.0f} WORSE ({gap/base:.1%}) than that fixed cutoff.")
         print("  Report this. The per-transaction threshold is optimal only under perfectly")
-        print("  calibrated probabilities; ours has ECE 0.0039, close but not exact. Note also")
-        print("  that 0.10 was selected by sweeping the TEST set -- hindsight our own method")
-        print("  never got -- so this is an upper bound on how favourable our baseline is.")
+        print("  calibrated probabilities; mine has ECE 0.0039, close but not exact. Note also")
+        print("  that 0.10 was selected by sweeping the TEST set -- hindsight my own method")
+        print("  never got -- so this is an upper bound on how favourable my baseline is.")
     else:
-        print(f"  ours is Rs{-gap:,.0f} better than any fixed cutoff tried.")
+        print(f"  mine is Rs{-gap:,.0f} better than any fixed cutoff tried.")
 
-    # ---- B: do the model's errors concentrate where we escalate? --------------------------
+    # ---- B: do the model's errors concentrate where I escalate? --------------------------
     stake = np.maximum(p * costs.c_fn(amt), (1 - p) * costs.c_fp(amt))
     order = -np.abs(p - costs.bayes_threshold(amt)) * 1e6 + stake / 1e6
     k = int(round(CAP * n))
@@ -83,7 +83,7 @@ def main() -> int:
     err_rs = np.where(y == 1, costs.c_fn(amt), costs.c_fp(amt)) * wrong
 
     print("\n" + "=" * 76)
-    print(f"B  does the model actually FAIL on the {CAP:.0%} we escalate?")
+    print(f"B  does the model actually FAIL on the {CAP:.0%} I escalate?")
     print("=" * 76)
     r_in, r_out = wrong[esc].mean(), wrong[~esc].mean()
     print(f"\n  error rate inside the escalated {CAP:.0%} : {r_in:>7.2%}")

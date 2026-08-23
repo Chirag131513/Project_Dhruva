@@ -7,7 +7,7 @@ This script never reads, writes, or transports credentials; it only uses whateve
 already cached for the current user.
 
 It fetches only train_transaction.csv and train_identity.csv. The competition's test files carry
-no public labels, so they are useless here -- our test period comes from splitting `train`
+no public labels, so they are useless here -- my test period comes from splitting `train`
 chronologically, which is the correct construction anyway.
 """
 

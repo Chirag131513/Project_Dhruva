@@ -15,7 +15,7 @@ and are hashed into `results/protocol.lock`.
 > empirical coverage without retraining the base model, at a measurable rupee benefit?
 
 Three phrasings are deliberate. **"Behavioural signal loss"**, not "AI-agent traffic": the shift
-is what we manipulate, agentic commerce is why it matters. **Calibration vs discrimination**:
+is what I manipulate, agentic commerce is why it matters. **Calibration vs discrimination**:
 "does removing features hurt?" is trivially yes. **"Target empirical coverage"**, not "error
 guarantee": conformal validity holds under exchangeability, drift violates it, and that is why
 ACI is in the design.
@@ -87,10 +87,10 @@ the label would manufacture the result. Seeded and logged.
 
 **Claim discipline.** May not say: *"this is what AI-agent payments look like."* May say: *"τ is
 a controlled proxy for the progressive loss of human-specific behavioural and device signal that
-industry reports under agent-initiated transactions. We manipulate signal availability, not
+industry reports under agent-initiated transactions. I manipulate signal availability, not
 agent-ness. Transactions and labels are real."*
 
-**Independent validation, required.** Every headline result must also reproduce on two shifts we
+**Independent validation, required.** Every headline result must also reproduce on two shifts I
 did not construct: (a) the natural identity-absent sub-population (E0), (b) IEEE-CIS's genuine
 six-month temporal drift with τ off (E1). Run these **first**.
 
@@ -199,10 +199,10 @@ E0–E4 are the submission. **Run E0 and E1 before E2** — they make everything
 |-----------|-----|
 | "AI-agent traffic" | "agent-induced behavioural signal shift" (method) / "agent-initiated payments" (motivation) |
 | "error guarantee" | "target empirical coverage under stated assumptions" |
-| "nobody has done this" | "we found no public work measuring this failure mode" |
-| "we solve RBI compliance" | "emits model-risk evidence relevant to emerging governance expectations" |
+| "nobody has done this" | "I found no public work measuring this failure mode" |
+| "I solve RBI compliance" | "emits model-risk evidence relevant to emerging governance expectations" |
 | "LIVE" | "TEST REPLAY" — it is precomputed held-out data |
-| "we built a fraud detector" | "we built the layer that tells you when your detector can still be trusted" |
+| "I built a fraud detector" | "I built the layer that tells you when your detector can still be trusted" |
 
 RBI framing is one supporting sentence, late. The primary story is technical reliability plus
 merchant economics.

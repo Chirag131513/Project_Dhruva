@@ -20,7 +20,7 @@ because the legitimate class dominates the average. Conditioning the quantile on
 forces a separate promise per class. This is the same failure as reporting one aggregate number
 when the per-bin numbers are what matter.
 
-We extend the cell definition beyond class alone, to (population, class), where population is
+I extend the cell definition beyond class alone, to (population, class), where population is
 derived from signal availability. That extension is the contribution; the Mondrian mechanism
 itself is standard and is not claimed as novel.
 
@@ -45,7 +45,7 @@ def nonconformity(proba_fraud: np.ndarray) -> np.ndarray:
     """Nonconformity scores s(x, y) = 1 - p_hat(y | x), shape (n, 2).
 
     Larger = the label conforms less well to what the model expected. `proba_fraud` is the
-    base scorer's P(fraud | x); we form both columns so callers never re-derive the convention.
+    base scorer's P(fraud | x); I form both columns so callers never re-derive the convention.
     """
     p = np.asarray(proba_fraud, dtype=float).ravel()
     if p.ndim != 1:
