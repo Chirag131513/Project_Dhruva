@@ -216,7 +216,7 @@ tr.win td{background:var(--accent-soft)}
     <tr class="win"><td>&plusmn;50% cost sweep, all four constants<br><span style="color:var(--ink-3)">conformal flips on 3 of 4; mine on none</span></td><td class="n">+&#8377;513,576 &hellip; +&#8377;1,409,008</td></tr>
     <tr><td>Error concentration, escalated 10% vs rest</td><td class="n">17.05% vs 1.98% &mdash; 8.6&times;</td></tr>
     <tr><td>Share of all error value captured @ 10%</td><td class="n">46.8%</td></tr>
-    <tr><td>Concentration across scorers (logreg / rf / lgbm)<br><span style="color:var(--never)">Block 11 &mdash; recorded but not reproducible</span></td><td class="n">0.7&times; &rarr; 1.1&times; &rarr; 8.6&times;</td></tr>
+    <tr><td>Concentration across scorers (logreg / rf / lgbm)<br><span style="color:var(--ink-3)">Block 11 &mdash; n = 3, two of them broken models</span></td><td class="n">0.7&times; &rarr; 1.1&times; &rarr; 8.6&times;</td></tr>
     <tr><td>My baseline&rsquo;s own headroom (disclosed)</td><td class="n">a flat 0.10 cut beats it by &#8377;22,709 (0.6%)</td></tr>
     <tr><td>Base model PR-AUC / Precision@2% / ROC-AUC</td><td class="n">0.5233 &middot; 0.6803 &middot; 0.8964</td></tr>
     <tr><td>Marginal conformal coverage / on fraud</td><td class="n">0.891 / 0.139</td></tr>
@@ -248,7 +248,7 @@ tr.win td{background:var(--accent-soft)}
 
     <div class="q"><p class="ask">Why not just use Vulcan?</p>
     <p class="ans">This sits on top of Vulcan and never retrains anything. It takes a score and decides what a human should see. <strong>I have no evidence about Vulcan and cannot get any</strong> &mdash; I have never seen its scores. What I can say is that the effect grows as the scorer improves, 0.7&times; to 1.1&times; to 8.6&times; across three base models, and that your own published material describes an alert budget and roughly 175 human review hours a month. The problem exists there. The effect size is an afternoon&rsquo;s experiment.</p>
-    <p class="pin">Block 11 &middot; n = 3, two of them broken, and no script was ever committed &mdash; say so if pressed</p></div>
+    <p class="pin">Block 11 &middot; n = 3, and two of the three are broken models &mdash; say so if pressed. Directional, not proof</p></div>
 
     <div class="q"><p class="ask">Why not just raise the threshold, or block more?</p>
     <p class="ans">That&rsquo;s the baseline, and it&rsquo;s already cost-optimal per transaction. It cannot do better without trading recall against false positives. <strong>Escalation escapes that trade-off</strong> &mdash; at 10% capacity both improve at once, because a human resolves the case instead of the system guessing.</p>

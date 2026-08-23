@@ -4,9 +4,10 @@
 
 State: Blocks 0–12 complete on real IEEE-CIS. 22 tests pass. Deployable API exists
 (`dhruva/gate.py`), latency measured, dashboard built. **The science is finished — do not run
-more experiments.** The documentation debt is **cleared** (see the bottom); two provenance gaps
-were found while clearing it, one of which is worth a single 25-minute re-run if you want the
-strongest possible answer to the cost-assumptions question.
+more experiments.** The documentation debt is **cleared** (see the bottom). Two provenance gaps
+were found while clearing it — claims the repo could not regenerate — and **both have since been
+closed by measurement**, with the original numbers reproducing exactly. **Every block in the
+write-up now runs.**
 
 **Step one is still to read the submission form.** Nobody has.
 
@@ -116,10 +117,11 @@ the places that explicitly retire it.
 
 22 tests still pass.
 
-### Two provenance gaps found while migrating — one closed, one open
+### Two provenance gaps found while migrating — both now closed
 
 Neither was on the list above. Both were claims the repo could not back, and both were sitting in
-the presentation layer. The first has since been measured; the second has not.
+the presentation layer. Both have since been measured, and in both cases the original numbers
+turned out to be right — what was missing was the evidence, which is not the same thing.
 
 1. ~~**Band's ±50% cost sweep was never run.**~~ **CLOSED — run 23 August 2026.** The K5 loop
    hardcoded `ambiguity("conformal", ...)`, so every persisted sweep number was the conformal
@@ -135,9 +137,15 @@ the presentation layer. The first has since been measured; the second has not.
    baseline rather than over the best rival **queue policy**, which is what §0 reports.
    The re-run also reproduced every other Block 9 figure **bit for bit** — `b1_mean`, K3's delta,
    CI and p-value, all sixteen net cells, and conformal's own sweep.
-2. **Block 11 has no script.** Commit `881438b` added `results/block11_concentration.json` and the
-   §0b prose and nothing else. The transfer table (0.7× → 1.1× → 8.6×) cannot be regenerated or
-   audited. Flagged in `RESULTS.md` §12, §10, `START_HERE` Part 2, and the runbook.
+2. ~~**Block 11 has no script.**~~ **CLOSED — rewritten 24 August 2026.** Commit `881438b` added
+   `results/block11_concentration.json` and the §0b prose and nothing else, so the transfer table
+   (0.7× → 1.1× → 8.6×) could not be regenerated or audited. `scripts/block11_concentration.py`
+   now rebuilds it, and regenerating **reproduced all six fields on all three scorers exactly** —
+   every digit of PR-AUC, both error rates, the ratio, and both capture shares. The published
+   numbers stand; only their provenance changed. It shares its `concentration()` definition with
+   Block 10 part B so the two cannot silently disagree, and its new `n_wrong` /
+   `err_value_total` fields independently corroborate §0b (lgbm: 3,847 errors, ₹3,718,531).
+   The caveat is unchanged and still leads: n = 3, and two of the three are **broken** models.
 
 Neither was run here: the standing instruction was **do not run more experiments**, and (1) is an
 experiment. Both are recorded as gaps instead, which is what the rest of the project does.

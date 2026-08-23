@@ -117,17 +117,17 @@ Run them in order. Each prints a table and saves a file.
 | 8 | `python scripts/block8_agnostic.py` | 12 min | The failure gets worse as the model gets better |
 | 9 | `python scripts/block9_triage.py --seeds 10` | 25 min | The kill test that fired — a one-line rule beats conformal 22× |
 | 10 | `python scripts/block10_proofs.py` | 3 min | Tests the two premises. One comes back against me |
-| 11 | *(no script — see below)* | — | Concentration across three scorers: 0.7× → 1.1× → 8.6× |
+| 11 | `python scripts/block11_concentration.py` | 6 min | Does concentration survive a better model? 0.7× → 1.1× → 8.6× |
 | 12 | `python scripts/block12_policies.py --seeds 5` | 15 min | **THE RESULT — the race against the queue policies teams already run** |
 
 **The most important one is Block 12.** If you only run one, run that. Block 9 is the second —
 it is where the kill test fired, and it is the credibility story even though it is no longer the
 headline.
 
-> **Block 11 does not reproduce.** `results/block11_concentration.json` and the RESULTS §0b
-> transfer table exist, but **no script that generates them was ever committed** (commit
-> `881438b` added only the JSON and the prose). Treat those three numbers as recorded but
-> unverifiable until someone rewrites the block. Do not offer to re-run it on stage.
+> **Block 11 used to be unrunnable.** Commit `881438b` added the results file and the §0b prose
+> and no script, so those three numbers could not be regenerated. The block has been rewritten,
+> and re-running it **reproduced all six fields on all three scorers exactly** — the published
+> numbers stand unchanged, only their provenance did. Every block in this table now runs.
 
 ---
 

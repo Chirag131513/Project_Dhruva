@@ -621,7 +621,7 @@ figure as evidence the method works.** The only economically meaningful row is L
 | "nobody has done this" | "I found no public work measuring this failure mode" |
 | "LIVE" | "TEST REPLAY" |
 | "no retraining" | "no gradient-based refitting of the base model" |
-| "my concentration result replicates across models" | Block 11 is **n = 3 with two broken models and no committed script**. Recorded, not reproducible |
+| "my concentration result replicates across models" | Block 11 is **n = 3, and two of the three are broken models**. Reproducible now (`scripts/block11_concentration.py`), but still directional, not proof |
 | "I catch 73% of fraud" *(unqualified)* | "73% **on an offline replay** of a held-out window." Blocked transactions never acquire outcomes, so **no offline number is a production guarantee** — say the words *selective labels* before a judge does (§8) |
 | "this will save Razorpay ₹X" | "here is the experiment that would tell you, and it is an afternoon's work on your data" |
 
@@ -647,8 +647,6 @@ none of them run:
 
 Cheap items that close a stated gap rather than opening a new question — do these first:
 
-- **Rewrite Block 11.** Its results file has no generating script, so the transfer table in §0b
-  cannot be audited or re-run. This is now the only claim in the document with no code behind it.
 - **Sweep the costs on the §0 margin.** §1's sweep covers band's benefit over the *no-queue*
   baseline. The current headline is its margin over the best rival **queue policy**, which
   `block12_policies.py` builds under a single fixed cost vector. Sweeping that would need the
@@ -680,6 +678,7 @@ python scripts/block7_alpha_sweep.py    # curve + ULB failure
 python scripts/block8_agnostic.py       # E7: fix is agnostic, failure scales with model quality
 python scripts/block9_triage.py --seeds 10   # kill test: band beats conformal 22x
 python scripts/block10_proofs.py        # the two premises; the baseline one goes against me
+python scripts/block11_concentration.py # concentration across three scorers: 0.7x -> 1.1x -> 8.6x
 python scripts/block12_policies.py --seeds 5 # THE RESULT: the queue-policy race (§0)
 python -m pytest tests/ -q              # 22 passed
 ```
@@ -693,11 +692,15 @@ python scripts/build_dashboard.py       # writes app/dashboard.html — open it 
 python scripts/make_figures.py          # results/figures/graph5_triage.png
 ```
 
-**Two gaps in this list, stated rather than hidden:**
+**One note on this list, stated rather than hidden:**
 
-- **Block 11 has no script.** `results/block11_concentration.json` and the transfer table in §0b
-  exist, but commit `881438b` added only the JSON and the prose — nothing in the repo regenerates
-  those three rows. They are recorded, not reproducible, until the block is rewritten.
+- **Block 11 had no script for a while.** Commit `881438b` added
+  `results/block11_concentration.json` and the §0b transfer table and nothing else, so those three
+  rows were recorded but not reproducible. `scripts/block11_concentration.py` now rebuilds them,
+  and **regenerating reproduced all six fields on all three scorers exactly** — every digit of
+  PR-AUC, both error rates, the ratio, and both capture shares. The published numbers stand
+  unchanged; only their provenance did. It shares its `concentration()` definition with Block 10
+  part B so the two cannot silently disagree.
 - **`app/console.py` has been deleted.** The Streamlit console was built around the conformal α
   slider that Block 9 retired, so it contradicted §0 — and by the time it was removed it no
   longer ran at all: `export_console.py` had stopped exporting the three `alpha_*` keys it reads,
