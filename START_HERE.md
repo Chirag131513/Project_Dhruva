@@ -29,31 +29,39 @@ You want to see `22 passed`. It takes about 30 seconds. If you see that, everyth
 
 ## Part 1 — Run the demo (this is the only thing you *need*)
 
-Two commands. The first prepares the data the screen needs; the second opens the screen.
+**If `app\dashboard.html` already exists, just double-click it — you are done.** The three
+commands below only rebuild it, and are needed only after the data or experiments change.
 
 ```powershell
 python scripts/export_console.py
 ```
 
-Takes ~2 minutes. It prints four lines like `cap 10%  cost 2,657,816  net +1,060,714`.
-When it says `written results/console_data.json`, it worked.
+~2 min. Prints four lines like `cap 10%  cost 2,657,816  net +1,060,714`.
+
+```powershell
+python scripts/measure_gate.py
+```
+
+~2 min. Measures the deployable Gate end to end and times it. Prints the saving, the p50/p99
+latency, and a real audit record. **`build_dashboard.py` will refuse to run without this.**
 
 ```powershell
 python scripts/build_dashboard.py
 ```
 
-That writes `app\dashboard.html`. **Double-click it.** No server needed — it opens in your
-browser as an ordinary file.
+Writes `app\dashboard.html`. **Double-click it.** No server — it opens as an ordinary file.
 
-**Check the top-right says `TEST REPLAY · IEEE-CIS`.** If it says `DEV DATA`, stop — the
+**Check the top-right says `TEST REPLAY · HELD-OUT DATA`.** If it says `DEV DATA`, stop — the
 real data isn't loading, see Part 6.
 
 ### What you're looking at
 
+- **Pipeline strip:** where the layer sits — your scorer → the gate → approve/review/block.
 - **Top:** a slider for **analyst review capacity**. The only control that matters.
 - **Tiles:** loss, money saved, false-positive rate, fraud recall, escalation rate.
 - **Left panel:** four bars racing — the four ways of choosing which cases a human sees.
 - **Right panel:** how each signal scales as capacity grows.
+- **Integration panel:** the real three-line API, measured latency, and an audit record.
 - **Bottom:** where the money goes, and a stream of individual decisions.
 
 ### The one thing to do on stage
