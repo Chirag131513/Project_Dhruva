@@ -313,7 +313,25 @@ Levels*, JASA 114(525):223–234, 2019 ([arXiv:1609.00451](https://arxiv.org/abs
 | [Cost-Sensitive CP & HITL Abstention](https://arxiv.org/abs/2607.27143) (Jul 2026) | 15 imbalanced datasets incl. fraud | marginal → 0.5% minority coverage; Mondrian **+61.7 pp** |
 | [A Quiet Failure in Calibrated Virtual Screening](https://arxiv.org/html/2607.06605v1) (Jul 2026) | drug discovery | 90.2% marginal / **64.8% minority**; Mondrian restores; utility model favours the fix |
 | [Class-Conditional CP for Anomaly Detection](https://doi.org/10.3390/make8070190) (Jul 2026) | Azure KPI, Yahoo, NAB | **52.94% → 90.59%** at 1:345 imbalance; agnostic across XGBoost/RF/NN |
-| [arXiv:2607.18088](https://arxiv.org/html/2607.18088v2) (Jul 2026) | action recognition | "marginal coverage hides a per-class collapse" |
+| [The Label Complexity of Class-Conditional Coverage under Distribution Shift](https://arxiv.org/abs/2607.18088) (Han & Qu, Jul 2026) | class-conditional coverage under shift; cross-subject skeleton benchmark | marginal holds near **90%** while the **worst class sits near 70%** |
+
+> **Citation corrections, 24 August 2026.** Every reference in this table was re-checked against
+> source. Three were exact — 2607.27143's *0.5% / +61.7 pp*, 2607.06605's *90.2% / 64.8% / 3.26
+> imbalance ratio*, and `make8070190`'s *52.94% → 90.59% at 1:345* all appear verbatim in their
+> abstracts. **The fourth row was wrong in two ways and is corrected above.**
+>
+> - Its domain was given as *"action recognition"*. The paper is about **class-conditional
+>   coverage under distribution shift**; action recognition is only the benchmark it happens to
+>   demonstrate on.
+> - It carried the phrase *"marginal coverage hides a per-class collapse"* **in quotation marks.
+>   That sentence does not appear in the paper.** It is a fair paraphrase of the actual line —
+>   *"This class specific undercoverage stays hidden behind a single reassuring marginal number"* —
+>   but a paraphrase inside quotation marks is a fabricated quote, which is exactly the failure
+>   this document exists to avoid. Replaced with the paper's own measured numbers.
+>
+> `make8070190`'s *"agnostic across XGBoost/RF/NN"* could not be independently confirmed — the
+> publisher blocks automated fetching and the abstract does not state it. The headline coverage
+> figures are confirmed; treat the model-agnosticism clause as unverified.
 
 **I claim none of that.** My contribution is operational and, in one respect, contrarian:
 
@@ -422,9 +440,15 @@ record = gate.explain(score, amount)                      # audit trail for ever
 re-fits on last week's traffic without waiting for chargebacks to arrive — which matters precisely
 because the labels are the thing that arrives late (§8, and H5).
 
-**Why I measured latency at all.** [arXiv:2607.13078](https://arxiv.org/abs/2607.13078) found
-**0 of 18** fraud-detection papers reporting per-decision latency. Criticising that gap while
-having it myself would be a stone thrown from inside, so I closed it.
+**Why I measured latency at all.** Gabani, *Operational Evidence Gaps for LLMs in Fraud Detection
+and Trust-and-Safety Workflows* ([arXiv:2607.13078](https://arxiv.org/abs/2607.13078), Jul 2026):
+*"Among the 18 fraud and investigation sources, none report clean per-decision latency,
+per-decision dollar cost, or calibration evidence."* Criticising that gap while having it myself
+would be a stone thrown from inside, so I closed it.
+
+*(Be precise if this is quoted at me: those are 18 **sources** on **LLM-based** fraud and
+trust-and-safety workflows, not 18 fraud-detection papers in general. Earlier drafts of this
+section said the latter, which overstated the sweep.)*
 
 Note what the number does *not* cover: this is the **gate's own** latency, on top of whatever the
 base scorer costs. I did not measure the scorer, and it dominates. The honest reading is "the
