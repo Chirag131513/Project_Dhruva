@@ -179,10 +179,11 @@ Full answers are in the Runbook. The short versions:
 - **"Does it save money?"** — Yes: **6–8% of realised loss** over the queue policy a team already
   runs, peaking at **7.9% at 2% capacity**. Not 28% — that compared against a baseline with no
   queue at all, and I retired it.
-- **"Is that robust to your cost assumptions?"** — **Say I didn't measure it.** I swept all four
-  constants ±50% on the *conformal* arm, where three of four flipped sign. **That sweep was never
-  run on the winning rule.** It is a one-line change to `block9_triage.py` to find out, and until
-  someone runs it, claiming robustness is inventing a number.
+- **"Is that robust to your cost assumptions?"** — **Yes, and I measured it.** All four constants
+  swept ±50%: the *conformal* arm flipped sign on three of four — one of the reasons I dropped it —
+  while the winning rule **holds its sign on all four**, ranging +₹513,576 to +₹1,409,008.
+  Be precise about the edges: that is at 10% capacity, single seed, against the *no-queue*
+  baseline. The margin over the best rival **queue policy** is still unswept. Don't overclaim it.
 - **"Did you tune it?"** — No. The setting was frozen and hashed before any result existed;
   `git log` proves it. The one change is recorded as an amendment with its prediction written
   down beforehand.

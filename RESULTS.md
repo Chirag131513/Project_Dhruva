@@ -214,23 +214,45 @@ because the model is weak, but because its failures are findable.
 | **K2** | benefit not monotone in capacity | **FIRED for conformal** (+38,995 → +72,319 → +87,058 → +47,755). Band is monotone. |
 | **K3** | a plain score-band rule ≥ conformal | **FIRED — band *beats* conformal**, Δ = −₹1,013,324, 95% CI [−1,034,124, −990,935], p = 0.0020 |
 | **K4** | ensemble disagreement beats conformal | **FIRED** (+788,055 vs +47,755) |
-| **K5** | sign flips under ±50% cost sweep | **FIRED for conformal** — 3 of 4 constants (`fee_chargeback`, `review_cost`, `goodwill`). **Band was never swept.** See below. |
+| **K5** | sign flips under ±50% cost sweep | **FIRED for conformal** — 3 of 4 constants (`fee_chargeback`, `review_cost`, `goodwill`). **Band, now measured: no flips on any of the four**, range +₹513,576 … +₹1,409,008. |
 
 K3's own test logic was wrong on first write — it checked only for a *tie* and would have
 reported "passed" in exactly the case where conformal is worse. Corrected before the 10-seed run.
 
-> **Correction — the K5 sweep never covered the winning arm.** Earlier versions of this table,
-> of `START_HERE.md` and of the runbook stated "Band: no flips", and the runbook attached a
-> numeric range to it. That was not measured. `scripts/block9_triage.py:220` hardcodes
-> `ambiguity("conformal", ...)` inside the sweep loop, so **every K5 number in
-> `block9_triage.json["sensitivity"]` is the conformal arm's**, and no cost sweep was ever run on
-> `band`. The claim has been struck from all four documents rather than restated more softly.
+> **The band cost sweep, and the correction that preceded it.** For most of this project's life
+> the sweep loop in `scripts/block9_triage.py` hardcoded `ambiguity("conformal", ...)`, so every
+> K5 number it persisted described the **conformal** arm — while this table, `START_HERE.md` and
+> the runbook all asserted "Band: no flips", and the runbook attached the range
+> `+513,576 … +1,409,008` to it. **None of that was reproducible from this repository**, so it
+> was struck rather than restated more softly, and the documents said "not measured" instead.
 >
-> This does not touch §0: the queue-policy result is a comparison *between* policies under one
-> fixed cost vector, and all four policies move together when a constant moves. What is unknown
-> is whether **band's margin over the best rival** holds its sign under ±50% — plausible, since
-> the rivals are scored with the same constants, but unmeasured. Fixing it is a one-line change
-> to line 220 and a re-run of Block 9.
+> **It has now been run.** The loop sweeps both arms; K5 is still *scored* on conformal, because
+> that is the arm it was pre-registered against and repointing a kill condition after seeing
+> results is the exact move this protocol exists to prevent. Band at 10% capacity, single seed:
+>
+> | constant | −50% | base | +50% |
+> |---|---|---|---|
+> | `fee_chargeback` | +513,576 | +1,060,714 | +1,409,008 |
+> | `margin` | +1,031,185 | +1,060,714 | +1,031,435 |
+> | `review_cost` | +1,281,474 | +1,060,714 | +839,954 |
+> | `goodwill` | +678,359 | +1,060,714 | +1,207,971 |
+>
+> **No sign flips on any of the four**, across a range of +₹513,576 to +₹1,409,008 — which is
+> exactly the range the runbook had claimed. **The old number was right and its evidence was
+> missing.** Both halves matter: a correct number with nothing behind it is still not a reportable
+> one, and striking it was correct on the evidence then available.
+>
+> The ordering is rebuilt under each cost vector rather than frozen — band ranks by distance to
+> the Bayes threshold, which moves when a constant moves — so this sweeps the rule as deployed.
+>
+> Two things this still does **not** cover. It is a **single seed** at **10% capacity**, matching
+> K5's pre-registered form. And it sweeps band's margin over the *no-queue* baseline, not over the
+> best rival **queue policy**, which is what §0 now reports. Those move together under a shared
+> cost vector, so a flip is unlikely, but that specific quantity remains unswept.
+>
+> Re-running this also reproduced every other Block 9 figure **identically** — `b1_mean`, K3's
+> delta, its confidence interval, its p-value, all sixteen net-benefit cells, and conformal's own
+> sweep, bit for bit.
 
 ---
 
@@ -594,7 +616,7 @@ figure as evidence the method works.** The only economically meaningful row is L
 | "error guarantee" | "target empirical coverage under stated assumptions" |
 | "I save ₹X of your fraud loss" | "**6–8% more than the queue policy you already run**, at the capacity you actually staff" |
 | "I save 28%" | **retired.** That measured against a baseline with *no queue*. Never say it again |
-| "the result is robust to my cost assumptions" | the ±50% sweep was run on the **conformal** arm only. **Band was never swept** — say "I didn't measure that" |
+| "the result is robust to my cost assumptions" | precise version: **band holds its sign on all four constants under ±50%** (§1) — measured at 10% capacity, single seed, against the *no-queue* baseline. The margin over the best rival **queue policy** is still unswept, so don't stretch it that far |
 | "escalation pays" *(as if it were the finding)* | escalation is what every team already does; **the finding is that the common ways of filling the queue lose money** |
 | "nobody has done this" | "I found no public work measuring this failure mode" |
 | "LIVE" | "TEST REPLAY" |
@@ -623,13 +645,17 @@ none of them run:
   different sets. That is a hypothesis I state, not a result I measured.
 - **Capacity beyond 10%**, to find where the curve saturates.
 
-Two of these are cheap and close a stated gap rather than opening a new question — do them first:
+Cheap items that close a stated gap rather than opening a new question — do these first:
 
-- **Sweep the costs on the winning arm.** `scripts/block9_triage.py:220` hardcodes
-  `ambiguity("conformal", ...)`; parameterise it and re-run. This is the only reason I cannot
-  say whether the headline is cost-robust, and it is one line.
 - **Rewrite Block 11.** Its results file has no generating script, so the transfer table in §0b
-  cannot be audited or re-run.
+  cannot be audited or re-run. This is now the only claim in the document with no code behind it.
+- **Sweep the costs on the §0 margin.** §1's sweep covers band's benefit over the *no-queue*
+  baseline. The current headline is its margin over the best rival **queue policy**, which
+  `block12_policies.py` builds under a single fixed cost vector. Sweeping that would need the
+  same treatment there, and would make the 7.9% itself cost-robust rather than the quantity
+  beneath it.
+
+*(The band cost sweep that used to head this list has been run — see §1.)*
 
 **A counterfactual / blindspot block**, to put a number on the selective-labels gap in §8:
 estimate what the confidently-blocked region actually contains, by treating the review queue as a

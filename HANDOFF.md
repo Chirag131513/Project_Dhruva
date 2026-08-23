@@ -116,19 +116,25 @@ the places that explicitly retire it.
 
 22 tests still pass.
 
-### Two provenance gaps found while migrating — both unresolved
+### Two provenance gaps found while migrating — one closed, one open
 
-Neither was on the list above. Both are claims the repo cannot back, and both were sitting in
-the presentation layer.
+Neither was on the list above. Both were claims the repo could not back, and both were sitting in
+the presentation layer. The first has since been measured; the second has not.
 
-1. **Band's ±50% cost sweep was never run.** `scripts/block9_triage.py:220` hardcodes
-   `ambiguity("conformal", ...)` inside the K5 loop, so every number in
-   `block9_triage.json["sensitivity"]` is the *conformal* arm's. "Band: no flips" was asserted in
-   `RESULTS.md` §1, `START_HERE` Parts 4 and 5, and the runbook — the runbook also carried a range
-   (`+513,576 … +1,409,008`) that **appears nowhere in the repo**. All of it is struck. The docs
-   now say "I did not measure that."
-   **Fix: parameterise line 220 and re-run Block 9.** One line, ~25 min. This is the single
-   highest-value experiment left, because it is the one a judge is most likely to probe.
+1. ~~**Band's ±50% cost sweep was never run.**~~ **CLOSED — run 23 August 2026.** The K5 loop
+   hardcoded `ambiguity("conformal", ...)`, so every persisted sweep number was the conformal
+   arm's while three documents asserted "Band: no flips" and the runbook carried a range
+   (`+513,576 … +1,409,008`) that appeared nowhere in the repo. It was struck as unsupported.
+   The loop now sweeps both arms and it has been re-run at 10 seeds.
+   **Result: band has no sign flips on any of the four constants**, range
+   **+₹513,576 … +₹1,409,008** — *exactly* the struck range. **The old number was right and its
+   evidence was missing.** Striking it was still correct on the evidence available then; a
+   correct number with nothing behind it is not a reportable one.
+   K5 is still *scored* on conformal, the arm it was pre-registered against. Two edges remain,
+   stated in §1: single seed at 10% capacity, and it sweeps the margin over the *no-queue*
+   baseline rather than over the best rival **queue policy**, which is what §0 reports.
+   The re-run also reproduced every other Block 9 figure **bit for bit** — `b1_mean`, K3's delta,
+   CI and p-value, all sixteen net cells, and conformal's own sweep.
 2. **Block 11 has no script.** Commit `881438b` added `results/block11_concentration.json` and the
    §0b prose and nothing else. The transfer table (0.7× → 1.1× → 8.6×) cannot be regenerated or
    audited. Flagged in `RESULTS.md` §12, §10, `START_HERE` Part 2, and the runbook.

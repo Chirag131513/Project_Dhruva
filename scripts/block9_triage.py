@@ -205,22 +205,44 @@ def main() -> int:
         conformal.nonconformity(sc.predict_proba_fraud(X["cal"])), y_cal, seg_c, a_amd,
         min_cell_n=cfg.min_cell_n, class_conditional=True, population_conditional=True)
     sets = conformal.predict_set(conformal.nonconformity(p), seg_t, cal)
-    pct = float(f["cost_sensitivity_pct"]); flips = []
-    print(f"{'constant':<17}{'-50%':>16}{'base':>16}{'+50%':>16}")
-    print("-" * 78)
-    sens = {}
-    for name in ("fee_chargeback", "margin", "review_cost", "goodwill"):
-        row = []
-        for m in (1 - pct, 1.0, 1 + pct):
-            c2 = cost.Costs.from_config(cfg, {name: m})
-            b = cost.realised_cost(cost.decide_bayes(p, amt, c2), y_te, amt, c2)["total"]
-            o = ambiguity("conformal", p, sets, amt, c2, np.random.default_rng(0))
-            row.append(b - run_arm(o, int(round(hi * n)), p, y_te, amt, c2)["total"])
-        sens[name] = row
-        if len({np.sign(v) for v in row if abs(v) > 1e-9}) > 1:
-            flips.append(name)
-        print(f"{name:<17}" + "".join(f"{v:>+16,.0f}" for v in row))
-    print(f"\n  K5  sign flips ................... {'FIRED on ' + ', '.join(flips) if flips else 'passed'}")
+    pct = float(f["cost_sensitivity_pct"])
+    # This loop used to hardcode ambiguity("conformal", ...), so every K5 number ever produced
+    # described the conformal arm -- while RESULTS, START_HERE and the runbook all claimed
+    # "band: no flips". That claim was never measured. Both arms are swept now.
+    #
+    # K5 itself is still SCORED ON CONFORMAL, because that is the arm it was pre-registered
+    # against; repointing a pre-registered kill condition after seeing results would be the
+    # exact move this protocol exists to prevent. Band is reported beside it.
+    #
+    # Note the ordering is rebuilt under each cost vector rather than frozen: band ranks by
+    # distance to the Bayes threshold, and that threshold moves when a cost constant moves. So
+    # this sweeps the rule as it would actually be deployed, not a stale ranking.
+    sens, flips_by_arm = {}, {}
+    for arm in ("conformal", "band"):
+        print(f"\n  arm = {arm}")
+        print(f"  {'constant':<17}{'-50%':>16}{'base':>16}{'+50%':>16}")
+        print("  " + "-" * 76)
+        sens[arm], flips_arm = {}, []
+        for name in ("fee_chargeback", "margin", "review_cost", "goodwill"):
+            row = []
+            for m in (1 - pct, 1.0, 1 + pct):
+                c2 = cost.Costs.from_config(cfg, {name: m})
+                b = cost.realised_cost(cost.decide_bayes(p, amt, c2), y_te, amt, c2)["total"]
+                o = ambiguity(arm, p, sets, amt, c2, np.random.default_rng(0))
+                row.append(b - run_arm(o, int(round(hi * n)), p, y_te, amt, c2)["total"])
+            sens[arm][name] = row
+            if len({np.sign(v) for v in row if abs(v) > 1e-9}) > 1:
+                flips_arm.append(name)
+            print(f"  {name:<17}" + "".join(f"{v:>+16,.0f}" for v in row))
+        flips_by_arm[arm] = flips_arm
+        print(f"    -> {arm}: "
+              f"{'FLIPS on ' + ', '.join(flips_arm) if flips_arm else 'no sign flips'}")
+
+    flips = flips_by_arm["conformal"]   # K5 is scored on the pre-registered arm
+    print(f"\n  K5  sign flips (conformal, as pre-registered) .. "
+          f"{'FIRED on ' + ', '.join(flips) if flips else 'passed'}")
+    print(f"      band, measured not asserted ............... "
+          f"{'FLIPS on ' + ', '.join(flips_by_arm['band']) if flips_by_arm['band'] else 'no flips'}")
 
     # ---------------------------------------------------------------- verdict
     print(f"\n{'='*78}\nVERDICT")
@@ -250,7 +272,11 @@ def main() -> int:
                  "K5": flips},
         "k3_detail": {"delta": float(d.mean()), "ci": [float(lo_ci), float(hi_ci)],
                       "p": float(p_band)},
+        # Shape changed: {arm: {constant: [-50%, base, +50%]}}. It was previously
+        # {constant: [...]} for the conformal arm only, undeclared. Nothing consumes this key
+        # programmatically (export_console.py reads net/kill/k3_detail/b1_mean/seeds).
         "sensitivity": sens,
+        "sensitivity_flips": flips_by_arm,
     }, indent=2, default=float), encoding="utf-8")
     print(f"\nwritten                results/{out.name}")
     print("=" * 78)

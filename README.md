@@ -127,8 +127,12 @@ reported that and changed the project rather than the test.
 - **External validation failed.** Below ~0.1% fraud prevalence the method does not work at all.
 - **My own baseline is 0.6% favourable to me** — I found that by sweeping the test set myself,
   and disclosed it.
-- **Two claims have no code behind them** and are labelled as such: `band`'s ±50% cost sweep was
-  never run, and Block 11 has no committed script.
+- **One claim still has no code behind it** and is labelled as such: Block 11 has no committed
+  script, so its transfer table cannot be re-run. A second — `band`'s ±50% cost sweep — was in
+  the same state, struck as unsupported, and has since been **measured**: no sign flips on any of
+  the four constants, +₹513,576 to +₹1,409,008. It landed on exactly the range that had been
+  struck, which is the point: the number was right and its evidence was missing, and those are
+  not the same thing.
 - Every number here is an **offline replay**. A blocked transaction never acquires an outcome, so
   no offline study — mine included — can fully verify this in production.
 

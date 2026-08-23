@@ -164,7 +164,7 @@ tr.win td{background:var(--accent-soft)}
       <h3>Limitations, unprompted</h3>
       <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;Below about 0.1% fraud it doesn&rsquo;t work at all &mdash; I tried a second dataset and it failed at every setting. The rule was written as a strawman and it won, so the signal space is barely explored. And my own baseline is beatable by about half a percent, which I found myself and put in the write-up.&rdquo;</span></div>
       <div class="line"><span class="lbl l-say">Say</span><span class="say-txt">&ldquo;And the deepest one: every number I&rsquo;ve shown you is an offline replay. A transaction you block never acquires an outcome, so you can never fully verify this in production. That&rsquo;s the selective-labels problem, it&rsquo;s in the write-up, and no offline study escapes it &mdash; mine included.&rdquo;</span></div>
-      <div class="line"><span class="lbl l-never">Never</span><span class="never-txt">Do not claim the &plusmn;50% cost sweep holds for my rule. It was only ever run on the conformal arm. See the question below.</span></div>
+      <div class="line"><span class="lbl l-never">Never</span><span class="never-txt">The &plusmn;50% sweep holds for my rule on all four constants &mdash; but it is one seed at 10% capacity, against the no-queue baseline. Do not stretch it to the 7.9% margin over rival policies; that quantity is unswept.</span></div>
     </div></div>
 
     <div class="beat"><div class="t">5:50</div><div>
@@ -213,6 +213,7 @@ tr.win td{background:var(--accent-soft)}
     <tr><td>Gate latency, single decision</td><td class="n">p50 14.6 &micro;s &middot; p99 24.1 &micro;s</td></tr>
     <tr><td>Gate latency, batch</td><td class="n">0.082 &micro;s per transaction</td></tr>
     <tr><td>Band vs conformal @ 10% (Block 9, 10 seeds)</td><td class="n">+&#8377;1,013,324, p = 0.0020, 22&times;</td></tr>
+    <tr class="win"><td>&plusmn;50% cost sweep, all four constants<br><span style="color:var(--ink-3)">conformal flips on 3 of 4; mine on none</span></td><td class="n">+&#8377;513,576 &hellip; +&#8377;1,409,008</td></tr>
     <tr><td>Error concentration, escalated 10% vs rest</td><td class="n">17.05% vs 1.98% &mdash; 8.6&times;</td></tr>
     <tr><td>Share of all error value captured @ 10%</td><td class="n">46.8%</td></tr>
     <tr><td>Concentration across scorers (logreg / rf / lgbm)<br><span style="color:var(--never)">Block 11 &mdash; recorded but not reproducible</span></td><td class="n">0.7&times; &rarr; 1.1&times; &rarr; 8.6&times;</td></tr>
@@ -254,7 +255,8 @@ tr.win td{background:var(--accent-soft)}
     <p class="pin">73.4% vs 49.7% recall; 0.86% vs 1.85% FPR</p></div>
 
     <div class="q"><p class="ask">Are your cost constants invented?</p>
-    <p class="ans">Declared, not measured, and stated as such: &#8377;1,500 chargeback fee, 25% margin, &#8377;250 goodwill, &#8377;40 per review, 5% analyst error. <strong>Be careful how you answer the robustness half of this.</strong> I swept all four &plusmn;50% on the <em>conformal</em> arm, where three of the four flipped sign &mdash; that is one of the reasons I dropped it. <strong>I never ran that sweep on the winning rule.</strong> If asked whether my headline is cost-robust, the honest answer is that I did not measure it, and it is a one-line change to the Block 9 script to find out.</p>
+    <p class="ans">Declared, not measured, and stated as such: &#8377;1,500 chargeback fee, 25% margin, &#8377;250 goodwill, &#8377;40 per review, 5% analyst error. <strong>All four are swept &plusmn;50%.</strong> The <em>conformal</em> arm flips sign on three of the four &mdash; one of the reasons I dropped it. <strong>The winning rule holds its sign on all four</strong>, ranging +&#8377;513,576 to +&#8377;1,409,008. The ranking is rebuilt under each cost vector, so that is the rule as deployed, not a frozen ordering.</p>
+    <p class="ans"><strong>State the edges before they are asked for.</strong> That sweep is one seed, at 10% capacity, and measures my benefit over the <em>no-queue</em> baseline. The 7.9% margin over the best rival <em>queue policy</em> &mdash; the actual headline &mdash; is not itself swept. The policies all move together under a shared cost vector so a flip is unlikely, but unlikely is not measured.</p>
     <p class="pin">Block 9 K5 &mdash; conformal only. Do not claim a range for band.</p></div>
 
     <div class="q"><p class="ask">Analyst review isn&rsquo;t free or perfect.</p>
@@ -319,7 +321,7 @@ tr.win td{background:var(--accent-soft)}
   is that it reports what it didn&rsquo;t find.</p></div>
   <div class="call stop"><p class="cl">Tempted to oversell</p>
   <p>Do not say the method is novel &mdash; it is one line. Do not say conformal is your method &mdash; it is
-  the thing that lost. Do not say 28%. Do not claim a cost-robustness range for the winning rule.
+  the thing that lost. Do not say 28%. Do not stretch the cost sweep to the margin over rival policies.
   Do not extrapolate to Razorpay&rsquo;s TPV. The true version is stronger:
   <em>I pre-registered a test that could destroy my own project, it fired, I shipped the result
   anyway &mdash; and then I cut my own headline by a factor of three when I found my baseline
