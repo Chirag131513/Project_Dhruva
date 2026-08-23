@@ -17,9 +17,16 @@ money.**
 ## Why this matters here specifically
 
 Razorpay's own published material describes the exact constraint this addresses. Vulcan is
-marketed as catching **5× more fraud "without increasing alerts"** — that phrase *is* an alert
-budget. Bumblebee left roughly **175 human review hours a month** in place. Analysts are finite
-and the queue is already full.
+reported as identifying **5× more fraudulent or disputed transactions "without increasing the
+number of alerts"** ([Aug 2026](https://www.dqindia.com/news/razorpay-vulcan-8x-fraud-detection-baseline-12398348)).
+That phrase *is* an alert budget: more fraud found, same number of cases a human can look at.
+
+And the human side is already saturated. Razorpay's own engineering team reports that merchant
+risk review ran at **10,000–12,000 manual reviews a month, roughly 700–800 human hours**, before
+they automated it ([Bumblebee](https://dev.to/razorpaytech/meet-bumblebee-agentic-ai-flagging-risky-merchants-in-under-90-seconds-2nlf)).
+*That* queue is merchant websites, not transactions — a different queue from the one this project
+routes — but it shows the shape of the constraint: **analysts are finite and the queue is already
+full.**
 
 So the question is not *should you review transactions* — you already do. It is **which ones**,
 and that turns out to be worth real money:

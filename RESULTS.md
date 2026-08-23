@@ -182,9 +182,33 @@ encouraging and it is not proof.
 
 **What to say if asked whether this applies to Vulcan:** *I don't know, I can't know, and the
 trend points the right way.* Razorpay's own published material shows the setting applies — Vulcan
-is marketed as catching 5× more fraud **"without increasing alerts"**, which is an alert budget,
-and Bumblebee left **~175 human review hours a month** in place. The problem exists there. The
-effect size is an experiment they would run in an afternoon with this code.
+is reported as identifying **5× more fraudulent or disputed transactions "without increasing the
+number of alerts"** ([Aug 2026 launch coverage](https://www.dqindia.com/news/razorpay-vulcan-8x-fraud-detection-baseline-12398348)),
+and an alert budget is exactly the constraint §0 is about. The effect size is an experiment they
+would run in an afternoon with this code.
+
+> **Correction, 24 August 2026 — the Bumblebee figure was wrong, twice.** Earlier versions of this
+> paragraph said Bumblebee left *"~175 human review hours a month"* in place. Checked against
+> [Razorpay's own engineering write-up](https://dev.to/razorpaytech/meet-bumblebee-agentic-ai-flagging-risky-merchants-in-under-90-seconds-2nlf):
+>
+> 1. **The number is wrong.** They report **10,000–12,000 manual reviews a month at ~4 minutes
+>    each — 700–800 human hours**, of which Bumblebee replaced roughly 800. Not 175. The error
+>    *understated* their workload by more than fourfold.
+> 2. **The number is about the wrong queue**, which matters more. Bumblebee reviews **merchant
+>    websites** at onboarding or when a merchant is flagged. It is not a transaction-review queue.
+>    Citing it as evidence that a *transaction* triage queue exists at Razorpay was a category
+>    error on my part.
+>
+> **What survives, and it is enough:** Vulcan's own "without increasing alerts" phrasing is a
+> stated alert budget on the transaction path, and that is the constraint this project addresses.
+> Bumblebee is now cited only as evidence that Razorpay runs capacity-limited human review at all
+> — a different queue, and an analogy rather than a measurement.
+>
+> One further caveat, and it cuts toward honesty about *them*: the same coverage notes that
+> Razorpay **has not disclosed the baseline** the 5× and 8× figures are measured against. That is
+> the identical flaw this project found in its own retired 28% claim (§0). **Do not use that as an
+> attack.** If it comes up, the only safe framing is about my own work: *I couldn't defend my
+> number without naming its baseline, so I cut it from 28% to 8%.*
 
 **Read this the right way round: the model is not bad.** It is right 98% of the time across nine
 tenths of the traffic — that is a good model. Its mistakes simply are not spread evenly, and a
