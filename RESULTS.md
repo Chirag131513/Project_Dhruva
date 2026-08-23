@@ -672,6 +672,10 @@ python scripts/make_figures.py          # results/figures/graph5_triage.png
 - **Block 11 has no script.** `results/block11_concentration.json` and the transfer table in §0b
   exist, but commit `881438b` added only the JSON and the prose — nothing in the repo regenerates
   those three rows. They are recorded, not reproducible, until the block is rewritten.
-- **`streamlit run app/console.py`** is deliberately no longer listed. It still runs, but its α
-  slider is built around the conformal arm that Block 9 retired; it contradicts §0. Use the
-  dashboard.
+- **`app/console.py` has been deleted.** The Streamlit console was built around the conformal α
+  slider that Block 9 retired, so it contradicted §0 — and by the time it was removed it no
+  longer ran at all: `export_console.py` had stopped exporting the three `alpha_*` keys it reads,
+  so it raised a `KeyError` on launch. Earlier versions of this section claimed "it still runs",
+  which was wrong. A broken demo of a retired method is a liability in a repository, not a
+  historical record; it stays in git history. Use `app/dashboard.html`. Removing it also drops
+  `streamlit` and `plotly` from `requirements.txt` — nothing else imported them.

@@ -86,7 +86,10 @@ tuning:
     verbosity: -1
 
 paths:
-  data_dir: C:/Users/Chirag V Rao/dhruva-data
+  # Relative to the repo, gitignored, and where scripts/fetch_data.py downloads to, so a
+  # fresh clone works unedited. To keep the ~700MB outside a synced folder, set the
+  # DHRUVA_DATA environment variable rather than putting an absolute path here.
+  data_dir: data
   results_dir: results
 
 amendments:

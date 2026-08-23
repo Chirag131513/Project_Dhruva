@@ -17,6 +17,17 @@ cd "C:\Users\Chirag V Rao\OneDrive\ドキュメント\dhruva"
 
 Your prompt should now end in `\dhruva>`. If it doesn't, nothing else will work — fix this first.
 
+**Then point the code at your data.** The repo now ships a portable default (`data/` inside the
+repo) so anyone who clones it can run it. Your ~700 MB of CSVs live outside OneDrive, so tell it
+where — **paste this once per terminal window:**
+
+```powershell
+$env:DHRUVA_DATA = "C:\Users\Chirag V Rao\dhruva-data"
+```
+
+Skip this and the block scripts will look in `dhruva\data\` and find nothing. The tests do **not**
+need it — they use synthetic fixtures.
+
 **Check the project is healthy:**
 
 ```powershell
@@ -203,8 +214,12 @@ python -m pip install -r requirements.txt
 **Console says `DEV DATA` instead of `TEST REPLAY`** — the real data isn't being found. Check
 these two files exist:
 ```powershell
-dir "C:\Users\Chirag V Rao\dhruva-data\*.csv"
+$env:DHRUVA_DATA = "C:\Users\Chirag V Rao\dhruva-data"
+dir "$env:DHRUVA_DATA\*.csv"
 ```
+
+**Nine times out of ten this is the cause: you opened a new terminal and forgot to set
+`DHRUVA_DATA`.** It does not persist between windows. Set it, then re-run.
 You need `train_transaction.csv` (683 MB) and `train_identity.csv` (27 MB). If they're missing,
 re-download:
 ```powershell

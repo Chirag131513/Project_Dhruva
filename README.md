@@ -153,8 +153,17 @@ capacity slider to 2%.
 | [`PROTOCOL.md`](PROTOCOL.md) | what was decided *before* any result existed |
 | [`RESULTS.md`](RESULTS.md) §8 | threats to validity, stated rather than hidden |
 
-Data is not in this repository — `python scripts/fetch_data.py` pulls IEEE-CIS. Full reproduction
-steps, **including the two blocks that do not reproduce**, are in [`RESULTS.md`](RESULTS.md) §12.
+**The tests need no data** — they run on synthetic fixtures, so `pytest` works the moment you
+clone. For the experiments, `python scripts/fetch_data.py` pulls IEEE-CIS into `data/` (gitignored),
+so a fresh clone needs no configuration. To keep the ~700 MB elsewhere, set `DHRUVA_DATA` rather
+than editing `config.yaml`:
+
+```bash
+export DHRUVA_DATA=/path/to/dhruva-data
+```
+
+Full reproduction steps, **including the two blocks that do not reproduce**, are in
+[`RESULTS.md`](RESULTS.md) §12.
 
 ---
 

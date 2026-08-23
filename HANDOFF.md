@@ -141,7 +141,12 @@ experiment. Both are recorded as gaps instead, which is what the rest of the pro
 ## Environment
 
 - Code: `OneDrive\ドキュメント\dhruva` (git)
-- Data: `C:\Users\Chirag V Rao\dhruva-data` — outside OneDrive deliberately, gitignored
+- Data: `C:\Users\Chirag V Rao\dhruva-data` — outside OneDrive deliberately, gitignored.
+  **`config.yaml` no longer hardcodes this.** It shipped an absolute path with the author's
+  username in it, which made the public repo unrunnable for anyone else. The default is now the
+  relative `data/`; set `DHRUVA_DATA` to override, once per terminal:
+  `$env:DHRUVA_DATA = "C:\Users\Chirag V Rao\dhruva-data"`. `paths:` sits outside the hashed
+  `frozen:` block, so this did not disturb `protocol.lock` — the hash is still `d38888c9d05d398c`.
   - `train_transaction.csv` 683 MB · `train_identity.csv` 27 MB · `ulb_creditcard.parquet` 72 MB
   - ULB must come from the **raw ARFF**: OpenML flags `Time` as `row_id_attribute`, so
     `fetch_openml` silently drops it and the chronological split has nothing to sort on.

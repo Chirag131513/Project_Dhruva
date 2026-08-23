@@ -4,7 +4,5 @@ scikit-learn>=1.5
 scipy>=1.13
 lightgbm>=4.5
 matplotlib>=3.9
-streamlit>=1.40
 pyyaml>=6.0
 pytest>=8.0
-plotly>=6.0

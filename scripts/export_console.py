@@ -2,13 +2,18 @@
 
     python scripts/export_console.py
 
-Precomputes the Block 9 signal comparison so the dashboard is a lookup table with a capacity
+Precomputes the queue-policy comparison so the dashboard is a lookup table with a capacity
 slider on top -- nothing is computed while a judge is watching, and nothing is live.
 
-The exported shape follows what Block 9 measured: net benefit per (signal, capacity), the
-sensitivity band on the winning signal, and a decision sample. The old alpha-sweep export was
-built around conformal, which Block 9 showed is the second-worst signal; keeping it would put
-the losing method at the centre of the demo.
+The exported shape follows what Block 12 measured, because that is the headline: net benefit
+per (policy, capacity), the blindness map, and a decision sample. Block 9's kill test rides
+along under `kill_test` as provenance -- the dashboard does not render it, but the evidence
+that conformal lost should travel with the demo rather than being a separate errand.
+
+SEED COUNTS ARE NOT INTERCHANGEABLE HERE. Block 12 ran 5 seeds and Block 9 ran 10, and both
+recompute their own baseline because the model is refit per seed. Every seed-dependent figure
+is therefore namespaced to the experiment that produced it: `policy_seeds` at top level for
+what is on screen, `kill_test.seeds` for Block 9. Do not add a bare `seeds` key back.
 """
 
 from __future__ import annotations
@@ -63,12 +68,21 @@ def main() -> int:
     out = {
         "config_hash": cfg.hash(), "data_source": df.attrs["data_source"],
         "test_n": int(n), "test_fraud": int(y.sum()), "test_volume": float(amt.sum()),
-        "b1": b1, "b1_mean": b9["b1_mean"], "seeds": b9["seeds"],
-        "caps": b12["caps"], "net": b9["net"], "kill": b9["kill"],
+        "b1": b1,
+        "caps": b12["caps"],
+        # Block 12 -- what the dashboard actually renders. ONE seed count at top level.
+        "policy_seeds": b12["seeds"],
         "policies": b12["policies"], "advantage": b12["advantage"],
         "blind": b12["blind"], "total_error_cost": b12["total_error_cost"],
-        "policy_seeds": b12["seeds"],
-        "k3": b9["k3_detail"],
+        # Block 9's kill test, namespaced. It used to travel here under bare names --
+        # `seeds` (10) sat directly beside `policy_seeds` (5) with nothing on either to
+        # say which experiment it described, and `b1_mean` (10-seed) beside `b1` (single
+        # seed). Nothing read the bare keys; they were only ever a trap for whoever
+        # touched this next. Namespacing makes picking the wrong one impossible.
+        "kill_test": {
+            "seeds": b9["seeds"], "b1_mean": b9["b1_mean"],
+            "net": b9["net"], "kill": b9["kill"], "k3": b9["k3_detail"],
+        },
         "sample_amount": [float(a) for a in amt[idx]],
         "sample_segment": [str(s) for s in sp.test["ProductCD"].astype(str).to_numpy()[idx]],
         "sample_label": [int(v) for v in y[idx]],

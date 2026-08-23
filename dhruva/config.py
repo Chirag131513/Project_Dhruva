@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -56,12 +57,22 @@ class Config:
     def data_dir(self) -> Path:
         """Where the IEEE-CIS CSVs live.
 
-        Absolute paths are honoured as-is so the ~700MB of raw data can sit OUTSIDE a synced
-        folder. The repo defaults to a relative `data/`, which is convenient but lands inside
-        OneDrive here -- that triggers a full cloud sync of files that are gitignored and freely
-        re-downloadable. Point this somewhere local instead.
+        Resolution order: the DHRUVA_DATA environment variable, then paths.data_dir in
+        config.yaml. Absolute paths are honoured as-is so the ~700MB of raw data can sit OUTSIDE
+        a synced folder -- inside OneDrive it triggers a full cloud sync of files that are
+        gitignored and freely re-downloadable.
+
+        The shipped default is the relative `data/`. It is gitignored, and it is where
+        scripts/fetch_data.py puts things, so a fresh clone runs with no edit at all. This used
+        to hold a machine-specific absolute path, which made the repository unrunnable for anyone
+        else and published the author's home directory into a public repo. Set the environment
+        variable instead of editing this file back:
+
+            PowerShell   $env:DHRUVA_DATA = "C:\\path\\to\\dhruva-data"
+            bash         export DHRUVA_DATA=/path/to/dhruva-data
         """
-        d = Path(self.paths["data_dir"]).expanduser()
+        raw = os.environ.get("DHRUVA_DATA") or self.paths["data_dir"]
+        d = Path(str(raw)).expanduser()
         return d if d.is_absolute() else REPO_ROOT / d
 
     def results_dir(self) -> Path:
