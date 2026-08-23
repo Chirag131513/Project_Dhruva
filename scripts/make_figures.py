@@ -34,14 +34,14 @@ from dhruva import config
 
 # Mine first so it wins the legend order; the two that go negative are the point of the panel.
 STYLE = {
-    "band":   ("#0A6570", "-",  "nearest the cost-optimal cut  (mine)"),
+    "band":   ("#0A6570", "-",  "nearest the cost-optimal cut  (this project)"),
     "score":  ("#9C382C", "--", "most suspicious first  (the obvious policy)"),
     "amount": ("#B8860B", "--", "biggest amount first"),
     "stake":  ("#8A9AA0", "--", "most rupees at stake"),
 }
 
 SHORT = {"amount": "amount-sort", "score": "score-sort",
-         "stake": "stake-sort", "band": "mine"}
+         "stake": "stake-sort", "band": "this project"}
 
 
 def main() -> int:

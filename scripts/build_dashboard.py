@@ -9,7 +9,7 @@ answer two questions in ninety seconds: *what does it do to my losses*, and *how
 front of my model*. So the page leads with the pipeline position, carries a capacity control, and
 ends with the actual three-line API, the measured per-decision latency, and a real audit record.
 
-THE DEMO GESTURE is the capacity slider: drag it and the four QUEUE POLICIES separate -- mine
+THE DEMO GESTURE is the capacity slider: drag it and the four QUEUE POLICIES separate -- the cost-optimal-cut policy
 pulling away while sorting-by-score and sorting-by-stake sit BELOW ZERO at the capacities a real
 team staffs. Escalation is not the finding; every team escalates. The finding is that the two
 most common ways of filling the queue lose money at 1-2% capacity. Park the slider at 2%, where
@@ -235,7 +235,7 @@ td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 const D=__DATA__,G_=__GATE__,$=i=>document.getElementById(i);
 const inr=v=>(v<0?"-":"")+"₹"+Math.round(Math.abs(v)).toLocaleString("en-IN");
 const G=D.grid,CAPS=D.caps,N=G.length;
-const SIG=[["band","nearest the cost-optimal cut  (mine)","#2E7BF6"],
+const SIG=[["band","nearest the cost-optimal cut  (this project)","#2E7BF6"],
            ["score","most suspicious first  (what most teams do)","#FBBF24"],
            ["amount","biggest amount first","#F87171"],
            ["stake","most rupees at stake","#4A5B78"]];

@@ -70,7 +70,7 @@ Net benefit against a per-transaction cost-optimal Bayes threshold (₹3,752,646
 
 | queue policy | 1% capacity | 2% | 5% | 10% |
 |---|---|---|---|---|
-| **nearest the cost-optimal cut** *(mine)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
+| **nearest the cost-optimal cut** *(this project)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
 | most suspicious first — *the obvious policy* | **−89,329** | **−15,091** | +577,447 | +1,038,038 |
 | biggest amount first — *very common in practice* | +1,899 | +108,327 | +128,600 | +63,451 |
 | most rupees at stake | **−87,962** | **−75,921** | +117,620 | +101,915 |

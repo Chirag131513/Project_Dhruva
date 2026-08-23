@@ -9,7 +9,7 @@ against the policies a risk team is already using to fill a finite queue:
     score    most suspicious first    -- the obvious policy, and the one most teams use
     amount   biggest transaction first -- extremely common, "watch the big ones"
     stake    most rupees at risk       -- the sophisticated version of the above
-    band     nearest the cost-optimal cut (mine)
+    band     nearest the cost-optimal cut (this project)
 
 If band cannot beat those, the value claim collapses and I say so.
 
@@ -40,7 +40,7 @@ from dhruva.data import AMOUNT, TARGET
 
 CAPS = [0.01, 0.02, 0.05, 0.10]
 NAME = {"score": "most suspicious first", "amount": "biggest amount first",
-        "stake": "most rupees at stake", "band": "nearest the cut (mine)"}
+        "stake": "most rupees at stake", "band": "nearest the cut (this project)"}
 
 
 def localise(values, wrong, err, tot, min_n=200):
