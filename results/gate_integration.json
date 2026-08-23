@@ -1,0 +1,43 @@
+{
+  "config_hash": "d38888c9d05d398c",
+  "data_source": "ieee-cis",
+  "capacity": 0.1,
+  "cutoff": -0.11687376760542488,
+  "n_cal": 78353,
+  "saved": 1072198.7585624997,
+  "saved_share": 0.2883393512928774,
+  "baseline": {
+    "total": 3718530.79975,
+    "missed_fraud": 3150876.027,
+    "blocked_legitimate": 567654.77275,
+    "review": 0.0,
+    "review_rate": 0.0,
+    "recall": 0.4967845659163987,
+    "fpr": 0.0184631253223311
+  },
+  "gated": {
+    "total": 2646332.0411875,
+    "missed_fraud": 1652357.6830000002,
+    "blocked_legitimate": 258510.204,
+    "review": 735464.1541875,
+    "review_rate": 0.109089756018011,
+    "recall": 0.7344587352625938,
+    "fpr": 0.008617375404379015
+  },
+  "p50_us": 14.6,
+  "p99_us": 24.10199999999968,
+  "batch_us_per_txn": 0.08190112100858753,
+  "example": {
+    "action": "REVIEW",
+    "score": 0.252548742888168,
+    "amount": 994.0,
+    "threshold": 0.16658312447786133,
+    "distance_to_threshold": 0.08596561841030664,
+    "escalation_cutoff": 0.11687376760542488,
+    "cost_if_missed": 2494.0,
+    "cost_if_blocked": 498.5,
+    "capacity": 0.1
+  },
+  "example_row": 3,
+  "example_label": "fraud"
+}
