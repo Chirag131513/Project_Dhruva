@@ -119,6 +119,7 @@ Run them in order. Each prints a table and saves a file.
 | 10 | `python scripts/block10_proofs.py` | 3 min | Tests the two premises. One comes back against me |
 | 11 | `python scripts/block11_concentration.py` | 6 min | Does concentration survive a better model? 0.7× → 1.1× → 8.6× |
 | 12 | `python scripts/block12_policies.py --seeds 5` | 15 min | **THE RESULT — the race against the queue policies teams already run** |
+| 13 | `python scripts/block13_rejector.py --seeds 5` | 18 min | A *learned* rejector fails to beat the one-line rule; plus the analyst-accuracy sweep |
 
 **The most important one is Block 12.** If you only run one, run that. Block 9 is the second —
 it is where the kill test fired, and it is the credibility story even though it is no longer the
@@ -184,6 +185,10 @@ Full answers are in the Runbook. The short versions:
   while the winning rule **holds its sign on all four**, ranging +₹513,576 to +₹1,409,008.
   Be precise about the edges: that is at 10% capacity, single seed, against the *no-queue*
   baseline. The margin over the best rival **queue policy** is still unswept. Don't overclaim it.
+- **"Did you try just *learning* the ranking?"** — Yes, and it lost. A model trained on realised
+  rupee value with the same inputs came in **0.0165 points** short of a statistical tie at 2%
+  capacity, and inside the tie band at every other capacity. So: **level, never ahead** — and it
+  needs labels, which the one-line rule does not. Do not say "band wins" without that margin.
 - **"Did you tune it?"** — No. The setting was frozen and hashed before any result existed;
   `git log` proves it. The one change is recorded as an amendment with its prediction written
   down beforehand.
