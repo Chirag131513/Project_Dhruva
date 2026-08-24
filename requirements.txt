@@ -1,3 +1,27 @@
+# Project Dhruva — runtime dependencies.
+#
+# Floors, not hard pins. Each `>=` is the version that first carries a feature this code
+# relies on, so a fresh clone resolves on any recent Python. Hard-pinning to the exact
+# versions below would make the install fail on a different Python or platform for a judge,
+# which costs more than it buys.
+#
+# VERIFIED REPRODUCTION ENVIRONMENT — every number in RESULTS.md was produced on exactly this:
+#
+#   Python        3.12.10   (Windows)
+#   numpy         2.5.2
+#   pandas        3.0.5
+#   scikit-learn  1.9.0
+#   scipy         1.18.0
+#   lightgbm      4.7.0
+#   matplotlib    3.11.1
+#   pyyaml        6.0.3
+#   pytest        9.1.1
+#
+# If a result ever fails to reproduce, pin to that list first before suspecting the code.
+# Note pandas 3.0 specifically: bug 2 in RESULTS.md §7 was a pandas 3.0 `str` dtype that the
+# encoder silently missed, nulling ~15 columns without raising. Below pandas 3.0 that bug
+# cannot occur; at or above it, the fix is required.
+
 numpy>=2.0
 pandas>=2.2
 scikit-learn>=1.5

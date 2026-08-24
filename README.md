@@ -1,60 +1,54 @@
 # Project Dhruva
 
-**Your fraud model is right 98% of the time across nine tenths of your traffic. That is a good
-model. But its mistakes are not spread evenly — and the review queue your analysts work is filled
-in a way that systematically misses them.**
+**A routing layer that decides which transactions your analysts should review — and a measurement showing that the two most common ways of choosing lose money at the queue sizes real teams actually staff.**
 
-Dhruva is a routing layer that sits on top of whatever scorer you already run and decides *which
-transactions a human should look at*. Three lines to integrate. No retraining. 14.6 µs per
-decision.
-
-I measured what that choice is worth on 590,540 real card-not-present transactions. **At the
-queue sizes real teams actually staff, the two most common ways of filling a review queue lose
-money.**
+Built for the **Razorpay AI Buildathon, Track 02 — AI Risk Manager**.
 
 ---
 
-## Why this matters here specifically
+## TL;DR for judges
 
-Razorpay's own published material describes the exact constraint this addresses. Vulcan is
-reported as identifying **5× more fraudulent or disputed transactions "without increasing the
-number of alerts"** ([Aug 2026](https://www.dqindia.com/news/razorpay-vulcan-8x-fraud-detection-baseline-12398348)).
-That phrase *is* an alert budget: more fraud found, same number of cases a human can look at.
+> **1. The queue policy you already run loses money.**
+> Every payments team has a review queue and fills it by sorting on risk score or transaction size. At 2% capacity, sorting by risk score returns **−₹15,091** and sorting by rupees at stake **−₹75,921**. Sorting by distance to the cost-optimal cut returns **+₹405,514** — an advantage of **5.8–7.9% of realised loss** over the best rival policy at 1–5% capacity. Every policy escalates the *same volume*; only the choice differs.
+>
+> **2. A map of where the model is blind — needs none of my code.**
+> ProductCD **C** carries **4.4× the error rate** of product W (10.61% vs 2.42%) on 10.3% of traffic. **Credit** cards carry **1.6×** their share of losses; the **largest amount decile** carries **2.1×**. Retrain there, add features there, staff the queue there.
+>
+> **3. I pre-registered a test that could kill my own project, and it fired.**
+> This was designed around conformal prediction — the method the 2026 literature is built on. A one-line rule beat it **22×** (p = 0.0020), so I abandoned it and reported the result. Conformal finished **second-worst of four** escalation signals.
 
-And the human side is already saturated. Razorpay's own engineering team reports that merchant
-risk review ran at **10,000–12,000 manual reviews a month, roughly 700–800 human hours**, before
-they automated it ([Bumblebee](https://dev.to/razorpaytech/meet-bumblebee-agentic-ai-flagging-risky-merchants-in-under-90-seconds-2nlf)).
-*That* queue is merchant websites, not transactions — a different queue from the one this project
-routes — but it shows the shape of the constraint: **analysts are finite and the queue is already
-full.**
+**Held-out test set:** 110,377 transactions · 3,732 fraud · read once.
 
-So the question is not *should you review transactions* — you already do. It is **which ones**,
-and that turns out to be worth real money:
+| base scorer (LightGBM) | PR-AUC | ROC-AUC | Precision@2% | Recall@2% | ECE |
+|---|---|---|---|---|---|
+| | **0.5233** | 0.8964 | **0.6803** | 0.4025 | 0.0039 |
 
-| If your team fills its queue by… | at 2% review capacity |
-|---|---|
-| sorting on risk score — *the most common policy* | **loses ₹15,091** |
-| sorting on rupees at stake | **loses ₹75,921** |
-| sorting on transaction size | makes ₹108,327 |
-| **sorting on distance to the cost-optimal cut** *(this project)* | **makes ₹405,514** |
+| operating point | fraud recall | false-positive rate | review rate |
+|---|---|---|---|
+| cost-optimal Bayes threshold *(baseline, no queue)* | 49.68% | 1.846% | 0% |
+| **deployed gate @ 10% capacity** | **73.45%** | **0.862%** | 10.9% |
 
-Sorting by risk score sends analysts to cases the model is **already confident about**, where a
-human costs ₹40 and changes no decision. The cases actually worth a human are the ones sitting
-near the decision boundary.
+**Both improve at once** — recall +23.8 points while false positives *halve* — because a human resolves the case instead of the system guessing. A threshold can only trade one against the other.
 
-## What you get
+False-positive cost is priced **per transaction**, not as a flat constant: `c_FP(x) = 0.25·amount + ₹250`.
 
-- **6–8% of realised fraud loss recovered**, measured against the queue policy you are already
-  running — not against a strawman. It peaks at **7.9%** at 2% review capacity.
-- **More fraud caught *and* fewer good customers blocked, at the same headcount.** At 10%
-  capacity: fraud recall **49.7% → 73.4%** while the false-positive rate **halves, 1.85% → 0.86%**.
-  A threshold cannot do that — it can only trade one against the other. Escalation escapes the
-  trade-off because a human *resolves* the case instead of the system guessing.
-- **A map of where your model is blind** — which costs you nothing and requires adopting none of
-  my code. See below.
-- **An audit record for every decision**, which matters if anyone has to explain a block.
+---
 
-## Drop-in integration
+## Quick start
+
+```bash
+git clone https://github.com/Chirag131513/Project_Dhruva.git && cd Project_Dhruva
+python -m pip install -r requirements.txt
+python -m pytest tests/ -q                 # 22 passed — needs no data
+```
+
+Then **double-click `app/dashboard.html`**. No server, no build step. Drag the capacity slider to **2%** and watch two of the four policies sit below zero.
+
+> The tests run on synthetic fixtures, so they pass on a fresh clone with no data download. The experiments need IEEE-CIS: `python scripts/fetch_data.py` pulls it into `data/` (gitignored). To keep the ~700 MB elsewhere, set `DHRUVA_DATA` rather than editing `config.yaml`.
+
+---
+
+## The deployable surface
 
 ```python
 from dhruva.gate import Gate
@@ -66,116 +60,107 @@ record = gate.explain(score, amount)                # full audit trail
 
 | | |
 |---|---|
-| **Latency** | p50 **14.6 µs**, p99 24.1 µs per decision (0.08 µs batched) |
+| **Latency** | p50 **14.6 µs**, p99 24.1 µs per decision (0.082 µs batched) |
 | **Retraining** | none — it consumes your existing scores |
-| **Labels needed to fit** | **none**. The cutoff is a quantile of an *unlabelled* ranking |
+| **Labels needed to fit** | **none.** The cutoff is a quantile of an *unlabelled* ranking |
 | **Tuning** | one number: how many cases your team can review |
 
-That "no labels" property is the operationally important one. Chargeback labels arrive weeks
-late, so anything that needs them cannot respond during the window that matters. Dhruva re-fits on
-last week's traffic without waiting for a single dispute to resolve.
+The "no labels" property is the operationally important one. Chargeback labels arrive weeks late, so anything needing them cannot respond during the window that matters. This re-fits on last week's traffic without waiting for a single dispute.
 
-## Where your model is blind
+*(That latency is the gate's own, on top of whatever the base scorer costs — which I did not measure and which dominates.)*
 
-This part requires adopting nothing of mine. I localised the model's confident errors to business
-segments — the same method [arXiv:2607.06605](https://arxiv.org/html/2607.06605v1) uses to localise
-errors to molecular scaffolds:
+---
 
-| segment | share of traffic | error rate | share of ₹ lost | concentration |
-|---|---|---|---|---|
-| **ProductCD C** | 10.3% | **10.61%** | 19.4% | **1.9×** |
-| **credit cards** | 23.2% | **6.65%** | 38.0% | **1.6×** |
-| **₹270–5,367** (largest decile) | 10.0% | 5.48% | 20.8% | **2.1×** |
-| ProductCD W *(for contrast)* | 79.1% | 2.42% | 68.5% | 0.9× |
+## The result
 
-**Product C carries 4.4× the error rate of product W. Credit is 2.6× debit.** Retrain there, add
-features there, staff the queue there. You can act on this table tomorrow.
-
-## The evidence
-
-IEEE-CIS (Vesta), 590,540 transactions, 3.4% fraud, held out **temporally** with a 7-day
-label-delay window. Net benefit vs a per-transaction cost-optimal Bayes threshold (₹3,752,646, no
-queue), 5 seeds. **Every policy escalates the same volume** — only the choice of cases differs.
+IEEE-CIS (Vesta), 590,540 transactions, 3.4% fraud, held out **temporally** with a 7-day label-delay window. Net benefit vs a per-transaction cost-optimal Bayes threshold (₹3,752,646, no queue), 5 seeds.
 
 | queue policy | 1% capacity | 2% | 5% | 10% |
 |---|---|---|---|---|
 | **nearest the cost-optimal cut** *(this project)* | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
-| most suspicious first | **−89,329** | **−15,091** | +577,447 | +1,038,038 |
+| most suspicious first — *the obvious policy* | **−89,329** | **−15,091** | +577,447 | +1,038,038 |
 | biggest amount first | +1,899 | +108,327 | +128,600 | +63,451 |
 | most rupees at stake | **−87,962** | **−75,921** | +117,620 | +101,915 |
 
 Advantage over the **best rival at each capacity**: 5.8% · **7.9%** · 5.9% · 0.9%.
 
-**It peaks at 2% and collapses by 10% — and I say so myself.** At a tenth of traffic under
-review, sorting by score nearly catches up. No merchant reviews a tenth of their traffic, which is
-why the left of that table is the one that matters. False-positive cost is priced per transaction
-(`c_FP(x) = 0.25·amount + ₹250`), not as a flat constant.
-
-## What I am not claiming
-
-- **Not that escalation is new.** Every team escalates. The finding is that the usual way of
-  choosing *what* to escalate loses money at realistic capacity.
-- **Not novelty in the method.** The winning rule is one line. The contribution is the
-  measurement, the negative result, and the blindness map.
-- **Nothing about Vulcan.** I have never seen its scores and cannot get them. What I can show is
-  that the effect *grows* as the underlying model gets better.
-- **Not "28% of loss saved."** An earlier version of this claim compared against a baseline with
-  no review queue at all — which nobody runs. I retired it myself and the number fell to 6–8%.
-
-## The record
-
-This project was designed around conformal prediction. I pre-registered a kill test that could
-invalidate it, ran it, and **it fired** — a one-line rule beat conformal by 22× (p = 0.0020). I
-reported that and changed the project rather than the test.
-
-- Of five hypotheses: two supported, **two refuted**, one supported only in part.
-- **One of my own headlines was retracted** after I found it was scoring itself on the cells it
-  had calibrated on.
-- **External validation failed.** Below ~0.1% fraud prevalence the method does not work at all.
-- **My own baseline is 0.6% favourable to me** — I found that by sweeping the test set myself,
-  and disclosed it.
-- **Two claims once had no code behind them; both have since been measured.** `band`'s ±50% cost
-  sweep was struck as unsupported, then run — no sign flips on any of the four constants,
-  +₹513,576 to +₹1,409,008, landing on exactly the range that had been struck. Block 11's
-  transfer table had no generating script; it was rewritten, and reproduced every field exactly.
-  In both cases the number was right and the *evidence* was missing, and those are not the same
-  thing. **Every block in the write-up now runs.**
-- Every number here is an **offline replay**. A blocked transaction never acquires an outcome, so
-  no offline study — mine included — can fully verify this in production.
-
-The method the project was named after lost, and the headline shrank by a factor of three under
-scrutiny. That record is the point, not a blemish on it.
-
-## Run it
-
-```bash
-python -m pip install -r requirements.txt
-python -m pytest tests/ -q        # 22 passed
-```
-
-Then open [`app/dashboard.html`](app/dashboard.html) — no server, just double-click it. Drag the
-capacity slider to 2%.
-
-| Read | Why |
-|---|---|
-| [`RESULTS.md`](RESULTS.md) §0 | the result on one page, with standard metrics up front |
-| [`START_HERE.md`](START_HERE.md) | run it and present it, assuming no knowledge of the code |
-| [`RUNBOOK.html`](RUNBOOK.html) | six-minute script, and the hard questions with answers |
-| [`PROTOCOL.md`](PROTOCOL.md) | what was decided *before* any result existed |
-| [`RESULTS.md`](RESULTS.md) §8 | threats to validity, stated rather than hidden |
-
-**The tests need no data** — they run on synthetic fixtures, so `pytest` works the moment you
-clone. For the experiments, `python scripts/fetch_data.py` pulls IEEE-CIS into `data/` (gitignored),
-so a fresh clone needs no configuration. To keep the ~700 MB elsewhere, set `DHRUVA_DATA` rather
-than editing `config.yaml`:
-
-```bash
-export DHRUVA_DATA=/path/to/dhruva-data
-```
-
-Full reproduction steps, **including the two blocks that do not reproduce**, are in
-[`RESULTS.md`](RESULTS.md) §12.
+**It peaks at 2% and collapses by 10% — and I say so myself.** At a tenth of traffic under review, sorting by score nearly catches up. No merchant reviews a tenth of their traffic, which is why the left of that table is the one that matters.
 
 ---
 
-Built for the Razorpay AI Buildathon, Track 02 — AI Risk Manager.
+## Project structure
+
+Thirteen numbered blocks. **Every one has a script, and every result in `RESULTS.md` comes from one of them.**
+
+| # | Script | What it establishes |
+|---|---|---|
+| 0 | `block0_audit.py` | The data is real: 590,540 transactions, 24.4% carry device data |
+| 1 | `block1_baseline.py` | The base model works — PR-AUC 0.5233 |
+| 2 | `block2_conformal.py` | **The illusion:** 89.1% marginal coverage, **13.9% on fraud** |
+| 3 | `block3_shift.py` | Hypothesis 1 **refuted** — calibration does not decay faster than ranking |
+| 4 | `block4_cost.py` | The money model. Hypothesis 4 **refuted** |
+| 5 | `block5_segments.py` | Which grouping works — and the **retraction** of Block 3's headline |
+| 6 | `block6_amendment.py` | Amendment 1: deriving α from capacity instead of choosing it |
+| 7 | `block7_alpha_sweep.py` | The α curve, and the **failed** external validation on ULB |
+| 8 | `block8_agnostic.py` | The failure gets *worse* as the model gets better |
+| 9 | `block9_triage.py` | **The kill test that fired** — a one-line rule beats conformal 22× |
+| 10 | `block10_proofs.py` | Two premises tested. One comes back **against me** |
+| 11 | `block11_concentration.py` | Error concentration across three scorers: 0.7× → 1.1× → 8.6× |
+| 12 | `block12_policies.py` | **THE RESULT** — the queue-policy race above |
+
+| Support | Purpose |
+|---|---|
+| `fetch_data.py` | Downloads IEEE-CIS |
+| `export_console.py` → `measure_gate.py` → `build_dashboard.py` | Rebuilds the dashboard (all three, in order) |
+| `make_figures.py` | Rebuilds `results/figures/graph5_triage.png` |
+
+| Module | Purpose |
+|---|---|
+| `dhruva/gate.py` | The deployable gate — three-line API, audit records |
+| `dhruva/cost.py` | Example-dependent cost model and the Bayes decision layer |
+| `dhruva/conformal.py` | Conformal calibration (the arm that lost, kept for the record) |
+| `dhruva/splits.py` | Chronological split with the 7-day label-delay window |
+
+---
+
+## What this project is **NOT**
+
+| Not claimed | The honest version |
+|---|---|
+| ❌ "28% of loss saved" | **Retired.** That measured against a baseline with *no review queue*, which nobody runs. I cut it myself. The claim is **6–8% over the policy a team already has**. |
+| ❌ Algorithmic novelty | The winning rule is **one line**. The contribution is the *measurement*, the *negative result*, and the *blindness map*. |
+| ❌ "This works on Vulcan" | **I have never seen Vulcan's scores and cannot get them.** What I can show is that the effect *grows* as the scorer improves — but that is n = 3, and two of the three are broken models. |
+| ❌ Conformal prediction is my method | It is a **baseline I tested and it came second-worst.** |
+| ❌ A production guarantee | Every number is an **offline replay**. A blocked transaction never acquires an outcome — the *selective labels* problem. No offline study escapes it, mine included. |
+| ❌ General applicability | **Below ~0.1% fraud prevalence it does not work at all.** External validation on ULB failed and that failure is written up, not buried. |
+
+**The full boundaries are in [`RESULTS.md`](RESULTS.md) §8 (threats to validity) and §10 (the "never say this" table).**
+
+---
+
+## Reproducibility
+
+| | |
+|---|---|
+| **Protocol** | Pre-registered and hashed **before any result existed** — `results/protocol.lock`, frozen at commit `559c8fa` |
+| **Config hash** | `d38888c9d05d398c`. Scripts **refuse to run** if a frozen constant changed |
+| **Amendments** | One, recorded in `config.yaml` with its prediction written down *beforehand* |
+| **Tests** | 22, passing. Three of the five known bugs have **mutation-verified** regression tests; two do not, and `RESULTS.md` §7 says which |
+| **Every result** | Traceable to a numbered block script and a JSON in `results/` |
+
+Two claims once had no code behind them — `band`'s ±50% cost sweep and Block 11's transfer table. **Both have since been measured**, and in both cases the original numbers reproduced exactly. The lesson is recorded rather than tidied away: the number was right and the *evidence* was missing, and those are not the same thing.
+
+---
+
+## Read next
+
+| Document | Why |
+|---|---|
+| [`RESULTS.md`](RESULTS.md) §0 | The result on one page, with standard metrics up front |
+| [`START_HERE.md`](START_HERE.md) | Run it and present it, assuming no knowledge of the code |
+| [`RUNBOOK.html`](RUNBOOK.html) | Six-minute demo script and the hard questions, with answers |
+| [`PROTOCOL.md`](PROTOCOL.md) | What was decided *before* any result existed |
+
+---
+
+*Two hypotheses were refuted, one of my own headlines was retracted for circularity, external validation failed, and the method this project is named after lost its own pre-registered kill test. That record is the submission, not a blemish on it.*
