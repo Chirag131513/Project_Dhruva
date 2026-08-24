@@ -112,14 +112,32 @@ NAME = {"score": "most suspicious first", "amount": "biggest amount first",
         "rej_lr": "learned rejector (logreg)", "rej_gbm": "learned rejector (shallow GBM)"}
 
 
-def seg_matrix(df, p, amt):
-    """Features the gate already has: score, amount, and coarse segment. Nothing else."""
-    cols = [np.asarray(p, float), np.asarray(amt, float), np.log1p(np.asarray(amt, float))]
+def seg_levels(df):
+    """Fix the one-hot vocabulary ONCE, on the split the rejector trains on.
+
+    Deriving levels separately per split silently produces different column counts -- cal had 12
+    and test 11 on the first run -- so the encoder must be fitted, not recomputed. A level that
+    appears only in test gets no column and falls through as all-zeros, which is the correct
+    behaviour for a category the rejector never saw while training.
+    """
+    out = {}
     for c in ("ProductCD", "card6"):
         if c in df:
-            v = df[c].astype(str).to_numpy()
-            for lvl in np.unique(v):
-                cols.append((v == lvl).astype(float))
+            # str() per element, not .astype(str): under pandas 3.0 a missing value survives
+            # .astype(str) as a float nan, and np.unique then compares float to str and raises.
+            # Same dtype trap as bug 2 in RESULTS section 7, which nulled 15 columns silently.
+            # block12_policies.localise() carries this identical idiom for the same reason.
+            out[c] = sorted(np.unique(np.array([str(x) for x in df[c].to_numpy()])))
+    return out
+
+
+def seg_matrix(df, p, amt, levels):
+    """Features the gate already has: score, amount, and coarse segment. Nothing else."""
+    cols = [np.asarray(p, float), np.asarray(amt, float), np.log1p(np.asarray(amt, float))]
+    for c, lvls in levels.items():
+        v = np.array([str(x) for x in df[c].to_numpy()])
+        for lvl in lvls:
+            cols.append((v == lvl).astype(float))
     return np.column_stack(cols)
 
 
@@ -197,8 +215,10 @@ def main() -> int:
         # --- train the rejector on CAL only -------------------------------------------------
         v_cal = escalation_value(p_cal, y_cal, amt_cal, costs)
         t_cal = (v_cal > 0).astype(int)
-        F_cal = seg_matrix(sp.cal, p_cal, amt_cal)
-        F_test = seg_matrix(sp.test, p, amt)
+        levels = seg_levels(sp.cal)          # vocabulary fixed on the training split
+        F_cal = seg_matrix(sp.cal, p_cal, amt_cal, levels)
+        F_test = seg_matrix(sp.test, p, amt, levels)
+        assert F_cal.shape[1] == F_test.shape[1], "feature width drifted between splits"
 
         if t_cal.sum() in (0, len(t_cal)):        # degenerate target -> cannot learn a ranking
             r_lr = r_gbm = np.zeros(n)

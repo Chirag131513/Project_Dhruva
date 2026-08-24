@@ -34,6 +34,13 @@ Held-out test window, **read once**: 110,377 transactions, 3,732 fraud, 3.38% pr
 because escalated cases get resolved by a human instead of forced into a yes or no. A threshold
 cannot do that; it can only trade one against the other.
 
+> ⚠️ **This pair is conditional on analyst accuracy, and the condition is not in the numbers
+> above.** `realised_cost` credits recall for any non-APPROVE action, so 73.45% / 0.862% are
+> **arithmetically independent** of how good the analyst is. Adjusting for a fallible analyst
+> (§9b), the dominance **holds at 95% and 90% accuracy and inverts below it** — at 80% the
+> false-positive rate rises to 2.74% against the baseline's 1.85%. The 5% error rate is declared,
+> not measured (§8). Quote the adjusted pair under challenge.
+
 **False-positive cost is priced per transaction, not as a flat constant**, and it is carried as
 its own term in every table below:
 
@@ -654,6 +661,91 @@ figure as evidence the method works.** The only economically meaningful row is L
 
 ---
 
+## 9b. A learned rejector, and how bad the analyst can be (Block 13)
+
+*Interpretations **pre-registered and committed before the run** — commit `98f651e`, which
+contains the docstring and no results. The decision rule is encoded in `verdict()` as code, so it
+could not be re-read favourably after the number appeared.*
+
+### A — does a learned model beat the one-line rule?
+
+§11 has always conceded that `band` was written as a strawman and won anyway. The obvious
+objection is *"did you try learning the ranking?"* Until now the answer was no. A small model was
+trained to predict whether escalating a case yields positive realised rupee value, using **only
+what the gate already has** — score, amount, log amount, one-hot ProductCD and card6 — fitted on
+the **calibration** split, never on test. Two arms, both with settings fixed before the run and
+**no tuning pass**.
+
+| queue policy | 1% | 2% | 5% | 10% |
+|---|---|---|---|---|
+| **nearest the cut (band)** | **+219,440** | **+405,514** | **+798,331** | **+1,072,836** |
+| learned rejector — shallow GBM | +175,018 | +329,842 | +763,260 | +1,056,840 |
+| learned rejector — logistic regression | −78,379 | −2,155 | +139,247 | +294,643 |
+| most suspicious first | −89,329 | −15,091 | +577,447 | +1,038,038 |
+
+**Pre-registered verdict: BAND WINS — but read the margin before repeating that.**
+At the pre-registered 2% capacity the gap is **−2.0165 points** of baseline loss against a
+threshold of −2.0. **It cleared the boundary by 0.0165 points.** Sixteen thousandths of a point
+the other way and the same rule would have printed *"TIE — simplicity wins."*
+
+**So the defensible claim is the weaker of the two adjacent readings:** a learned model with more
+information, a label requirement and a fitted vocabulary **does not beat one line of arithmetic**.
+It is not that band is decisively superior. At every other capacity the gap sits comfortably
+inside the indifference band (−1.18, −0.93, −0.43 points), which says the same thing: **level, and
+never behind.** Do not quote "band wins" without the margin.
+
+Two things worth saying plainly:
+
+- **The GBM rejector is a perfectly good policy** — it beats *most suspicious first* at 1% and 2%,
+  where that policy loses money. It is simply not better than the one-liner.
+- **The rejector needs labels and band does not.** This was stated before the run, not after.
+  Chargeback labels arrive weeks late (§8), so band refits on last week's traffic and the rejector
+  cannot. Any rupee comparison has to carry that asymmetry.
+- **A bug found while building it is itself evidence.** The one-hot vocabulary was recomputed per
+  split and silently produced 12 columns on calibration and 11 on test — textbook **train/serve
+  skew**, the classic way a learned model misbehaves in production. `band` has no fitted state, no
+  vocabulary and nothing to drift; it cannot have that bug. That is a robustness argument
+  independent of rupees, and it surfaced before any number did.
+
+### B — how accurate does the analyst have to be?
+
+The 5% analyst error rate is declared, never measured (§8). Sweeping it:
+
+| analyst accuracy | band − score @ 2% | adjusted recall | adjusted FPR | dominance holds? |
+|---|---|---|---|---|
+| 95% *(declared)* | +426,547 | 70.9% | 1.34% | ✅ |
+| 90% | +499,364 | 69.5% | **1.81%** | ✅ *by 0.04 points* |
+| 80% | +644,998 | 66.5% | **2.74%** | ❌ |
+| 70% | +790,631 | 63.6% | **3.67%** | ❌ |
+
+*(Baseline for comparison: 49.7% recall, 1.85% FPR. "Adjusted" credits the analyst only 1−ε of
+the time — see below.)*
+
+**(a) The band-vs-score gap survives every accuracy tested, and *grows* as the analyst gets
+worse** — +₹426,547 at 95% rising to +₹790,631 at 70%. The mechanism is worth stating: sorting by
+score sends analysts to cases the model is already confident about, so a *bad* analyst converts
+those reviews into fresh errors. Band sends them to genuinely ambiguous cases where a review has
+something to decide. **The worse your analysts, the more the queue ordering matters.** That is the
+opposite of the intuition that this needs good analysts to work.
+
+**(b) The "recall up *and* false positives down" claim breaks below ~90% analyst accuracy, and
+this qualifies §0.** At 80% accuracy the false-positive rate rises to 2.74% against the baseline's
+1.85% — the dominance inverts. At 90% it survives by 0.04 points, which is not a margin worth
+leaning on.
+
+**Why the raw figures do not show this, which matters more than the sweep.** `realised_cost`
+credits `fraud_recall` for any action that is not APPROVE — a reviewed fraud counts as caught
+whatever the analyst then decides — and counts `fpr` only over *blocked* legitimate cases. The raw
+73.4% / 0.86% pair in §0 is therefore **arithmetically independent of analyst accuracy**: sweep it
+from 95% to 70% and those two numbers do not move at all. That was predicted in the
+pre-registration from reading `cost.py`, before running anything.
+
+So the honest statement of §0's operating point is: **"both improve at once, provided your
+analysts are at least ~90% accurate — and I did not measure that, I declared it."** Quote the
+adjusted pair under challenge, not the raw one.
+
+---
+
 ## 10. What not to say
 
 | Don't | Do |
@@ -686,8 +778,12 @@ The band result is strong but the *signal* is barely explored. `band` ranks by d
 Bayes threshold; it was written as a strawman for the kill test and it won. Obvious next steps,
 none of them run:
 
-- **A learned rejector** trained directly on realised rupee cost, which is what DAUNT's framing
-  implies and what would test whether hand-built ranking is leaving money on the table.
+- ~~**A learned rejector**~~ **— done (§9b).** Trained on realised rupee value, it lands
+  **0.0165 points** the wrong side of the pre-registered indifference band at 2% capacity, and
+  inside it at every other capacity. A learned model with more inputs and a label requirement is
+  *level, and never ahead*. What remains open is a **magnitude-aware** target: the pre-registered
+  rejector classifies the *sign* of escalation value, so a case worth ₹1 ranks alongside one worth
+  ₹50,000. Regressing the value is the obvious next attempt.
 - **Why conformal fails specifically.** My reading is that conformal nominates cases where the
   *classes* are hard to separate, while the money is in cases near the *cost-optimal cut* — two
   different sets. That is a hypothesis I state, not a result I measured.
@@ -728,6 +824,7 @@ python scripts/block9_triage.py --seeds 10   # kill test: band beats conformal 2
 python scripts/block10_proofs.py        # the two premises; the baseline one goes against me
 python scripts/block11_concentration.py # concentration across three scorers: 0.7x -> 1.1x -> 8.6x
 python scripts/block12_policies.py --seeds 5 # THE RESULT: the queue-policy race (§0)
+python scripts/block13_rejector.py --seeds 5 # learned rejector + analyst-accuracy sweep (§9b)
 python -m pytest tests/ -q              # 22 passed
 ```
 
