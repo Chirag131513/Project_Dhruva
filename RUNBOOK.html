@@ -209,7 +209,7 @@ tr.win td{background:var(--accent-soft)}
   <div class="tw"><table>
     <thead><tr><th>Other figures you may need</th><th>Value</th></tr></thead><tbody>
     <tr><td>Deployed gate @ 10% capacity &mdash; saved</td><td class="n">&#8377;1,072,199 vs a no-queue baseline</td></tr>
-    <tr><td>Recall / FPR &mdash; gate @ 10% vs baseline</td><td class="n">73.4% vs 49.7% &middot; 0.86% vs 1.85%</td></tr>
+    <tr><td>Recall / FPR &mdash; gate @ 10% vs baseline<br><span style="color:var(--ink-3)">at the <b>declared 95%</b> analyst accuracy &mdash; inverts below ~90%</span></td><td class="n">73.4% vs 49.7% &middot; 0.86% vs 1.85%</td></tr>
     <tr><td>Gate latency, single decision</td><td class="n">p50 14.6 &micro;s &middot; p99 24.1 &micro;s</td></tr>
     <tr><td>Gate latency, batch</td><td class="n">0.082 &micro;s per transaction</td></tr>
     <tr><td>Band vs conformal @ 10% (Block 9, 10 seeds)</td><td class="n">+&#8377;1,013,324, p = 0.0020, 22&times;</td></tr>
@@ -252,8 +252,9 @@ tr.win td{background:var(--accent-soft)}
     <p class="pin">Block 11 &middot; n = 3, and two of the three are broken models &mdash; say so if pressed. Directional, not proof</p></div>
 
     <div class="q"><p class="ask">Why not just raise the threshold, or block more?</p>
-    <p class="ans">That&rsquo;s the baseline, and it&rsquo;s already cost-optimal per transaction. It cannot do better without trading recall against false positives. <strong>Escalation escapes that trade-off</strong> &mdash; at 10% capacity both improve at once, because a human resolves the case instead of the system guessing.</p>
-    <p class="pin">73.4% vs 49.7% recall; 0.86% vs 1.85% FPR</p></div>
+    <p class="ans">That&rsquo;s the baseline, and it&rsquo;s already cost-optimal per transaction. It cannot do better without trading recall against false positives. <strong>Escalation escapes that trade-off</strong> &mdash; at 10% capacity both improve at once, <strong>at the declared 95% analyst accuracy</strong>, because a human resolves the case instead of the system guessing.</p>
+    <p class="ans"><strong>Volunteer the condition before they find it.</strong> That pair is measured assuming analysts are right 95% of the time &mdash; a number I declared and never measured. Adjusting for a fallible analyst, the dominance holds at 95% and 90% and <strong>inverts below that</strong>: at 80% accuracy the false-positive rate rises to 2.74% against the baseline&rsquo;s 1.85%. The <em>rupee</em> advantage survives all the way down to 70% and actually grows &mdash; but the &ldquo;both improve&rdquo; claim does not. Quote the adjusted pair under challenge.</p>
+    <p class="pin">73.4% vs 49.7% recall; 0.86% vs 1.85% FPR &middot; conditional on &ge;90% analyst accuracy (RESULTS &sect;9b)</p></div>
 
     <div class="q"><p class="ask">Are your cost constants invented?</p>
     <p class="ans">Declared, not measured, and stated as such: &#8377;1,500 chargeback fee, 25% margin, &#8377;250 goodwill, &#8377;40 per review, 5% analyst error. <strong>All four are swept &plusmn;50%.</strong> The <em>conformal</em> arm flips sign on three of the four &mdash; one of the reasons I dropped it. <strong>The winning rule holds its sign on all four</strong>, ranging +&#8377;513,576 to +&#8377;1,409,008. The ranking is rebuilt under each cost vector, so that is the rule as deployed, not a frozen ordering.</p>

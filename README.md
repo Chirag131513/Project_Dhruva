@@ -26,9 +26,11 @@ Built for the **Razorpay AI Buildathon, Track 02 — AI Risk Manager**.
 | operating point | fraud recall | false-positive rate | review rate |
 |---|---|---|---|
 | cost-optimal Bayes threshold *(baseline, no queue)* | 49.68% | 1.846% | 0% |
-| **deployed gate @ 10% capacity** | **73.45%** | **0.862%** | 10.9% |
+| **deployed gate @ 10% capacity** *(at the declared 95% analyst accuracy)* | **73.45%** | **0.862%** | 10.9% |
 
 **Both improve at once** — recall +23.8 points while false positives *halve* — because a human resolves the case instead of the system guessing. A threshold can only trade one against the other.
+
+> **That pair is conditional, and I would rather you heard it from me.** Those figures assume analysts are right **95%** of the time — a constant I declared and never measured. Sweeping it ([§9b](RESULTS.md)): the dominance **holds at 95% and 90% and inverts below that** — at 80% accuracy the false-positive rate rises to **2.74%** against the baseline's 1.85%. The *rupee* advantage survives all the way down to 70% and in fact **grows**, but the "both improve" claim does not. **Measure your analysts before quoting this pair.**
 
 False-positive cost is priced **per transaction**, not as a flat constant: `c_FP(x) = 0.25·amount + ₹250`.
 
@@ -90,7 +92,7 @@ Advantage over the **best rival at each capacity**: 5.8% · **7.9%** · 5.9% · 
 
 ## Project structure
 
-Thirteen numbered blocks. **Every one has a script, and every result in `RESULTS.md` comes from one of them.**
+Fourteen numbered blocks. **Every one has a script, and every result in `RESULTS.md` comes from one of them.**
 
 | # | Script | What it establishes |
 |---|---|---|
@@ -107,6 +109,7 @@ Thirteen numbered blocks. **Every one has a script, and every result in `RESULTS
 | 10 | `block10_proofs.py` | Two premises tested. One comes back **against me** |
 | 11 | `block11_concentration.py` | Error concentration across three scorers: 0.7× → 1.1× → 8.6× |
 | 12 | `block12_policies.py` | **THE RESULT** — the queue-policy race above |
+| 13 | `block13_rejector.py` | A **learned** rejector does not beat the one-line rule; plus the analyst-accuracy sweep |
 
 | Support | Purpose |
 |---|---|
@@ -128,7 +131,7 @@ Thirteen numbered blocks. **Every one has a script, and every result in `RESULTS
 | Not claimed | The honest version |
 |---|---|
 | ❌ "28% of loss saved" | **Retired.** That measured against a baseline with *no review queue*, which nobody runs. I cut it myself. The claim is **6–8% over the policy a team already has**. |
-| ❌ Algorithmic novelty | The winning rule is **one line**. The contribution is the *measurement*, the *negative result*, and the *blindness map*. |
+| ❌ Algorithmic novelty | The winning rule is **one line**, and I tested that against a real opponent: a learned rejector trained on realised rupee value, using the same inputs. It **did not beat it** — landing 0.0165 points from a statistical tie, so the honest reading is *level, never ahead*. The contribution is the *measurement*, the *negative result*, and the *blindness map*. |
 | ❌ "This works on Vulcan" | **I have never seen Vulcan's scores and cannot get them.** What I can show is that the effect *grows* as the scorer improves — but that is n = 3, and two of the three are broken models. |
 | ❌ Conformal prediction is my method | It is a **baseline I tested and it came second-worst.** |
 | ❌ A production guarantee | Every number is an **offline replay**. A blocked transaction never acquires an outcome — the *selective labels* problem. No offline study escapes it, mine included. |
@@ -158,6 +161,7 @@ Two claims once had no code behind them — `band`'s ±50% cost sweep and Block 
 |---|---|
 | [`RESULTS.md`](RESULTS.md) §0 | The result on one page, with standard metrics up front |
 | [`START_HERE.md`](START_HERE.md) | Run it and present it, assuming no knowledge of the code |
+| [`RAZORPAY_ACTION_MEMO.md`](RAZORPAY_ACTION_MEMO.md) | **Three things a risk team can do on Monday** — two need none of this code |
 | [`RUNBOOK.html`](RUNBOOK.html) | Six-minute demo script and the hard questions, with answers |
 | [`PROTOCOL.md`](PROTOCOL.md) | What was decided *before* any result existed |
 
